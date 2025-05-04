@@ -83,7 +83,6 @@ function seleccionarArea(area, botonSeleccionado) {
     localStorage.setItem('areaSeleccionada', JSON.stringify(area));
 }
 
-// Carga las categorías del área y las muestra en su contenedor
 async function cargarCategorias(idArea, contenedor) {
     // Oculta todos los demás contenedores de categorías
     document.querySelectorAll('.categorias-contenedor').forEach(c => {
@@ -98,6 +97,7 @@ async function cargarCategorias(idArea, contenedor) {
         if (!response.ok) throw new Error('Error al obtener categorías');
 
         const categorias = await response.json();
+        console.log('Lista completa de categorías recibidas:', categorias); // Log 1: Todas las categorías
 
         contenedor.innerHTML = '';
 
@@ -111,9 +111,17 @@ async function cargarCategorias(idArea, contenedor) {
             const boton = document.createElement('button');
             boton.className = 'boton-categoria';
             boton.textContent = cat.nombre;
+            
+            console.log('Creando botón para categoría:', {  // Log 2: Al crear cada botón
+                id: cat.id, 
+                nombre: cat.nombre
+            });
+
             boton.addEventListener('click', () => {
+                console.log('Categoría clickeada - ID:', cat.id); // Log 3: Al hacer clic
+                
                 localStorage.setItem('categoriaSeleccionada', JSON.stringify(cat));
-                window.open(`/ruta-a-nueva-pagina.html?idCategoria=${cat.id}`, '_blank');
+                window.open(`../views/categorias-dinamicas.html?id=${cat.id}`, '_blank');
             });
             
             contenedor.appendChild(boton);
