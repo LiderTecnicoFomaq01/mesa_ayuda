@@ -1,0 +1,113 @@
+body {
+font-family: Arial, sans-serif;
+margin: 0;
+background-color: #f4f4f4;
+}
+
+header {
+background-color: #0b3d91;
+color: white;
+padding: 20px;
+text-align: center;
+}
+
+.logo {
+height: 60px;
+vertical-align: middle;
+}
+
+main {
+display: flex;
+justify-content: center;
+align-items: center;
+height: 70vh;
+}
+
+.login-container {
+background: white;
+padding: 30px;
+border-radius: 10px;
+width: 100%;
+max-width: 400px;
+box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.login-fields {
+display: flex;
+flex-direction: column;
+gap: 15px;
+}
+
+input {
+padding: 10px;
+font-size: 1rem;
+border: 1px solid #ccc;
+border-radius: 5px;
+}
+
+button {
+background-color: #0b3d91;
+color: white;
+padding: 10px;
+font-size: 1rem;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+}
+
+button:hover {
+background-color: #092e6c;
+}
+
+.error {
+color: red;
+font-size: 0.9rem;
+text-align: center;
+}
+
+footer {
+text-align: center;
+padding: 10px;
+background-color: #0b3d91;
+color: white;
+}
+
+.message {
+text-align: center;
+margin-top: 10px;
+font-weight: bold;
+}
+
+.message.info {
+color: #0b3d91;
+}
+
+.message.success {
+color: green;
+}
+
+.message.error {
+color: red;
+}
+
+.password-wrapper {
+position: relative;
+}
+
+.password-wrapper input {
+width: 94.5%;
+}
+
+.toggle-password {
+position: absolute;
+right: 10px;
+top: 50%;
+transform: translateY(-50%);
+cursor: pointer;
+}
+
+.toggle-password img {
+width: 24px;
+height: 24px;
+}
+  

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Principal</title>
+    <link rel="stylesheet" href="../css/panel-principal.css">
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <img src="../public/assets/img/Logo.png" alt="Logo" class="logo">
+            <h1 class="titulo-app">Mesa de ayuda FOMAG</h1>
+        </div>
+        <div class="usuario-nombre" id="usuarioNombre"></div>
+    </header>                
+    
+    <div class="dashboard-container">
+        <nav class="sidebar">
+            <!-- Módulos para todos los usuarios -->
+            <div class="modulo" data-panel="crear-solicitud">
+                <h2>Crear Solicitud</h2>
+                <p>Crea una nueva solicitud de soporte</p>
+            </div>
+            
+            <div class="modulo" data-panel="mis-solicitudes">
+                <h2>Mis Solicitudes</h2>
+                <p>Revisa el estado de tus solicitudes</p>
+            </div>
+            
+            <!-- Módulos solo para admin (se muestran con CSS según clase) -->
+            <div class="modulo admin-module" data-panel="solicitudes-generales">
+                <h2>Solicitudes Generales</h2>
+                <p>Todas las solicitudes del sistema</p>
+            </div>
+            
+            <div class="modulo admin-module" data-panel="mis-asignadas">
+                <h2>Mis Asignadas</h2>
+                <p>Solicitudes asignadas a mí</p>
+            </div>
+            
+            <div class="modulo admin-module" data-panel="solucionadas">
+                <h2>Solucionadas</h2>
+                <p>Solicitudes ya resueltas</p>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <!-- Contenido dinámico se cargará aquí -->
+            <div class="panel-bienvenida">
+                <h2>Bienvenido al Sistema</h2>
+                <p>Seleccione una opción del menú lateral para comenzar</p>
+            </div>
+            
+            <!-- Paneles de contenido (inicialmente ocultos) -->
+            <div class="panel-contenido" id="crear-solicitud" style="display: none;">
+                <!-- Contenido de Crear Solicitud -->
+            </div>
+            
+            <div class="panel-contenido" id="mis-solicitudes" style="display: none;">
+                <!-- Contenido de Mis Solicitudes -->
+            </div>
+            
+            <div class="panel-contenido admin-panel" id="solicitudes-generales" style="display: none;">
+                <!-- Contenido de Solicitudes Generales -->
+            </div>
+            
+            <div class="panel-contenido admin-panel" id="mis-asignadas" style="display: none;">
+                <!-- Contenido de Mis Asignadas -->
+            </div>
+            
+            <div class="panel-contenido admin-panel" id="solucionadas" style="display: none;">
+                <!-- Contenido de Solucionadas -->
+            </div>
+        </main>
+    </div>
+    <script src="../js/panel-principal.js"></script>
+</body>
+</html>
