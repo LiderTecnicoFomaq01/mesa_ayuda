@@ -39,6 +39,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Crear formulario dinámico
         const form = document.createElement('form');
         form.id = 'dynamic-form';
+        form.enctype = 'multipart/form-data'; // Importante para formularios con archivos
         
         campos.forEach(campo => {
             const fieldContainer = document.createElement('div');
@@ -165,51 +166,48 @@ document.addEventListener('DOMContentLoaded', async () => {
                     break;
                     
                 case 'archivo':
-                    // Crear label
                     const labelArchivo = document.createElement('label');
                     labelArchivo.htmlFor = `field-${campo.id}`;
                     labelArchivo.textContent = campo.nombre_campo;
-                    
+                
                     if (campo.requerido) {
                         const requiredSpan = document.createElement('span');
                         requiredSpan.className = 'required';
                         requiredSpan.textContent = '*';
                         labelArchivo.appendChild(requiredSpan);
                     }
-                    
-                    // Contenedor para el input de archivo
+                
                     const fileContainer = document.createElement('div');
                     fileContainer.className = 'file-input-container';
-                    
-                    // Botón personalizado
+                
                     const fileButton = document.createElement('span');
                     fileButton.className = 'file-input-button';
                     fileButton.textContent = 'Seleccionar archivo';
-                    
-                    // Texto del nombre del archivo
+                
                     const fileName = document.createElement('span');
                     fileName.className = 'file-input-name';
                     fileName.textContent = 'Ningún archivo seleccionado';
-                    
-                    // Input de archivo real
+                
                     input = document.createElement('input');
                     input.type = 'file';
                     input.id = `field-${campo.id}`;
-                    input.name = `field_${campo.id}`;
+                    input.name = `field_${campo.id}`;  // <- nombre dinámico
                     input.required = campo.requerido;
-                    
-                    // Evento para mostrar el nombre del archivo
+                    input.multiple = true;             // <- permitir múltiples archivos
+                
                     input.addEventListener('change', (e) => {
-                        fileName.textContent = e.target.files[0]?.name || 'Ningún archivo seleccionado';
+                        const names = Array.from(e.target.files).map(f => f.name).join(', ');
+                        fileName.textContent = names || 'Ningún archivo seleccionado';
                     });
-                    
+                
                     fileContainer.appendChild(fileButton);
                     fileContainer.appendChild(fileName);
                     fileContainer.appendChild(input);
-                    
+                
                     fieldContainer.appendChild(labelArchivo);
                     fieldContainer.appendChild(fileContainer);
                     break;
+                    
                     
                 default:
                     // Crear label
@@ -252,9 +250,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Manejar envío del formulario
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+        
             try {
-                const formData = new FormData(form);
                 const userData = JSON.parse(localStorage.getItem("userData"));
         
                 // Configurar botón durante envío
@@ -264,46 +261,54 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <span class="button-text">Enviando...</span>
                 `;
         
-                // Obtener valores de los campos dinámicos
+                // Crear FormData para enviar
+                const formData = new FormData();
                 const camposValues = {};
-                const files = [];
-                
+        
+                // Procesar todos los campos del formulario
                 campos.forEach(campo => {
-                    if (campo.tipo === 'file') {
-                        // Para archivos, los agregamos al array files
-                        const fileInput = form.querySelector(`input[name="field_${campo.id}"]`);
-                        if (fileInput.files.length > 0) {
-                            files.push({
-                                id_campo: campo.id,
-                                file: fileInput.files[0]
-                            });
+                    const input = form.querySelector(`[name="field_${campo.id}"]`) || 
+                                  form.querySelector(`[name="archivo"]`);
+        
+                    if (campo.tipo_campo === 'archivo') {
+                        // Manejar archivo adjunto
+                        const fileInput = form.querySelector('input[type="file"]');
+                        if (fileInput && fileInput.files.length > 0) {
+                            for (const file of fileInput.files) {
+                                formData.append('archivo', file);  // el mismo campo se puede repetir
+                            }
                         }
                     } else {
-                        // Para otros tipos de campos
-                        camposValues[`field_${campo.id}`] = formData.get(`field_${campo.id}`);
+                        // Manejar otros tipos de campos
+                        let value;
+        
+                        if (input.type === 'checkbox') {
+                            value = input.checked;
+                        } else {
+                            value = input.value;
+                        }
+        
+                        if (value !== '' && value !== null && value !== undefined) {
+                            camposValues[`field_${campo.id}`] = value;
+                        }
                     }
                 });
         
-                // Crear objeto ticket con los datos requeridos
-                const ticketData = {
+                // Agregar los datos del ticket como JSON
+                formData.append('ticket', JSON.stringify({
                     id_categoria: parseInt(idCategoria),
                     id_usuario: userData.id,
                     id_estado: 1,
                     campos: camposValues
-                };
+                }));
         
-                // Crear FormData para enviar tanto JSON como archivos
-                const requestData = new FormData();
-                requestData.append('ticket', JSON.stringify(ticketData));
-                
-                // Agregar archivos al FormData
-                files.forEach((fileObj, index) => {
-                    requestData.append('files', fileObj.file); // Campo único para Multer
-                    requestData.append(`fileInfo_${index}`, JSON.stringify({
-                        id_campo: fileObj.id_campo,
-                        originalName: fileObj.file.name
-                    }));
-                });
+                // Mostrar mensaje de carga mientras se envía el archivo
+                const loadingMessage = document.createElement('div');
+                loadingMessage.className = 'loading-message';
+                loadingMessage.innerHTML = `
+                    <p>Subiendo archivo...</p>
+                `;
+                form.prepend(loadingMessage);
         
                 // Enviar al backend
                 const response = await fetch('http://localhost:4000/api/tickets', {
@@ -312,22 +317,37 @@ document.addEventListener('DOMContentLoaded', async () => {
                         'Authorization': `Bearer ${userData.token}`
                         // No establecer Content-Type, FormData lo hará automáticamente
                     },
-                    body: requestData
+                    body: formData
                 });
         
                 const responseData = await response.json();
+        
+                // Eliminar el mensaje de carga una vez que la respuesta sea recibida
+                loadingMessage.remove();
         
                 if (!response.ok) {
                     throw new Error(responseData.message || 'Error del servidor');
                 }
         
-                // Mostrar confirmación
+                // Mostrar confirmación de éxito
                 const successMessage = document.createElement('div');
                 successMessage.className = 'success-message';
                 successMessage.innerHTML = `
                     <p>Ticket #${responseData.ticketId} enviado correctamente</p>
+                    <p>Archivo adjunto: ${responseData.fileName || 'Ninguno'}</p>
                 `;
                 form.prepend(successMessage);
+        
+                // Eliminar el mensaje de éxito después de un retraso (dependiendo si hay archivo o no)
+                const delay = responseData.fileName ? 5000 : 3000;  // 5s si hay archivo, 3s si no
+                setTimeout(() => {
+                    successMessage.remove();
+                }, delay);
+        
+                // Limpiar los campos del formulario después de un pequeño retraso
+                setTimeout(() => {
+                    form.reset();
+                }, delay);
         
             } catch (error) {
                 console.error('Error al enviar el ticket:', error);
@@ -336,7 +356,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 errorMessage.textContent = `Error: ${error.message}`;
                 form.prepend(errorMessage);
             } finally {
-                // Restaurar botón
+                // Restaurar el botón
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = `
                     <span class="button-icon">📨</span>

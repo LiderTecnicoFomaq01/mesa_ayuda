@@ -1,29 +1,24 @@
+// config/multerConfig.js
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
+
+const tempDir = path.join(__dirname, '..', 'uploads', 'temp'); // correcto
+
+if (!fs.existsSync(tempDir)) {
+  fs.mkdirSync(tempDir, { recursive: true });
+}
 
 const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads/temp/');
-    },
-    filename: function (req, file, cb) {
-        cb(null, Date.now() + path.extname(file.originalname));
-    }
+  destination: (req, file, cb) => {
+    cb(null, tempDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueName = Date.now() + '-' + file.originalname;
+    cb(null, uniqueName);
+  }
 });
 
-const fileFilter = (req, file, cb) => {
-    // Validar tipos de archivo permitidos
-    const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
-    if (allowedTypes.includes(file.mimetype)) {
-        cb(null, true);
-    } else {
-        cb(new Error('Tipo de archivo no permitido'), false);
-    }
-};
-
-const upload = multer({ 
-    storage: storage,
-    fileFilter: fileFilter,
-    limits: { fileSize: 5 * 1024 * 1024 } // 5MB
-});
+const upload = multer({ storage });
 
 module.exports = upload;
