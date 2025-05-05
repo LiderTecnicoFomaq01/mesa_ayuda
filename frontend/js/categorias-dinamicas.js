@@ -255,36 +255,67 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             try {
                 const formData = new FormData(form);
-                const submitBtn = form.querySelector('button[type="submit"]');
-                
-                // Deshabilitar botón durante el envío
+                const userData = JSON.parse(localStorage.getItem("userData"));
+        
+                // Configurar botón durante envío
                 submitBtn.disabled = true;
-                submitBtn.innerHTML = 'Enviando... <span class="spinner small"></span>';
-                
-                // Aquí puedes agregar la lógica para enviar los datos al servidor
-                console.log('Datos del formulario:', Object.fromEntries(formData.entries()));
-                
-                // Simular envío (remover en producción)
-                await new Promise(resolve => setTimeout(resolve, 1500));
-                
-                // Mostrar mensaje de éxito
+                submitBtn.innerHTML = `
+                    <span class="spinner"></span>
+                    <span class="button-text">Enviando...</span>
+                `;
+        
+                // Obtener valores de los campos dinámicos
+                const camposValues = {};
+                campos.forEach(campo => {
+                    camposValues[`field_${campo.id}`] = formData.get(`field_${campo.id}`);
+                });
+        
+                // Crear objeto ticket con los datos requeridos
+                const ticketData = {
+                    id_categoria: parseInt(idCategoria),  // ID de la URL
+                    id_usuario: userData.id,
+                    id_estado: 1, // Asumiendo que 1 es el estado inicial (ej: "Abierto")
+                    campos: camposValues
+                };
+        
+                // Enviar al backend
+                const response = await fetch('http://localhost:4000/api/tickets', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${userData.token}`
+                    },
+                    body: JSON.stringify(ticketData)
+                });
+        
+                // Leer la respuesta una sola vez
+                const responseData = await response.json();
+        
+                if (!response.ok) {
+                    throw new Error(responseData.message || 'Error del servidor');
+                }
+        
+                // Mostrar confirmación
                 const successMessage = document.createElement('div');
                 successMessage.className = 'success-message';
-                successMessage.textContent = 'Ticket enviado correctamente';
+                successMessage.innerHTML = `
+                    <p>Ticket enviado correctamente</p>
+                `;
                 form.prepend(successMessage);
-                
+        
             } catch (error) {
-                console.error('Error al enviar el formulario:', error);
+                console.error('Error al enviar el ticket:', error);
                 const errorMessage = document.createElement('div');
                 errorMessage.className = 'error-message';
-                errorMessage.textContent = 'Error al enviar el ticket: ' + error.message;
+                errorMessage.textContent = `Error: ${error.message}`;
                 form.prepend(errorMessage);
             } finally {
-                const submitBtn = form.querySelector('button[type="submit"]');
-                if (submitBtn) {
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'Enviar Ticket';
-                }
+                // Restaurar botón
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `
+                    <span class="button-icon">📨</span>
+                    <span class="button-text">Enviar Ticket</span>
+                `;
             }
         });
         

@@ -20,8 +20,14 @@ app.use(express.urlencoded({ extended: true }));
 // Importación segura de rutas
 try {
   const authRoutes = require('./src/routes/authRoutes');
+  const areasRoutes = require('./src/routes/areasRoutes');
+  const ticketsRoutes = require('./src/routes/ticketsRoutes');
+  
   app.use('/api/auth', authRoutes);
-  console.log('Rutas cargadas correctamente');
+  app.use('/api/areas', areasRoutes);
+  app.use('/api/tickets', ticketsRoutes);
+  
+  console.log('Todas las rutas cargadas correctamente');
 } catch (err) {
   console.error('Error al cargar rutas:', err);
   process.exit(1);
@@ -46,10 +52,6 @@ const PORT = process.env.PORT || 4000;
 const server = app.listen(PORT, () => {
   console.log(`🚀 Servidor en http://localhost:${PORT}`);
 });
-
-const areasRoutes = require('./src/routes/areasRoutes');
-app.use('/api/areas', areasRoutes);
-
 
 // Manejo de cierre
 process.on('SIGTERM', () => {
