@@ -266,29 +266,55 @@ document.addEventListener('DOMContentLoaded', async () => {
         
                 // Obtener valores de los campos dinámicos
                 const camposValues = {};
+                const files = [];
+                
                 campos.forEach(campo => {
-                    camposValues[`field_${campo.id}`] = formData.get(`field_${campo.id}`);
+                    if (campo.tipo === 'file') {
+                        // Para archivos, los agregamos al array files
+                        const fileInput = form.querySelector(`input[name="field_${campo.id}"]`);
+                        if (fileInput.files.length > 0) {
+                            files.push({
+                                id_campo: campo.id,
+                                file: fileInput.files[0]
+                            });
+                        }
+                    } else {
+                        // Para otros tipos de campos
+                        camposValues[`field_${campo.id}`] = formData.get(`field_${campo.id}`);
+                    }
                 });
         
                 // Crear objeto ticket con los datos requeridos
                 const ticketData = {
-                    id_categoria: parseInt(idCategoria),  // ID de la URL
+                    id_categoria: parseInt(idCategoria),
                     id_usuario: userData.id,
-                    id_estado: 1, // Asumiendo que 1 es el estado inicial (ej: "Abierto")
+                    id_estado: 1,
                     campos: camposValues
                 };
+        
+                // Crear FormData para enviar tanto JSON como archivos
+                const requestData = new FormData();
+                requestData.append('ticket', JSON.stringify(ticketData));
+                
+                // Agregar archivos al FormData
+                files.forEach((fileObj, index) => {
+                    requestData.append('files', fileObj.file); // Campo único para Multer
+                    requestData.append(`fileInfo_${index}`, JSON.stringify({
+                        id_campo: fileObj.id_campo,
+                        originalName: fileObj.file.name
+                    }));
+                });
         
                 // Enviar al backend
                 const response = await fetch('http://localhost:4000/api/tickets', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
                         'Authorization': `Bearer ${userData.token}`
+                        // No establecer Content-Type, FormData lo hará automáticamente
                     },
-                    body: JSON.stringify(ticketData)
+                    body: requestData
                 });
         
-                // Leer la respuesta una sola vez
                 const responseData = await response.json();
         
                 if (!response.ok) {
@@ -299,7 +325,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const successMessage = document.createElement('div');
                 successMessage.className = 'success-message';
                 successMessage.innerHTML = `
-                    <p>Ticket enviado correctamente</p>
+                    <p>Ticket #${responseData.ticketId} enviado correctamente</p>
                 `;
                 form.prepend(successMessage);
         

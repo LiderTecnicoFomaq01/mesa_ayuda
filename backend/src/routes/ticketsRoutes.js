@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const ticketsController = require('../controllers/ticketsController');
-const authMiddleware = require('../middlewares/authMiddleware');
+const upload = require('../config/multerConfig');
 
-router.post('/',  ticketsController.createTicket);
+router.post('/', upload.any(), ticketsController.createTicket);
 
 module.exports = router;
