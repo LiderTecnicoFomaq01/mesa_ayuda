@@ -15,6 +15,8 @@ const getTicketsByUserId = async (usuarioId) => {
     JOIN estados_ticket et ON et.id = t.id_estado
     JOIN prioridades_ticket pt ON pt.id = c.id_prioridad
     WHERE t.id_usuario = ?
+    ORDER BY t.fecha_creacion DESC;
+
   `, [usuarioId]);
 
   return rows;

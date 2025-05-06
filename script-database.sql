@@ -99,7 +99,7 @@ CREATE TABLE campos_tickets (
   id INT AUTO_INCREMENT PRIMARY KEY,
   id_categoria INT NOT NULL,
   nombre_campo VARCHAR(255) NOT NULL,
-  tipo_campo ENUM('texto', 'numero', 'fecha', 'archivo', 'booleano') NOT NULL,
+  tipo_campo ENUM('texto', 'numero', 'fecha', 'archivo', 'booleano', 'email') NOT NULL,
   requerido BOOLEAN DEFAULT FALSE,
   FOREIGN KEY (id_categoria) REFERENCES categorias(id)
 ) ENGINE=InnoDB;
@@ -174,6 +174,7 @@ INSERT INTO estados_ticket(nombre_estado, descripcion) VALUES
 ('en curso', 'Ticket asignado y en proceso de resolución'),
 ('esperando soporte', 'Ticket en espera de información o acción del equipo de soporte'),
 ('esperando aprobacion', 'Ticket en espera de aprobación del cliente'),
+('resuelto', 'Ticket concluido y a espera de cierre por parte del usuario'),
 ('finalizado', 'Ticket completado y cerrado'),
 ('cancelado', 'Ticket cancelado por el usuario o administrador');
 
