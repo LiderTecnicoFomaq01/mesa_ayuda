@@ -3,10 +3,20 @@ const TICKETS_URL = 'http://localhost:4000/api/misSolicitudesTickets';
 
 function initMisSolicitudes() {
     console.log("Panel Mis Solicitudes cargado");
+
+    // Verificar si el usuario está autenticado
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    if (!userData) {
+        console.warn("No hay datos de usuario, redirigiendo a login");
+        window.location.href = "login.html"; // Redirigir al login si no hay datos
+        return;
+    }
     
+    const userId = userData.id;  // Asumiendo que el userData tiene una propiedad 'id'
+
     // Cargar ambos componentes
     cargarFiltros();
-    cargarTickets();
+    cargarTickets(userId);
 
     // Configurar eventos de filtros
     configurarEventosFiltros();
@@ -17,23 +27,19 @@ function configurarEventosFiltros() {
     const selectCategoria = document.getElementById('filtro-categoria');
     const selectEstado = document.getElementById('filtro-estado');
     const btnLimpiar = document.getElementById('btn-limpiar-filtros');
+    const btnAplicar = document.getElementById('btn-aplicar-filtros'); // Asegúrate de que el ID coincida con tu HTML
 
-    // Evento para área
+    // Evento para área (solo carga categorías, no aplica filtros)
     if (selectArea) {
         selectArea.addEventListener('change', (event) => {
             const idAreaSeleccionada = event.target.value;
             cargarCategorias(idAreaSeleccionada);
-            aplicarFiltros();
         });
     }
 
-    // Eventos para otros filtros
-    if (selectCategoria) {
-        selectCategoria.addEventListener('change', aplicarFiltros);
-    }
-    
-    if (selectEstado) {
-        selectEstado.addEventListener('change', aplicarFiltros);
+    // Evento para aplicar filtros
+    if (btnAplicar) {
+        btnAplicar.addEventListener('click', aplicarFiltros);
     }
 
     // Evento para limpiar filtros
@@ -43,13 +49,13 @@ function configurarEventosFiltros() {
             document.getElementById('filtro-estado').value = '';
             document.getElementById('filtro-categoria').value = '';
             cargarCategorias();
-            cargarTickets();
+            cargarTickets(); // Vuelve a cargar todos los tickets sin filtros
         });
     }
 }
 
 // Función para cargar tickets con filtros
-async function cargarTickets(userId = 1, filters = {}) {
+async function cargarTickets(userId, filters = {}) {
     const tbody = document.getElementById('ticket-body');
     if (!tbody) return;
 
@@ -83,6 +89,7 @@ async function cargarTickets(userId = 1, filters = {}) {
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${ticket.radicado}</td>
+                <td>${ticket.area}</td>
                 <td>${ticket.categoria}</td>
                 <td>${ticket.estado}</td>
                 <td>${new Date(ticket.fecha_creacion).toLocaleDateString()}</td>
