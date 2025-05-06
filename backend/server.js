@@ -23,10 +23,13 @@ try {
   const areasRoutes = require('./src/routes/areasRoutes');
   const ticketsRoutes = require('./src/routes/ticketsRoutes');
   const filtrosRoutes = require('./src/routes/filtrosRoutes');
+  const misSolicitudesTicketsRoutes = require('./src/routes/misSolicitudesTicketsRoutes');
+  
   app.use('/api/filtros', filtrosRoutes);
   app.use('/api/auth', authRoutes);
   app.use('/api/areas', areasRoutes);
   app.use('/api/tickets', ticketsRoutes);
+  app.use('/api', misSolicitudesTicketsRoutes);
   
   console.log('Todas las rutas cargadas correctamente');
 } catch (err) {
