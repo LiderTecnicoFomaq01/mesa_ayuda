@@ -22,7 +22,8 @@ try {
   const authRoutes = require('./src/routes/authRoutes');
   const areasRoutes = require('./src/routes/areasRoutes');
   const ticketsRoutes = require('./src/routes/ticketsRoutes');
-  
+  const filtrosRoutes = require('./src/routes/filtrosRoutes');
+  app.use('/api/filtros', filtrosRoutes);
   app.use('/api/auth', authRoutes);
   app.use('/api/areas', areasRoutes);
   app.use('/api/tickets', ticketsRoutes);
