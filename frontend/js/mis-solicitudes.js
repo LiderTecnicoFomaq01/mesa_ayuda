@@ -44,14 +44,24 @@ function configurarEventosFiltros() {
     // Evento para limpiar filtros
     if (btnLimpiar) {
         btnLimpiar.addEventListener('click', () => {
+            // Limpiar los valores de los combobox
             selectArea.value = '';
             selectCategoria.value = '';
             selectEstado.value = '';
+
+            // Limpiar el textbox de radicado
+            const inputRadicado = document.getElementById('filtro-radicado');
+            if (inputRadicado) {
+                inputRadicado.value = ''; // Limpiar el valor del textbox
+            }
+
+            // Recargar categorías
             cargarCategorias();
 
+            // Volver a cargar los tickets sin filtros
             const userId = sessionStorage.getItem('userId'); // Corrección aquí
             if (userId) {
-                cargarTickets(userId);
+                cargarTickets(userId); // Llamar a la función para cargar todos los tickets
             }
         });
     }
@@ -62,23 +72,33 @@ function aplicarFiltros() {
     const selectArea = document.getElementById('filtro-area');
     const selectCategoria = document.getElementById('filtro-categoria');
     const selectEstado = document.getElementById('filtro-estado');
+    const inputRadicado = document.getElementById('filtro-radicado'); // Obtener el input del radicado
 
     const areaText = selectArea?.options[selectArea.selectedIndex]?.text || '';
     const categoriaText = selectCategoria?.options[selectCategoria.selectedIndex]?.text || '';
     const estadoText = selectEstado?.options[selectEstado.selectedIndex]?.text || '';
+    const radicado = inputRadicado?.value.trim() || ''; // Obtener el valor del input radicado
 
     const filters = {};
 
+    // Filtrar por área si el valor no es "Seleccione un área"
     if (areaText !== 'Seleccione un área') {
         filters.area = areaText.trim();
     }
 
+    // Filtrar por categoría si el valor no es "Seleccione una categoría"
     if (categoriaText !== 'Seleccione una categoría') {
         filters.categoria = categoriaText.trim();
     }
 
+    // Filtrar por estado si el valor no es "Seleccione un estado"
     if (estadoText !== 'Seleccione un estado') {
         filters.estado = estadoText.trim();
+    }
+
+    // Filtrar por radicado si se ha proporcionado un valor
+    if (radicado !== '') {
+        filters.radicado = radicado;
     }
 
     const userId = sessionStorage.getItem('userId');
@@ -105,15 +125,27 @@ async function cargarTickets(userId, filters = {}) {
         const todosLosTickets = await response.json();
 
         const ticketsFiltrados = todosLosTickets.filter(ticket => {
-            if (filters.area && filters.area !== '' &&
-                ticket.area.toLowerCase() !== filters.area.toLowerCase()) return false;
+            // Filtro por radicado
+            if (filters.radicado && filters.radicado !== '' && ticket.radicado.toString() !== filters.radicado) {
+                return false;
+            }
 
-            if (filters.categoria && filters.categoria !== '' &&
-                ticket.categoria.toLowerCase() !== filters.categoria.toLowerCase()) return false;
+            // Filtro por área
+            if (filters.area && filters.area !== '' && ticket.area.toLowerCase() !== filters.area.toLowerCase()) {
+                return false;
+            }
 
-            if (filters.estado && filters.estado !== '' &&
-                ticket.estado.toLowerCase() !== filters.estado.toLowerCase()) return false;
+            // Filtro por categoría
+            if (filters.categoria && filters.categoria !== '' && ticket.categoria.toLowerCase() !== filters.categoria.toLowerCase()) {
+                return false;
+            }
 
+            // Filtro por estado
+            if (filters.estado && filters.estado !== '' && ticket.estado.toLowerCase() !== filters.estado.toLowerCase()) {
+                return false;
+            }
+
+            // Si pasa todos los filtros, incluir el ticket
             return true;
         });
 
