@@ -10,10 +10,21 @@ const getEstados = async () => {
     return rows;
 };
 
-const getCategorias = async () => {
-    const [rows] = await db.query('SELECT id, nombre FROM categorias');
-    return rows;
+const getCategorias = async (areaId = null) => {
+    let query = 'SELECT id, nombre FROM categorias';
+    const params = [];
+
+    if (areaId) {
+        query += ' WHERE id_area = ?'; // Filtra por área si se proporciona
+        params.push(areaId);
+    }
+
+    console.log("Consulta ejecutada:", query); // Muestra la consulta SQL para verificarla
+
+    const [rows] = await db.query(query, params); // Ejecuta la consulta con los parámetros
+    return rows; // Devuelve las categorías obtenidas
 };
+
 
 module.exports = {
     getAreas,

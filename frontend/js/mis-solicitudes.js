@@ -1,16 +1,33 @@
+const API_URL = 'http://localhost:4000/api/filtros';
+
 function initMisSolicitudes() {
     console.log("Panel Mis Solicitudes cargado");
     cargarFiltros();
+
+    // 🔁 Aseguramos que el listener se active una sola vez cuando el DOM ya está cargado
+    const selectArea = document.getElementById('filtro-area');
+    if (selectArea) {
+        selectArea.addEventListener('change', (event) => {
+            const idAreaSeleccionada = event.target.value;
+            console.log("Área seleccionada:", idAreaSeleccionada);
+            cargarCategorias(idAreaSeleccionada); // Filtrar por área
+        });
+    }
+
+    document.getElementById('btn-limpiar-filtros').addEventListener('click', () => {
+        document.getElementById('filtro-area').value = '';
+        document.getElementById('filtro-estado').value = '';
+        document.getElementById('filtro-categoria').value = '';
+        cargarCategorias(); // Volver a cargar todas las categorías
+    });
 }
 
 function cargarFiltros() {
     console.log('Iniciando carga de filtros...');
     cargarAreas();
     cargarEstados();
-    cargarCategorias();
+    cargarCategorias(); // todas al inicio
 }
-
-const API_URL = 'http://localhost:4000/api/filtros'; // <== aquí defines tu backend
 
 async function cargarAreas() {
     const selectArea = document.getElementById('filtro-area');
@@ -50,13 +67,23 @@ async function cargarEstados() {
     }
 }
 
-async function cargarCategorias() {
+async function cargarCategorias(idArea = '') {
     const selectCategoria = document.getElementById('filtro-categoria');
     try {
         console.log("Cargando categorías...");
-        const res = await fetch(`${API_URL}/categorias`);
+        let url = `${API_URL}/categorias`;
+
+        if (idArea) {
+            url += `?area_id=${idArea}`;
+            console.log("URL con filtro de área:", url); // Verifica cómo se construye la URL
+        } else {
+            console.log("URL sin filtro de área:", url); // Si no hay área seleccionada
+        }
+
+        const res = await fetch(url);
         if (!res.ok) throw new Error('Error al cargar categorías');
         const data = await res.json();
+
         selectCategoria.innerHTML = '<option value="">Seleccione una categoría</option>';
         data.forEach(cat => {
             const option = document.createElement('option');
@@ -68,6 +95,7 @@ async function cargarCategorias() {
         console.error('Error al cargar categorías:', error);
     }
 }
+
 
 // Inicialización segura
 if (document.readyState === 'loading') {
