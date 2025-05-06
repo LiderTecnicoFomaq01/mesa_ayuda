@@ -1,9 +1,8 @@
 const express = require('express');
 const router = express.Router();
+const ticketsController = require('../controllers/ticketsController');
+const upload = require('../config/multerConfig');
 
-router.post('/', (req, res) => {
-  // lógica para guardar el ticket
-  res.json({ mensaje: 'Ticket recibido' });
-});
+router.post('/', upload.any(), ticketsController.createTicket);
 
 module.exports = router;
