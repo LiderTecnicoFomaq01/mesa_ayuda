@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     try {
-        const response = await fetch(`http://localhost:4000/api/detalle-ticket/${radicado}`);
+        const response = await fetch(`http://localhost:4000/api/detalle-ticket/${encodeURIComponent(radicado)}`);
         if (!response.ok) throw new Error('Error al obtener los datos');
 
         const data = await response.json();
@@ -61,20 +61,18 @@ function renderTicket(data) {
     document.getElementById('email').value = ticket.email;
     document.getElementById('asunto').value = ticket.asunto;
     document.getElementById('descripcion').value = ticket.descripcion;
+
     // Estado
     const estadoBadge = document.getElementById('estado');
     estadoBadge.textContent = ticket.estado;
-
-    // Aplicar estilos usando la función
     estadoBadge.style.cssText = obtenerEstiloEstado(ticket.estado);
 
-
-    // Campos adicionales (en la sección de histórico o puedes crear un div específico para ellos)
+    // Campos adicionales
     const historicoContent = document.getElementById('historico-content');
     if (campos.length > 0) {
         let camposHtml = `<ul>`;
         campos.forEach(campo => {
-            camposHtml += `<li><strong>${campo.nombre_campo}:</strong> ${campo.valor_campo || 'N/A'}</li>`;
+            camposHtml += `<li>${campo.nombre_campo}: ${campo.valor_campo || 'N/A'}</li>`;
         });
         camposHtml += `</ul>`;
         historicoContent.innerHTML += camposHtml;
@@ -82,21 +80,102 @@ function renderTicket(data) {
         historicoContent.innerHTML += `<p>No hay campos adicionales.</p>`;
     }
 
-    // Archivos adjuntos
+    // Archivos
     const archivosContainer = document.getElementById('archivos');
+
     if (archivos.length > 0) {
-        let archivosHtml = `<ul>`;
-        archivos.forEach(archivo => {
+        let archivosHtml = `<ul style="list-style: none; padding: 0;">`;
+
+        archivos.forEach((archivo) => {
+            const nombre = archivo.nombre_archivo;
+        
+            // Normaliza la ruta y extrae la parte después de 'uploads/'
+            let rutaNormalizada = archivo.ruta_archivo.replace(/\\/g, '/');
+            const indexUploads = rutaNormalizada.indexOf('uploads/');
+            if (indexUploads !== -1) {
+                rutaNormalizada = rutaNormalizada.substring(indexUploads + 'uploads/'.length);
+            }
+
+            const downloadUrl = `http://localhost:4000/uploads/${encodeURIComponent(rutaNormalizada)}`;
+
             archivosHtml += `
-                <li>
-                    <a href="${archivo.ruta_archivo}" target="_blank">${archivo.nombre_archivo}</a>
+                <li style="margin-bottom: 15px;">
+                    <!-- Enlace de previsualización -->
+                    <a href="#" onclick="previsualizarArchivo('${rutaNormalizada}', '${nombre}'); return false;" 
+                    style="text-decoration: underline; color: #007bff; cursor: pointer;">
+                        <i class="fas fa-file"></i> ${nombre}
+                    </a>
+                    
+                    <!-- Botón de descarga -->
+                    <button class="evidencia-descargar"
+                            data-url="${downloadUrl}"
+                            data-filename="${nombre}"
+                            style="margin-left: 15px; padding: 5px 10px; background-color: #2196f3; color: white; border-radius: 6px; border: none;">
+                        <i class="fas fa-download"></i> Descargar
+                    </button>
                 </li>
             `;
         });
+
         archivosHtml += `</ul>`;
         archivosContainer.innerHTML = archivosHtml;
+
+        // Manejador de descarga para los botones
+        document.querySelectorAll('.evidencia-descargar').forEach(btn => {
+            btn.addEventListener('click', async function() {
+                const originalText = this.textContent;
+                this.textContent = "Preparando...";
+                this.disabled = true;
+                
+                try {
+                    const url = this.dataset.url;
+                    const filename = this.dataset.filename;
+                    
+                    const response = await fetch(url);
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    
+                    const blob = await response.blob();
+                    const tempLink = document.createElement('a');
+                    tempLink.href = URL.createObjectURL(blob);
+                    tempLink.download = filename;
+                    tempLink.style.display = 'none';
+                    document.body.appendChild(tempLink);
+                    tempLink.click();
+                    setTimeout(() => {
+                        document.body.removeChild(tempLink);
+                        URL.revokeObjectURL(tempLink.href);
+                    }, 100);
+                    
+                } catch (error) {
+                    console.error("Descarga fallida:", error);
+                    alert(`No se pudo descargar: ${error.message}`);
+                } finally {
+                    this.textContent = originalText;
+                    this.disabled = false;
+                }
+            });
+        });
+        
     } else {
         archivosContainer.textContent = 'Sin adjuntos para mostrar';
+    }
+}
+
+// Función para previsualizar el archivo en una nueva pestaña
+function previsualizarArchivo(ruta, nombre) {
+    const extension = nombre.split('.').pop().toLowerCase();
+    const fileUrl = `http://localhost:4000/uploads/${encodeURIComponent(ruta)}`;
+
+    // Verificar si es un archivo soportado (por ejemplo, PDF)
+    if (extension === 'pdf') {
+        window.open(fileUrl, '_blank'); // Esto abre el PDF en el visor del navegador
+    } else if (['jpg', 'jpeg', 'png', 'gif', 'bmp'].includes(extension)) {
+        window.open(fileUrl, '_blank'); // Esto abrirá las imágenes en el visor del navegador
+    } else if (extension === 'txt') {
+        window.open(fileUrl, '_blank'); // Abrir archivos de texto en una nueva pestaña
+    } else {
+        // Si no se puede previsualizar, mostrar un mensaje
+        alert(`El archivo ${nombre} no se puede previsualizar.`);
     }
 }
 

@@ -8,6 +8,7 @@ exports.getFullTicketDetails = async (ticketId) => {
             u.email AS email,
             t.id AS radicado,
             t.asunto AS asunto,
+            t.descripcion_caso AS descripcion,
             a.nombre AS area,
             c.nombre AS categoria,
             et.nombre_estado AS estado,

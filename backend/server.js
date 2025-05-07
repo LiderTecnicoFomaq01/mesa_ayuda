@@ -1,8 +1,8 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-
 const app = express();
+const path = require('path');
 
 // Configuración CORS segura
 const corsOptions = {
@@ -16,6 +16,10 @@ app.use(cors(corsOptions));
 // Middlewares esenciales
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Configuración para servir archivos estáticos desde la carpeta 'uploads'
+const uploadsPath = path.join(__dirname, 'src', 'uploads');
+app.use('/uploads', express.static(uploadsPath));
 
 // Importación segura de rutas
 try {
