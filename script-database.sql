@@ -64,9 +64,9 @@ CREATE TABLE estados_ticket (
 CREATE TABLE prioridades_ticket (
   id INT AUTO_INCREMENT PRIMARY KEY,
   nombre_prioridad VARCHAR(50) NOT NULL UNIQUE,
-  nivel INT NOT NULL UNIQUE,
   descripcion TEXT,
-  color VARCHAR(20)
+  tiempo_min_horas INT NOT NULL,
+  tiempo_max_horas INT NOT NULL
 ) ENGINE=InnoDB;
 
 -- Tabla de categorías
@@ -87,6 +87,7 @@ CREATE TABLE tickets (
   id_categoria INT NOT NULL,
   id_usuario INT NOT NULL,
   id_estado INT NOT NULL,
+  asunto VARCHAR(255) NOT NULL,
   fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (id_categoria) REFERENCES categorias(id),
@@ -173,21 +174,19 @@ INSERT INTO areas(nombre, descripcion) VALUES
 INSERT INTO estados_ticket(nombre_estado, descripcion) VALUES
 ('en curso', 'Ticket asignado y en proceso de resolución'),
 ('esperando soporte', 'Ticket en espera de información o acción del equipo de soporte'),
-('esperando aprobacion', 'Ticket en espera de aprobación del cliente'),
 ('resuelto', 'Ticket concluido y a espera de cierre por parte del usuario'),
 ('finalizado', 'Ticket completado y cerrado'),
 ('cancelado', 'Ticket cancelado por el usuario o administrador');
 
-INSERT INTO prioridades_ticket(nombre_prioridad, nivel, descripcion, color) VALUES
-('crítica', 1, 'Problema que afecta a toda la organización o servicio crítico', 'rojo'),
-('alta', 2, 'Problema que afecta a varios usuarios o funciones importantes', 'naranja'),
-('media', 3, 'Problema que afecta a un usuario o función no crítica', 'amarillo'),
-('baja', 4, 'Solicitud de mejora o problema menor', 'verde');
+INSERT INTO prioridades_ticket(nombre_prioridad, descripcion, tiempo_min_horas, tiempo_max_horas) VALUES
+('alta', 'Problema que afecta a varios usuarios o funciones importantes', 2, 4),
+('media', 'Problema que afecta a un usuario o función no crítica', 8, 24),
+('baja', 'Solicitud de mejora o problema menor', 36, 48);
 
 INSERT INTO categorias(id_area, nombre, descripcion, id_prioridad) VALUES
 (1, 'Pruebas', 'Categoría para tickets de prueba del sistema', 1),
 (2, 'Desarrollo nuevo', 'Solicitudes de nuevos desarrollos', 3),
-(3, 'Reportes', 'Generación de reportes especiales', 4),
+(3, 'Reportes', 'Generación de reportes especiales', 2),
 (4, 'Hardware', 'Problemas con equipos físicos', 2);
 
 INSERT INTO campos_tickets (id_categoria, nombre_campo, tipo_campo, requerido) VALUES

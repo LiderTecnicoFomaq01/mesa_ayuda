@@ -1,17 +1,17 @@
 const db = require('../../dbConfig');
 
 const getAreas = async () => {
-    const [rows] = await db.query('SELECT id, nombre FROM areas');
+    const [rows] = await db.query('SELECT id, UPPER(nombre) AS nombre FROM areas');
     return rows;
 };
 
 const getEstados = async () => {
-    const [rows] = await db.query('SELECT id, nombre_estado FROM estados_ticket');
+    const [rows] = await db.query('SELECT id, UPPER(nombre_estado) AS nombre_estado FROM estados_ticket');
     return rows;
 };
 
 const getCategorias = async (areaId = null) => {
-    let query = 'SELECT id, nombre FROM categorias';
+    let query = 'SELECT id, UPPER(nombre) AS nombre FROM categorias';
     const params = [];
 
     if (areaId) {
@@ -24,7 +24,6 @@ const getCategorias = async (areaId = null) => {
     const [rows] = await db.query(query, params); // Ejecuta la consulta con los parámetros
     return rows; // Devuelve las categorías obtenidas
 };
-
 
 module.exports = {
     getAreas,
