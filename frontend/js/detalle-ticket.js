@@ -67,18 +67,29 @@ function renderTicket(data) {
     estadoBadge.textContent = ticket.estado;
     estadoBadge.style.cssText = obtenerEstiloEstado(ticket.estado);
 
-    // Campos adicionales
+    
     const historicoContent = document.getElementById('historico-content');
     if (campos.length > 0) {
         let camposHtml = `<ul>`;
         campos.forEach(campo => {
-            camposHtml += `<li>${campo.nombre_campo}: ${campo.valor_campo || 'N/A'}</li>`;
+            let valor = campo.valor_campo;
+    
+            // Convertir booleanos o cadenas tipo 'true'/'false'
+            if (valor === true || valor === 'true') {
+                valor = 'SI';
+            } else if (valor === false || valor === 'false') {
+                valor = 'NO';
+            } else {
+                valor = valor || 'N/A'; // Si está vacío o null
+            }
+    
+            camposHtml += `<li>${campo.nombre_campo}: ${valor}</li>`;
         });
         camposHtml += `</ul>`;
         historicoContent.innerHTML += camposHtml;
     } else {
         historicoContent.innerHTML += `<p>No hay campos adicionales.</p>`;
-    }
+    }    
 
     // Archivos
     const archivosContainer = document.getElementById('archivos');
