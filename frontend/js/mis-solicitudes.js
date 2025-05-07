@@ -236,7 +236,6 @@ async function cargarTickets(userId, filters = {}) {
     }
 }
 
-
 // Cargar filtros disponibles (áreas, categorías, estados)
 async function cargarFiltros() {
     await cargarAreas();
@@ -253,7 +252,7 @@ async function cargarAreas() {
         if (!res.ok) throw new Error('Error al cargar áreas');
         const data = await res.json();
 
-        selectArea.innerHTML = '<option value="">SELECCIONE UN AREA</option>';
+        selectArea.innerHTML = '<option value="">Seleccione un área</option>';
         data.forEach(area => {
             const option = document.createElement('option');
             option.value = area.id;
@@ -274,7 +273,7 @@ async function cargarEstados() {
         if (!res.ok) throw new Error('Error al cargar estados');
         const data = await res.json();
 
-        selectEstado.innerHTML = '<option value="">SELECCIONE UN ESTADO</option>';
+        selectEstado.innerHTML = '<option value="">Seleccione un estado</option>';
         data.forEach(estado => {
             const option = document.createElement('option');
             option.value = estado.id;
@@ -298,7 +297,7 @@ async function cargarCategorias(idArea = '') {
         if (!res.ok) throw new Error('Error al cargar categorías');
         const data = await res.json();
 
-        selectCategoria.innerHTML = '<option value="">SELECCIONE UNA CATEGORIA</option>';
+        selectCategoria.innerHTML = '<option value="">Seleccione una categoría</option>';
         data.forEach(cat => {
             const option = document.createElement('option');
             option.value = cat.id;
