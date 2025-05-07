@@ -88,6 +88,7 @@ CREATE TABLE tickets (
   id_usuario INT NOT NULL,
   id_estado INT NOT NULL,
   asunto VARCHAR(255) NOT NULL,
+  descripcion_caso TEXT,
   fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (id_categoria) REFERENCES categorias(id),

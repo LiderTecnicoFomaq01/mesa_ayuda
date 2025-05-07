@@ -24,7 +24,9 @@ try {
   const ticketsRoutes = require('./src/routes/ticketsRoutes');
   const filtrosRoutes = require('./src/routes/filtrosRoutes');
   const misSolicitudesTicketsRoutes = require('./src/routes/misSolicitudesTicketsRoutes');
-  
+  const detalleTicketRoutes = require('./src/routes/detalle-ticket');
+
+  app.use('/api/detalle-ticket', detalleTicketRoutes);
   app.use('/api/filtros', filtrosRoutes);
   app.use('/api/auth', authRoutes);
   app.use('/api/areas', areasRoutes);

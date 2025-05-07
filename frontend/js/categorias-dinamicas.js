@@ -296,11 +296,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                 // Agregar los datos del ticket como JSON
 
                 const asunto = document.getElementById('asunto').value;
+                const descripcion = document.getElementById('descripcion').value;
                 formData.append('ticket', JSON.stringify({
                     id_categoria: parseInt(idCategoria),
                     id_usuario: userData.id,
                     id_estado: 1,
                     asunto: asunto,
+                    descripcion: descripcion,
                     campos: camposValues
                 }));
         

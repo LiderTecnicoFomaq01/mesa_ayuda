@@ -1,24 +1,70 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Detalle del Ticket</title>
-    <link rel="stylesheet" href="../css/detalle-ticket.css"> 
+    <link rel="stylesheet" href="../css/detalle-ticket.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"> <!-- Para iconos -->
 </head>
 <body>
-    <header>
-        <img src="../public/assets/img/Logo.png" alt="Logo" class="logo">
-        <h1>MESA DE AYUDA FOMAG</h1>
+    <header class="header">
+        <div class="header-left">
+            <i class="fas fa-eye"></i>
+            <h2>Detalles - Solicitud N° <span id="radicado"></span></h2>
+        </div>
+        <div>
+            <span id="estado" class="badge"></span>
+        </div>
     </header>
 
-    <h2>Detalle del Ticket</h2>
     <main class="main-content">
-        <div id="ticket-info" class="ticket-info-form">
-            <!-- Aquí se cargará el formulario con los datos del ticket -->
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Área</label>
+                <input type="text" id="area" readonly />
+            </div>
+            <div class="form-group">
+                <label>Categoría</label>
+                <input type="text" id="categoria" readonly />
+            </div>
+            <div class="form-group">
+                <label>Fecha de Radicación</label>
+                <input type="text" id="fecha" readonly />
+            </div>
+            <div class="form-group">
+                <label>Radicado Por</label>
+                <input type="text" id="radicado_por" readonly />
+            </div>
+            <div class="form-group">
+                <label>Correo Electrónico</label>
+                <input type="text" id="email" readonly />
+            </div>
+            <div class="form-group full-width">
+                <label>Asunto</label>
+                <input type="text" id="asunto" readonly />
+            </div>
+            <div class="form-group full-width">
+                <label>Descripción del Caso</label>
+                <textarea id="descripcion" rows="4" readonly></textarea>
+            </div>
         </div>
+
+        <div class="historico">
+            <h3><i class="fas fa-list-alt"></i> Campos del ticket</h3>
+            <div id="historico-content">
+                <!-- Aquí se cargará el historial -->
+            </div>
+        </div>
+
+        <div class="adjuntos">
+            <h3>Archivos Adjuntos</h3>
+            <div id="archivos">Sin adjuntos para mostrar</div>
+        </div>
+
+        <button class="btn-salir">Salir</button>
     </main>
 
-    <!--<script src="../js/detalle-ticket.js"></script>-->
+    <script src="../js/detalle-ticket.js"></script>
 </body>
 </html>

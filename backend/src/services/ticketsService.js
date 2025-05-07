@@ -15,14 +15,17 @@ exports.processTicketCreation = async ({ ticketData, files }) => {
     await conn.beginTransaction();
 
     const asunto = (ticketData.asunto || 'Sin asunto').toString().trim();
+    const descripcion = (ticketData.descripcion || 'Sin descripcion').toString().trim();
+
     const [ticketResult] = await conn.query(
       
-      'INSERT INTO tickets (id_categoria, id_usuario, id_estado, asunto) VALUES (?, ?, ?, ?)',
+      'INSERT INTO tickets (id_categoria, id_usuario, id_estado, asunto, descripcion_caso) VALUES (?, ?, ?, ?, ?)',
       [
         ticketData.id_categoria,
         ticketData.id_usuario,
         ticketData.id_estado || 1,
-        asunto
+        asunto,
+        descripcion
       ]
     );
 
