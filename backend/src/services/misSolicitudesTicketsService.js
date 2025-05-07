@@ -8,7 +8,9 @@ const getTicketsByUserId = async (usuarioId) => {
       c.nombre AS categoria,
       et.nombre_estado AS estado,
       t.fecha_creacion AS fecha_creacion,
-      pt.nombre_prioridad AS prioridad
+      pt.nombre_prioridad AS prioridad,
+      pt.tiempo_min_horas AS tiempo_verde,
+      pt.tiempo_max_horas AS tiempo_amarillo
     FROM tickets t
     JOIN categorias c ON c.id = t.id_categoria
     JOIN areas a ON a.id = c.id_area

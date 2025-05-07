@@ -111,6 +111,57 @@ function aplicarFiltros() {
     cargarTickets(userId, filters);
 }
 
+// Calcular color de semáforo basado en tiempos traídos del backend
+function obtenerColorSemaforo(fechaCreacion, tiempoVerde, tiempoAmarillo) {
+    const ahora = new Date();
+    const creacion = new Date(fechaCreacion);
+    const horasTranscurridas = (ahora - creacion) / (1000 * 60 * 60);
+
+    if (tiempoVerde == null || tiempoAmarillo == null) return '⚪'; // Si no hay info, color neutro
+
+    if (horasTranscurridas < tiempoVerde) return '🟢';
+    if (horasTranscurridas < tiempoAmarillo) return '🟡';
+    return '🔴';
+}
+
+function formatearFecha(fechaStr) {
+    const fecha = new Date(fechaStr);
+    const dia = String(fecha.getDate()).padStart(2, '0');
+    const mes = String(fecha.getMonth() + 1).padStart(2, '0'); // meses van de 0 a 11
+    const anio = fecha.getFullYear();
+    return `${dia}/${mes}/${anio}`;
+}
+
+function obtenerEstiloPrioridad(prioridad) {
+    if (!prioridad) return '';
+
+    switch (prioridad.toLowerCase()) {
+        case 'alta':
+            return 'background-color: red; color: white; font-weight: bold; padding: 4px 8px; border-radius: 6px; text-transform: uppercase;';
+        case 'media':
+            return 'background-color: orange; color: white; font-weight: bold; padding: 4px 8px; border-radius: 6px; text-transform: uppercase;';
+        case 'baja':
+            return 'background-color: goldenrod; color: white; font-weight: bold; padding: 4px 8px; border-radius: 6px; text-transform: uppercase;';
+        default:
+            return 'color: black;';
+    }
+}
+
+function obtenerEstiloEstado(estado) {
+    if (!estado) return '';
+
+    switch (estado.toLowerCase()) {
+        case 'cancelado':
+            return 'background-color: red; color: white; font-weight: bold; padding: 4px 8px; border-radius: 6px; text-transform: uppercase;';
+        case 'resuelto':
+            return 'background-color: #4caf50; color: white; font-weight: bold; padding: 4px 8px; border-radius: 6px; text-transform: uppercase;';
+        case 'finalizado':
+            return 'background-color: #2e7d32; color: white; font-weight: bold; padding: 4px 8px; border-radius: 6px; text-transform: uppercase;';
+        default:
+            return 'background-color: #2196f3; color: white; font-weight: bold; padding: 4px 8px; border-radius: 6px; text-transform: uppercase;';
+    }
+}
+
 // Función principal para cargar tickets con o sin filtros
 async function cargarTickets(userId, filters = {}) {
     const tbody = document.getElementById('ticket-body');
@@ -157,15 +208,25 @@ async function cargarTickets(userId, filters = {}) {
         }
 
         ticketsFiltrados.forEach(ticket => {
+            const semaforo = obtenerColorSemaforo(ticket.fecha_creacion, ticket.tiempo_verde, ticket.tiempo_amarillo);
             const row = document.createElement('tr');
+
             row.innerHTML = `
                 <td>${ticket.radicado}</td>
                 <td>${ticket.area}</td>
                 <td>${ticket.categoria}</td>
-                <td>${ticket.estado}</td>
-                <td>${new Date(ticket.fecha_creacion).toLocaleDateString()}</td>
-                <td>${ticket.prioridad || 'No definida'}</td>
+                <td><span style="${obtenerEstiloEstado(ticket.estado)}">${(ticket.estado || 'SIN ESTADO').toUpperCase()}</span></td>
+                <td>${formatearFecha(ticket.fecha_creacion)}</td>
+                <td><span style="${obtenerEstiloPrioridad(ticket.prioridad)}">${(ticket.prioridad || 'No definida').toUpperCase()}</span></td>
+                <td>${semaforo}</td>
             `;
+
+            // Asignar un evento click a la fila para abrir la nueva pestaña
+            row.addEventListener('click', () => {
+                // Reemplaza '/detalles_ticket/${ticket.radicado}' con la URL correspondiente
+                window.open(`/detalles_ticket/${ticket.radicado}`, '_blank');
+            });
+
             tbody.appendChild(row);
         });
 
