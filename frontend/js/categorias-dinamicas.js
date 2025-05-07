@@ -293,12 +293,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                         }
                     }
                 });
-        
                 // Agregar los datos del ticket como JSON
+
+                const asunto = document.getElementById('asunto').value;
                 formData.append('ticket', JSON.stringify({
                     id_categoria: parseInt(idCategoria),
                     id_usuario: userData.id,
                     id_estado: 1,
+                    asunto: asunto,
                     campos: camposValues
                 }));
         
@@ -339,7 +341,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 form.prepend(successMessage);
         
                 // Eliminar el mensaje de éxito después de un retraso (dependiendo si hay archivo o no)
-                const delay = responseData.fileName ? 5000 : 3000;  // 5s si hay archivo, 3s si no
+                const delay = responseData.fileName ? 7000 : 3000;  // 7s si hay archivo, 3s si no
                 setTimeout(() => {
                     successMessage.remove();
                 }, delay);
@@ -347,6 +349,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 // Limpiar los campos del formulario después de un pequeño retraso
                 setTimeout(() => {
                     form.reset();
+                    document.getElementById('asunto').value = '';
                 }, delay);
         
             } catch (error) {

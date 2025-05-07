@@ -11,6 +11,23 @@
     --white: #ffffff;
 }
 
+/* Unificar altura y padding para todos los inputs */
+.form-field input[type="text"],
+.form-field input[type="number"],
+.form-field input[type="date"],
+.form-field input[type="file"],
+.form-field select,
+.form-field textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--medium-gray);
+    border-radius: 4px;
+    font-size: 1rem;
+    box-sizing: border-box; /* Esto asegura que no haya diferencias por box-sizing */
+    transition: all 0.3s ease;
+    min-height: 45px; /* <-- fuerza misma altura mínima para todos */
+}
+
 /* Estilos base */
 body {
     font-family: 'Arial', sans-serif;

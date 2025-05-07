@@ -7,18 +7,25 @@ exports.processTicketCreation = async ({ ticketData, files }) => {
   let conn;
   try {
     // Validación básica
-    if (!ticketData || !ticketData.id_categoria || !ticketData.id_usuario) {
+    if (!ticketData || !ticketData.id_categoria || !ticketData.id_usuario || !ticketData.asunto) {
       throw new Error('Datos del ticket incompletos');
     }
 
     conn = await pool.getConnection();
     await conn.beginTransaction();
 
-    // Insertar ticket principal
+    const asunto = (ticketData.asunto || 'Sin asunto').toString().trim();
     const [ticketResult] = await conn.query(
-      'INSERT INTO tickets (id_categoria, id_usuario, id_estado) VALUES (?, ?, ?)',
-      [ticketData.id_categoria, ticketData.id_usuario, ticketData.id_estado || 1]
+      
+      'INSERT INTO tickets (id_categoria, id_usuario, id_estado, asunto) VALUES (?, ?, ?, ?)',
+      [
+        ticketData.id_categoria,
+        ticketData.id_usuario,
+        ticketData.id_estado || 1,
+        asunto
+      ]
     );
+
     const ticketId = ticketResult.insertId;
 
     // Procesar campos dinámicos
