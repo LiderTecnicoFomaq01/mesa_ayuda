@@ -139,9 +139,9 @@ function obtenerEstiloPrioridad(prioridad) {
         case 'alta':
             return 'background-color: red; color: white; font-weight: bold; padding: 4px 8px; border-radius: 6px; text-transform: uppercase;';
         case 'media':
-            return 'background-color: #FF8A14; color: white; font-weight: bold; padding: 4px 8px; border-radius: 6px; text-transform: uppercase;';
+            return 'background-color: orange; color: white; font-weight: bold; padding: 4px 8px; border-radius: 6px; text-transform: uppercase;';
         case 'baja':
-            return 'background-color: #FFFF14; color: white; font-weight: bold; padding: 4px 8px; border-radius: 6px; text-transform: uppercase;';
+            return 'background-color: goldenrod; color: white; font-weight: bold; padding: 4px 8px; border-radius: 6px; text-transform: uppercase;';
         default:
             return 'color: black;';
     }
@@ -162,7 +162,7 @@ function obtenerEstiloEstado(estado) {
     }
 }
 
-
+// Función principal para cargar tickets con o sin filtros
 async function cargarTickets(userId, filters = {}) {
     const tbody = document.getElementById('ticket-body');
     if (!tbody) return;
@@ -217,7 +217,7 @@ async function cargarTickets(userId, filters = {}) {
                 <td>${ticket.categoria}</td>
                 <td><span style="${obtenerEstiloEstado(ticket.estado)}">${(ticket.estado || 'SIN ESTADO').toUpperCase()}</span></td>
                 <td>${formatearFecha(ticket.fecha_creacion)}</td>
-                <td><span style="${obtenerEstiloPrioridad(ticket.prioridad)}">${(ticket.prioridad || 'No definida')}</span></td>
+                <td><span style="${obtenerEstiloPrioridad(ticket.prioridad)}">${(ticket.prioridad || 'No definida').toUpperCase()}</span></td>
                 <td>${semaforo}</td>
             `;
 

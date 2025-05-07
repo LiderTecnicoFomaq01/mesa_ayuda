@@ -194,20 +194,3 @@ INSERT INTO campos_tickets (id_categoria, nombre_campo, tipo_campo, requerido) V
 (1, 'NIT (sin dígito de verificación)', 'texto', TRUE),
 (1, 'ADJUNTAR DOCUMENTO DE SOPORTE', 'archivo', FALSE),
 (1, '¿REQUERIMIENTO URGENTE?', 'booleano', FALSE);
----------------------- ejemplo para el ine----------
-INSERT INTO categorias(id_area, nombre, descripcion, id_prioridad) VALUES
-(1, 'Usuarios', 'Categoría pedir datos a usuarios', 2);
-
-INSERT INTO campos_tickets (id_categoria, nombre_campo, tipo_campo, requerido) VALUES
-(5, 'NOMBRES COMPLETOS', 'texto', TRUE),
-(5, 'APELLIDOS COMPLETOS', 'texto', TRUE),
-(5, 'TIPO DE DOCUMENTO', 'opciones', TRUE),
-(5, 'NÚMERO DE DOCUMENTO', 'texto', TRUE),
-(5, 'FECHA DE NACIMIENTO', 'fecha', TRUE),
-(5, 'GÉNERO', 'opciones', FALSE),
-(5, 'TELÉFONO CELULAR', 'texto', TRUE),
-(5, 'CORREO ELECTRÓNICO', 'email', TRUE),
-(2, 'DIRECCIÓN DE RESIDENCIA', 'texto', FALSE),
-(2, 'FOTOCOPIA DEL DOCUMENTO DE IDENTIDAD', 'archivo', TRUE),
-(2, 'AUTORIZACIÓN DE TRATAMIENTO DE DATOS', 'booleano', TRUE);
-
