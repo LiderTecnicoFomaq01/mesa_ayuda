@@ -225,7 +225,8 @@ async function cargarTickets(userId, filters = {}) {
             // Asignar un evento click a la fila para abrir la nueva pestaña
             row.addEventListener('click', () => {
                 // Reemplaza '/detalles_ticket/${ticket.radicado}' con la URL correspondiente
-                window.open(`/detalles_ticket/${ticket.radicado}`, '_blank');
+                window.open(`/frontend/views/detalle-ticket.html?radicado=${ticket.radicado}`, '_blank');
+
             });
 
             tbody.appendChild(row);
