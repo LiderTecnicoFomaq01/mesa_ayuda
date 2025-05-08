@@ -5,6 +5,13 @@ const getAreas = async () => {
     return rows;
 };
 
+const getUsuarios = async () => {
+    const [rows] = await db.query(
+        'SELECT id, primer_nombre, primer_apellido, email FROM usuarios'
+    );
+    return rows;
+};
+
 const getEstados = async () => {
     const [rows] = await db.query('SELECT id, UPPER(nombre_estado) AS nombre_estado FROM estados_ticket');
     return rows;
@@ -28,5 +35,6 @@ const getCategorias = async (areaId = null) => {
 module.exports = {
     getAreas,
     getEstados,
-    getCategorias
+    getCategorias,
+    getUsuarios
 };

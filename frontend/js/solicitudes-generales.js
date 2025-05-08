@@ -24,6 +24,7 @@ function initMisSolicitudes() {
 function configurarEventosFiltros() {
     const selectArea = document.getElementById('filtro-area');
     const selectCategoria = document.getElementById('filtro-categoria');
+    const selectUsuarios = document.getElementById('filtro-usuario');
     const selectEstado = document.getElementById('filtro-estado');
     const btnLimpiar = document.getElementById('btn-limpiar-filtros');
     const btnAplicar = document.getElementById('btn-aplicar-filtros');
@@ -48,6 +49,7 @@ function configurarEventosFiltros() {
             selectArea.value = '';
             selectCategoria.value = '';
             selectEstado.value = '';
+            selectUsuarios.value = '';
 
             // Limpiar el textbox de radicado
             const inputRadicado = document.getElementById('filtro-radicado');
@@ -70,11 +72,13 @@ function configurarEventosFiltros() {
 // Función para aplicar filtros y recargar tickets
 function aplicarFiltros() {
     const selectArea = document.getElementById('filtro-area');
+    const selectUsuarios = document.getElementById('filtro-usuario');
     const selectCategoria = document.getElementById('filtro-categoria');
     const selectEstado = document.getElementById('filtro-estado');
     const inputRadicado = document.getElementById('filtro-radicado'); // Obtener el input del radicado
 
     const areaText = selectArea?.options[selectArea.selectedIndex]?.text || '';
+    const usuarioText = selectUsuarios?.options[selectUsuarios.selectedIndex]?.text || ''; // Adaptación aquí
     const categoriaText = selectCategoria?.options[selectCategoria.selectedIndex]?.text || '';
     const estadoText = selectEstado?.options[selectEstado.selectedIndex]?.text || '';
     const radicado = inputRadicado?.value.trim() || ''; // Obtener el valor del input radicado
@@ -84,6 +88,11 @@ function aplicarFiltros() {
     // Filtrar por área si el valor no es "Seleccione un área"
     if (areaText !== 'Seleccione un área') {
         filters.area = areaText.trim();
+    }
+
+    // Filtrar por usuario si el valor no es "Seleccione un usuario"
+    if (usuarioText !== 'Seleccione un usuario') {
+        filters.usuario = usuarioText.trim();
     }
 
     // Filtrar por categoría si el valor no es "Seleccione una categoría"
@@ -220,6 +229,11 @@ async function cargarTickets(userId, filters = {}) {
                 return false;
             }
 
+            // Filtro por usuario (email)
+            if (filters.usuario && filters.usuario !== '' && ticket.email.toLowerCase() !== filters.usuario.toLowerCase()) {
+                return false;
+            }
+
             // Si pasa todos los filtros, incluir el ticket
             return true;
         });
@@ -260,9 +274,7 @@ async function cargarTickets(userId, filters = {}) {
 
             // Asignar un evento click a la fila para abrir la nueva pestaña
             row.addEventListener('click', () => {
-                // Reemplaza '/detalles_ticket/${ticket.radicado}' con la URL correspondiente
                 window.open(`/frontend/views/detalle-ticket.html?radicado=${ticket.radicado}`, '_blank');
-
             });
 
             tbody.appendChild(row);
@@ -274,9 +286,10 @@ async function cargarTickets(userId, filters = {}) {
     }
 }
 
-// Cargar filtros disponibles (áreas, categorías, estados)
+// Cargar filtros disponibles (áreas, categorías, estados, usuarios)
 async function cargarFiltros() {
     await cargarAreas();
+    await cargarUsuarios();
     await cargarEstados();
     await cargarCategorias();
 }
@@ -299,6 +312,27 @@ async function cargarAreas() {
         });
     } catch (error) {
         console.error('Error al cargar áreas:', error);
+    }
+}
+
+async function cargarUsuarios() {
+    const selectUsuarios = document.getElementById('filtro-usuario');
+    if (!selectUsuarios) return;
+
+    try {
+        const res = await fetch(`${API_URL}/usuarios`);
+        if (!res.ok) throw new Error('Error al cargar usuarios');
+        const data = await res.json();
+
+        selectUsuarios.innerHTML = '<option value="">Seleccione un usuario</option>';
+        data.forEach(usuario => {
+            const option = document.createElement('option');
+            option.value = usuario.id;
+            option.textContent = usuario.email;
+            selectUsuarios.appendChild(option);
+        });
+    } catch (error) {
+        console.error('Error al cargar usuarios:', error);
     }
 }
 

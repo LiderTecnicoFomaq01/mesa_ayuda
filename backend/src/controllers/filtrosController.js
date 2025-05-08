@@ -9,6 +9,15 @@ const getAreas = async (req, res) => {
     }
 };
 
+const getUsuarios = async (req, res) => {
+    try {
+        const usuarios = await combosService.getUsuarios();
+        res.json(usuarios);
+    } catch (err) {
+        res.status(500).json({ error: 'Error al obtener usuarios' });
+    }
+};
+
 const getEstados = async (req, res) => {
     try {
         const estados = await combosService.getEstados();
@@ -31,6 +40,7 @@ const getCategorias = async (req, res) => {
 
 module.exports = {
     getAreas,
+    getUsuarios,
     getEstados,
     getCategorias
 };
