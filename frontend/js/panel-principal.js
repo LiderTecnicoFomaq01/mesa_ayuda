@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 function setupUserInterface(userData) {
     // Configurar rol de admin
-    if (userData.rol === "admin") {
+    if (userData.rol === "admin" || userData.rol === "usuario administrativo") {
         document.body.classList.add("admin");
     }
 

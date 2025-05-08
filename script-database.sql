@@ -106,6 +106,26 @@ CREATE TABLE campos_tickets (
   FOREIGN KEY (id_categoria) REFERENCES categorias(id)
 ) ENGINE=InnoDB;
 
+CREATE TABLE categoria_encargados (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  id_categoria INT NOT NULL,
+  id_usuario INT NOT NULL,
+  contador_tickets INT DEFAULT 0,
+  fecha_asignacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (id_categoria) REFERENCES categorias(id),
+  FOREIGN KEY (id_usuario) REFERENCES usuarios(id),
+  UNIQUE KEY (id_categoria, id_usuario)
+) ENGINE=InnoDB;
+
+CREATE TABLE asignaciones_ticket (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  id_ticket INT NOT NULL,
+  id_usuario INT NOT NULL,
+  fecha_asignacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (id_ticket) REFERENCES tickets(id),
+  FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
+);
+
 -- Tabla de valores de campos
 CREATE TABLE valores_campos (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -119,11 +139,11 @@ CREATE TABLE valores_campos (
 
 -- Para archivos
 CREATE TABLE ticket_archivos (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    id_ticket INT NOT NULL,
-    ruta_archivo TEXT NOT NULL,
-    nombre_original VARCHAR(255) NOT NULL,
-    FOREIGN KEY (id_ticket) REFERENCES tickets(id) ON DELETE CASCADE
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  id_ticket INT NOT NULL,
+  ruta_archivo TEXT NOT NULL,
+  nombre_original VARCHAR(255) NOT NULL,
+  FOREIGN KEY (id_ticket) REFERENCES tickets(id) ON DELETE CASCADE
 );
 
 -- Tabla de respuestas a tickets
@@ -189,8 +209,5 @@ INSERT INTO prioridades_ticket(nombre_prioridad, descripcion, tiempo_min_horas, 
 ('baja', 'Solicitud de mejora o problema menor', 36, 48);
 
 INSERT INTO categorias(id_area, nombre, descripcion, id_prioridad) VALUES
-(1, 'Pruebas', 'Categoría para tickets de prueba del sistema', 1),
-(2, 'Desarrollo nuevo', 'Solicitudes de nuevos desarrollos', 3),
-(3, 'Reportes', 'Generación de reportes especiales', 2),
-(4, 'Hardware', 'Problemas con equipos físicos', 2);
+(1, 'Pruebas', 'Categoría para tickets de prueba del sistema', 1);
 

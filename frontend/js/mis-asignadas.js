@@ -1,7 +1,7 @@
 const API_URL = 'http://localhost:4000/api/filtros';
-const TICKETS_URL = 'http://localhost:4000/api/misSolicitudesTickets';
+const TICKETS_URL = 'http://localhost:4000/api/asignadas/MisAsignadasTickets';
 
-function initMisSolicitudes() {
+function initMisAsignadas() {
     console.log("Panel Mis Solicitudes cargado");
 
     // Verificar si el usuario está autenticado
@@ -148,6 +148,7 @@ function obtenerIndicativoSemaforo(fechaCreacion, tiempoVerde, tiempoAmarillo, e
     return { tiempoTexto, color };
 }
 
+
 function formatearFecha(fechaStr) {
     const fecha = new Date(fechaStr);
     const dia = String(fecha.getDate()).padStart(2, '0');
@@ -217,6 +218,12 @@ async function cargarTickets(userId, filters = {}) {
 
             // Filtro por estado
             if (filters.estado && filters.estado !== '' && ticket.estado.toLowerCase() !== filters.estado.toLowerCase()) {
+                return false;
+            }
+
+            // 🚫 NO mostrar si está en Resuelto, Finalizado o Cancelado
+            const estadoTicket = (ticket.estado || '').toLowerCase();
+            if (['resuelto', 'finalizado', 'cancelado'].includes(estadoTicket)) {
                 return false;
             }
 
@@ -348,7 +355,7 @@ async function cargarCategorias(idArea = '') {
 
 // Ejecutar cuando el DOM esté listo
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initMisSolicitudes);
+    document.addEventListener('DOMContentLoaded', initMisAsignadas);
 } else {
-    initMisSolicitudes();
+    initMisAsignadas();
 }

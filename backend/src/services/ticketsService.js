@@ -84,6 +84,42 @@ exports.processTicketCreation = async ({ ticketData, files }) => {
       }
     }
 
+    // Buscar encargados y su cantidad de tickets asignados (por esa categoría)
+    const [encargados] = await conn.query(
+      `
+      SELECT ce.id_usuario, ce.contador_tickets
+      FROM categoria_encargados ce
+      WHERE ce.id_categoria = ?
+      ORDER BY ce.contador_tickets ASC, ce.fecha_asignacion ASC
+      LIMIT 1
+      `,
+      [ticketData.id_categoria]
+    );
+
+    if (encargados.length === 0) {
+      console.warn(`No hay encargados para la categoría ID ${ticketData.id_categoria}`);
+    } else {
+      const encargado = encargados[0];
+
+      // Insertar la asignación
+      await conn.query(
+        'INSERT INTO asignaciones_ticket (id_ticket, id_usuario) VALUES (?, ?)',
+        [ticketId, encargado.id_usuario]
+      );
+
+      // Incrementar el contador en categoria_encargados
+      await conn.query(
+        `
+        UPDATE categoria_encargados
+        SET contador_tickets = contador_tickets + 1
+        WHERE id_categoria = ? AND id_usuario = ?
+        `,
+        [ticketData.id_categoria, encargado.id_usuario]
+      );
+
+      console.log(`Ticket asignado equitativamente al usuario ID: ${encargado.id_usuario}`);
+    }
+
     await conn.commit();
     return { success: true, ticketId };
     

@@ -1,0 +1,55 @@
+<div class="contenedor-mis-solicitudes">
+    <h2>SOLICITUDES ASIGNADAS</h2>
+    
+    <div class="filtros-container">
+        <!-- Filtros -->
+        <div class="filtro-grid">
+            <div class="filtro-item">
+                <label for="filtro-radicado">N° DE RADICADO</label>
+                <input type="text" id="filtro-radicado" placeholder="NUMERO DE RADICADO">
+            </div>
+            <div class="filtro-item">
+                <label for="filtro-area">AREA</label>
+                <select id="filtro-area">
+                </select>
+            </div>
+            <div class="filtro-item">
+                <label for="filtro-categoria">CATEGORIA</label>
+                <select id="filtro-categoria">
+                </select>
+            </div>
+            <div class="filtro-item">
+                <label for="filtro-estado">ESTADO</label>
+                <select id="filtro-estado">
+                </select>
+            </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="filtro-acciones">
+            <button id="btn-aplicar-filtros" class="btn-filtro">APLICAR</button>
+            <button id="btn-limpiar-filtros" class="btn-filtro btn-secundario">LIMPIAR</button>
+        </div>
+    </div>
+    
+    <div class="contenedor-resultados">
+        <table class="tabla-tickets">
+            <thead>
+                <tr>
+                    <th>N° DE RADICADO</th>
+                    <th>AREA</th>
+                    <th>CATEGORIA</th>
+                    <th>ASUNTO</th>
+                    <th>ESTADO</th>
+                    <th>FECHA DE RADICACION</th>
+                    <th>PRIORIDAD</th>
+                    <th>SEMAFORO</th>
+                </tr>
+            </thead>
+            <tbody id="ticket-body">
+                
+            </tbody>
+        </table>
+    </div>
+    
+</div>
