@@ -22,7 +22,6 @@ const getTicketsByUserId = async (usuarioId) => {
         JOIN prioridades_ticket pt ON pt.id = c.id_prioridad
         JOIN asignaciones_ticket atk ON atk.id_ticket = t.id
         JOIN usuarios u ON u.id = atk.id_usuario
-        WHERE et.id NOT IN (3, 4, 5)
         ORDER BY t.fecha_creacion DESC;
 
   `, [usuarioId]);
