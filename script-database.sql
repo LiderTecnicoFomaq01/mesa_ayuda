@@ -101,7 +101,7 @@ CREATE TABLE campos_tickets (
   id INT AUTO_INCREMENT PRIMARY KEY,
   id_categoria INT NOT NULL,
   nombre_campo VARCHAR(255) NOT NULL,
-  tipo_campo ENUM('texto', 'numero', 'fecha', 'archivo', 'booleano', 'email') NOT NULL,
+  tipo_campo ENUM('texto', 'numero', 'fecha', 'archivo', 'booleano', 'email', 'textarea') NOT NULL,
   requerido BOOLEAN DEFAULT FALSE,
   FOREIGN KEY (id_categoria) REFERENCES categorias(id)
 ) ENGINE=InnoDB;
@@ -163,11 +163,11 @@ INSERT INTO usuarios (
 (2, '200000002', 'María', 'José', 'Rodríguez', 'López', 'admin2@correo.com', 'admin123', 1),
 (1, '100000003', 'Andrés', 'Felipe', 'García', 'Torres', 'usuario_admin3@correo.com', 'admin123', 2),
 (3, 'CE1234567', 'Paula', 'Andrea', 'Ramírez', 'Vargas', 'usuario_admin4@correo.com', 'admin123', 2),
-(4, 'P7654321', 'Camila', NULL, 'Suárez', 'Mejía', 'usuario_admin5@correo.com', 'admin123', 2);
+(4, 'P7654321', 'Camila', NULL, 'Suárez', 'Mejía', 'usuario_admin5@correo.com', 'admin123', 2),
 (1, '100000001', 'Carlos', 'Andrés', 'Pérez', 'Gómez', 'admin1@correo.com', 'admin123', 1),
 (4, 'P1234567', 'Luisa', NULL, 'Martínez', 'Díaz', 'usuario_admin1@correo.com', 'admin123', 2),
 (3, 'CE9876543', 'Juan', 'Esteban', 'Córdoba', NULL, 'usuario_admin2@correo.com', 'admin123', 2),
-(4, 'P7654321', 'María', 'Camila', 'Ruiz', 'Sánchez', 'usuario1@correo.com', 'usuario123', 3),
+(4, 'P76543216', 'María', 'Camila', 'Ruiz', 'Sánchez', 'usuario1@correo.com', 'usuario123', 3),
 (1, '100000005', 'Diego', NULL, 'Fernández', 'López', 'usuario2@correo.com', 'usuario123', 3);
 
 INSERT INTO areas(nombre, descripcion) VALUES
@@ -194,8 +194,3 @@ INSERT INTO categorias(id_area, nombre, descripcion, id_prioridad) VALUES
 (3, 'Reportes', 'Generación de reportes especiales', 2),
 (4, 'Hardware', 'Problemas con equipos físicos', 2);
 
-INSERT INTO campos_tickets (id_categoria, nombre_campo, tipo_campo, requerido) VALUES
-(1, 'RAZÓN SOCIAL DEL PRESTADOR / ENTIDAD / FARMACIA / INSUMO / OPERADOR LOGÍSTICO', 'texto', TRUE),
-(1, 'NIT (sin dígito de verificación)', 'texto', TRUE),
-(1, 'ADJUNTAR DOCUMENTO DE SOPORTE', 'archivo', FALSE),
-(1, '¿REQUERIMIENTO URGENTE?', 'booleano', FALSE);

@@ -164,6 +164,43 @@ document.addEventListener('DOMContentLoaded', async () => {
                     
                     fieldContainer.appendChild(checkboxGroup);
                     break;
+                
+                case 'textarea':
+                    // Contenedor principal para el textarea
+                    const textareaGroup = document.createElement('div');
+                    textareaGroup.className = 'textarea-group';
+                
+                    // Etiqueta/pregunta para el textarea
+                    const preguntaTextarea = document.createElement('label');
+                    preguntaTextarea.className = 'textarea-label';
+                    preguntaTextarea.htmlFor = `field-${campo.id}`;
+                    preguntaTextarea.textContent = campo.nombre_campo;
+                
+                    if (campo.requerido) {
+                        const requiredSpan = document.createElement('span');
+                        requiredSpan.className = 'required';
+                        requiredSpan.textContent = ' *';
+                        preguntaTextarea.appendChild(requiredSpan);
+                    }
+                
+                    // Crear el textarea
+                    const textarea = document.createElement('textarea');
+                    textarea.id = `field-${campo.id}`;
+                    textarea.name = `field_${campo.id}`;
+                    textarea.required = campo.requerido;
+                    textarea.rows = 4; // Puedes ajustar el número de filas
+                    textarea.className = 'textarea-input';
+                
+                    // Opcional: Placeholder
+                    textarea.placeholder = 'Escribe aquí...';
+                
+                    // Agregar la etiqueta y el textarea al contenedor
+                    textareaGroup.appendChild(preguntaTextarea);
+                    textareaGroup.appendChild(textarea);
+                
+                    // Agregar al contenedor general
+                    fieldContainer.appendChild(textareaGroup);
+                    break;
                     
                 case 'archivo':
                     const labelArchivo = document.createElement('label');
