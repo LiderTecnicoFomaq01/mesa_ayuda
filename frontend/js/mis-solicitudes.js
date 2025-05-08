@@ -112,17 +112,42 @@ function aplicarFiltros() {
 }
 
 // Calcular color de semáforo basado en tiempos traídos del backend
-function obtenerColorSemaforo(fechaCreacion, tiempoVerde, tiempoAmarillo) {
+function obtenerIndicativoSemaforo(fechaCreacion, tiempoVerde, tiempoAmarillo, estado, fechaCierre = null) {
     const ahora = new Date();
     const creacion = new Date(fechaCreacion);
-    const horasTranscurridas = (ahora - creacion) / (1000 * 60 * 60);
 
-    if (tiempoVerde == null || tiempoAmarillo == null) return '⚪'; // Si no hay info, color neutro
+    let fin = ahora;
 
-    if (horasTranscurridas < tiempoVerde) return '🟢';
-    if (horasTranscurridas < tiempoAmarillo) return '🟡';
-    return '🔴';
+    // ✅ SOLO si está "Finalizado", detenemos el contador (usamos fechaCierre si está disponible)
+    if (estado && estado.toLowerCase() === 'finalizado' && fechaCierre) {
+        fin = new Date(fechaCierre);
+    } else if (estado && estado.toLowerCase() === 'finalizado' && !fechaCierre) {
+        fin = ahora;  // Si no tienes fecha_cierre, congelamos en el tiempo actual (no sigue creciendo)
+    }
+
+    const horasTranscurridas = Math.floor((fin - creacion) / (1000 * 60 * 60));
+
+    let tiempoTexto = `${horasTranscurridas}h`;
+    if (horasTranscurridas >= 48) {
+        const dias = Math.floor(horasTranscurridas / 24);
+        tiempoTexto = `${dias} día${dias > 1 ? 's' : ''}`;
+    }
+
+    let color = '#cccccc'; // neutro por defecto
+
+    if (tiempoVerde == null || tiempoAmarillo == null) {
+        color = '#cccccc'; // neutro si no hay data
+    } else if (horasTranscurridas < tiempoVerde) {
+        color = 'green';
+    } else if (horasTranscurridas < tiempoAmarillo) {
+        color = 'orange';
+    } else {
+        color = 'red';
+    }
+
+    return { tiempoTexto, color };
 }
+
 
 function formatearFecha(fechaStr) {
     const fecha = new Date(fechaStr);
@@ -208,7 +233,7 @@ async function cargarTickets(userId, filters = {}) {
         }
 
         ticketsFiltrados.forEach(ticket => {
-            const semaforo = obtenerColorSemaforo(ticket.fecha_creacion, ticket.tiempo_verde, ticket.tiempo_amarillo);
+            const { tiempoTexto, color } = obtenerIndicativoSemaforo(ticket.fecha_creacion, ticket.tiempo_verde, ticket.tiempo_amarillo);
             const row = document.createElement('tr');
 
             row.innerHTML = `
@@ -219,7 +244,18 @@ async function cargarTickets(userId, filters = {}) {
                 <td><span style="${obtenerEstiloEstado(ticket.estado)}">${(ticket.estado || 'SIN ESTADO').toUpperCase()}</span></td>
                 <td>${formatearFecha(ticket.fecha_creacion)}</td>
                 <td><span style="${obtenerEstiloPrioridad(ticket.prioridad)}">${(ticket.prioridad || 'No definida').toUpperCase()}</span></td>
-                <td>${semaforo}</td>
+                <td>
+                    <span style="
+                        display: inline-block;
+                        padding: 5px 10px;
+                        border-radius: 5px;
+                        background-color: ${color};
+                        color: white;
+                        font-weight: bold;
+                    ">
+                        ${tiempoTexto}
+                    </span>
+                </td>
             `;
 
             // Asignar un evento click a la fila para abrir la nueva pestaña
