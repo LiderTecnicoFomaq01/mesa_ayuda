@@ -234,6 +234,37 @@ body {
     color: var(--dark-gray);
 }
 
+/* Grupo del email */
+.email-group {
+    margin-bottom: 20px;
+}
+
+/* Etiqueta del email */
+.email-label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 6px;
+    font-size: 16px;
+    color: #333;
+}
+
+/* Campo de entrada para email */
+.email-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+}
+
+/* Cuando está en foco */
+.email-input:focus {
+    border-color: #007BFF;
+    outline: none;
+}
+
 /* Estilo para checkboxes requeridos no marcados */
 input[type="checkbox"]:required:not(:checked) + .checkbox-label::after {
     color: var(--error-color);

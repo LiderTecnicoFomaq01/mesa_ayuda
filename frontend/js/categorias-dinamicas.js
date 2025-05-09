@@ -244,7 +244,47 @@ document.addEventListener('DOMContentLoaded', async () => {
                     fieldContainer.appendChild(labelArchivo);
                     fieldContainer.appendChild(fileContainer);
                     break;
+                
+                case 'email':
+                    // Contenedor principal para el campo de email
+                    const emailGroup = document.createElement('div');
+                    emailGroup.className = 'email-group';
                     
+                    // Etiqueta/pregunta
+                    const emailLabel = document.createElement('label');
+                    emailLabel.htmlFor = `field-${campo.id}`;
+                    emailLabel.className = 'email-label';
+                    emailLabel.textContent = campo.nombre_campo;
+                    
+                    if (campo.requerido) {
+                        const requiredSpan = document.createElement('span');
+                        requiredSpan.className = 'required';
+                        requiredSpan.textContent = '*';
+                        emailLabel.appendChild(requiredSpan);
+                    }
+                
+                    // Crear input de tipo email
+                    input = document.createElement('input');
+                    input.type = 'email';
+                    input.id = `field-${campo.id}`;
+                    input.name = `field_${campo.id}`;
+                    input.required = campo.requerido;
+                    input.className = 'email-input';
+                
+                    // Mensaje de error personalizado si quieres reforzar el mensaje
+                    input.addEventListener('invalid', function (event) {
+                        if (input.validity.typeMismatch) {
+                            input.setCustomValidity('Por favor, ingresa un correo electrónico válido que contenga @.');
+                        } else {
+                            input.setCustomValidity('');
+                        }
+                    });
+                
+                    emailGroup.appendChild(emailLabel);
+                    emailGroup.appendChild(input);
+                
+                    fieldContainer.appendChild(emailGroup);
+                    break;
                     
                 default:
                     // Crear label

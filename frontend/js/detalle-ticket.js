@@ -83,7 +83,7 @@ function renderTicket(data) {
                 valor = valor || 'N/A'; // Si está vacío o null
             }
     
-            camposHtml += `<li>${campo.nombre_campo}: ${valor}</li>`;
+            camposHtml += `<li><strong>${campo.nombre_campo}:</strong> ${valor}</li>`;
         });
         camposHtml += `</ul>`;
         historicoContent.innerHTML += camposHtml;
