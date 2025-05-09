@@ -1,5 +1,8 @@
-const API_URL = 'http://localhost:4000/api/filtros';
-const TICKETS_URL = 'http://localhost:4000/api/generales/solicitudesGeneralesTickets';
+var TICKETS_URL = 'http://localhost:4000/api/generales/solicitudesGeneralesTickets';
+
+if (typeof API_URL === 'undefined') {
+    var API_URL = 'http://localhost:4000/api/filtros'; // Usamos 'var' para que sea accesible globalmente
+}
 
 function initMisSolicitudes() {
     console.log("Panel Mis Solicitudes cargado");

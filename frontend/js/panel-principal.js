@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", async () => {
     console.log("Inicializando aplicación...");
-    
+
     // Verificar autenticación
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (!userData) {
@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Configurar interfaz de usuario
     setupUserInterface(userData);
-    
+
     // Configurar navegación
     await setupModuleNavigation();
 });
@@ -42,7 +42,7 @@ function formatUserName(userData) {
 
 async function setupModuleNavigation() {
     console.log("Configurando navegación entre módulos");
-    
+
     const modulos = document.querySelectorAll(".modulo");
     const panelBienvenida = document.querySelector(".panel-bienvenida");
 
@@ -55,6 +55,10 @@ async function setupModuleNavigation() {
     // Configurar event listeners
     modulos.forEach(modulo => {
         modulo.addEventListener("click", async () => {
+            if (modulo.classList.contains("active")) {
+                console.log(`Módulo ${modulo.getAttribute("data-panel")} ya está activo`);
+                return;
+            }
             await handleModuleClick(modulo, modulos, panelBienvenida);
         });
     });
@@ -62,7 +66,7 @@ async function setupModuleNavigation() {
 
 async function handleModuleClick(clickedModule, allModules, welcomePanel) {
     console.log(`Módulo clickeado: ${clickedModule.getAttribute("data-panel")}`);
-    
+
     // Actualizar estado activo
     allModules.forEach(m => m.classList.remove("active"));
     clickedModule.classList.add("active");
@@ -79,7 +83,7 @@ async function handleModuleClick(clickedModule, allModules, welcomePanel) {
 
 async function loadModule(panelId, welcomePanel) {
     console.log(`Cargando panel: ${panelId}`);
-    
+
     const panelElement = document.getElementById(panelId);
     if (!panelElement) {
         console.warn(`Panel ${panelId} no encontrado`);
@@ -87,45 +91,47 @@ async function loadModule(panelId, welcomePanel) {
         return;
     }
 
-    // Mostrar panel
+    // Ocultar y limpiar TODOS los paneles
+    const allPanels = document.querySelectorAll(".panel-contenido");
+    allPanels.forEach(panel => {
+        panel.style.display = "none";
+        panel.innerHTML = "";
+    });
+
+    // Mostrar el panel nuevo
     panelElement.style.display = "block";
     if (welcomePanel) welcomePanel.style.display = "none";
 
-    // Cargar contenido solo si no está ya cargado
-    if (!panelElement.dataset.loaded) {
-        try {
-            await loadPanelContent(panelId);
-            panelElement.dataset.loaded = "true";
-        } catch (error) {
-            console.error(`Error al cargar panel ${panelId}:`, error);
-            panelElement.innerHTML = `
-                <div class="error-message">
-                    <p>Error al cargar el panel <strong>${panelId}</strong>.</p>
-                    <p>${error.message}</p>
-                </div>
-            `;
-        }
+    try {
+        await loadPanelContent(panelId); // Siempre recargar (sin cache por ahora)
+    } catch (error) {
+        console.error(`Error al cargar panel ${panelId}:`, error);
+        panelElement.innerHTML = `
+            <div class="error-message" style="padding:20px; color: #fff; background-color: #e74c3c; border-radius: 8px;">
+                <p>Error al cargar el panel <strong>${panelId}</strong>.</p>
+                <p>${error.message}</p>
+            </div>
+        `;
     }
 }
 
 async function loadPanelContent(panelId) {
     console.log(`Cargando contenido para ${panelId}`);
-    
+
     const panelElement = document.getElementById(panelId);
     if (!panelElement) throw new Error(`Panel ${panelId} no encontrado`);
 
-    // CORRECCIÓN EN LA RUTA - ajusta según tu estructura real
-    const viewPath = `../views/${panelId}.html`;  // Cambiado a ../views/
-    
+    const viewPath = `../views/${panelId}.html`;
+
     console.log(`Intentando cargar vista desde: ${viewPath}`);
     const response = await fetch(viewPath);
-    
+
     if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
     }
-    
+
     panelElement.innerHTML = await response.text();
-    
+
     // Cargar assets
     await loadPanelAssets(panelId);
 }
@@ -133,27 +139,33 @@ async function loadPanelContent(panelId) {
 function loadPanelAssets(panelId) {
     return new Promise((resolve, reject) => {
         console.log(`Cargando assets para ${panelId}`);
-        
-        // CORRECCIÓN EN LAS RUTAS - ajusta según tu estructura
-        const basePath = '../';  // Usa ../ para subir un nivel
-        
-        // Cargar CSS
-        const cssLink = document.createElement("link");
-        cssLink.rel = "stylesheet";
-        cssLink.href = `${basePath}css/${panelId}.css`;
-        cssLink.onload = () => {
-            console.log(`CSS para ${panelId} cargado`);
-            // No resolvemos aquí porque aún falta cargar el JS
-        };
-        cssLink.onerror = () => {
-            console.warn(`No se pudo cargar CSS para ${panelId}`);
-            // No rechazamos porque el CSS es opcional
-        };
-        document.head.appendChild(cssLink);
+
+        const basePath = '../';
+
+        // Cargar CSS si no está ya cargado
+        const cssId = `css-${panelId}`;
+        if (!document.getElementById(cssId)) {
+            const cssLink = document.createElement("link");
+            cssLink.id = cssId;
+            cssLink.rel = "stylesheet";
+            cssLink.href = `${basePath}css/${panelId}.css`;
+            cssLink.onload = () => console.log(`CSS para ${panelId} cargado`);
+            cssLink.onerror = () => console.warn(`No se pudo cargar CSS para ${panelId}`);
+            document.head.appendChild(cssLink);
+        } else {
+            console.log(`CSS para ${panelId} ya estaba cargado`);
+        }
+
+        // Eliminar TODOS los scripts de paneles antes de cargar el nuevo
+        document.querySelectorAll("script[data-panel]").forEach(script => {
+            console.log(`Eliminando script de ${script.dataset.panel}`);
+            script.remove();
+        });
 
         // Cargar JS
         const script = document.createElement("script");
         script.src = `${basePath}js/${panelId}.js`;
+        script.dataset.panel = panelId; // Para identificarlo luego
         script.onload = () => {
             console.log(`Script para ${panelId} cargado correctamente`);
             resolve();
@@ -165,3 +177,4 @@ function loadPanelAssets(panelId) {
         document.body.appendChild(script);
     });
 }
+

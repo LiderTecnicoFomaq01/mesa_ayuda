@@ -1,5 +1,11 @@
-const API_URL = 'http://localhost:4000/api/filtros';
-const TICKETS_URL = 'http://localhost:4000/api/misSolicitudesTickets';
+// Comprobar si ya están definidas las constantes
+if (typeof API_URL === 'undefined') {
+    var API_URL = 'http://localhost:4000/api/filtros'; // Usamos 'var' para que sea accesible globalmente
+}
+
+var TICKETS_URL = 'http://localhost:4000/api/misSolicitudesTickets';
+
+
 
 function initMisSolicitudes() {
     console.log("Panel Mis Solicitudes cargado");
@@ -118,19 +124,19 @@ function obtenerIndicativoSemaforo(fechaCreacion, tiempoVerde, tiempoAmarillo, e
 
     let fin = ahora;
 
-    // ✅ SOLO si está "resuelto", detenemos el contador (usamos fechaCierre si está disponible)
-    if (estado && estado.toLowerCase() === 'resuelto' && fechaCierre) {
+    // ✅ SOLO si está "Finalizado", detenemos el contador (usamos fechaCierre si está disponible)
+    if (estado && estado.toLowerCase() === 'finalizado' && fechaCierre) {
         fin = new Date(fechaCierre);
-    } else if (estado && estado.toLowerCase() === 'resuelto' && !fechaCierre) {
+    } else if (estado && estado.toLowerCase() === 'finalizado' && !fechaCierre) {
         fin = ahora;  // Si no tienes fecha_cierre, congelamos en el tiempo actual (no sigue creciendo)
     }
 
     const horasTranscurridas = Math.floor((fin - creacion) / (1000 * 60 * 60));
 
-    let tiempoTexto = `${horasTranscurridas} h`;
+    let tiempoTexto = `${horasTranscurridas}h`;
     if (horasTranscurridas >= 48) {
         const dias = Math.floor(horasTranscurridas / 24);
-        tiempoTexto = `${dias} d`;
+        tiempoTexto = `${dias} día${dias > 1 ? 's' : ''}`;
     }
 
     let color = '#cccccc'; // neutro por defecto
@@ -147,6 +153,7 @@ function obtenerIndicativoSemaforo(fechaCreacion, tiempoVerde, tiempoAmarillo, e
 
     return { tiempoTexto, color };
 }
+
 
 function formatearFecha(fechaStr) {
     const fecha = new Date(fechaStr);
@@ -240,7 +247,7 @@ async function cargarTickets(userId, filters = {}) {
                 <td>${ticket.area}</td>
                 <td>${ticket.categoria}</td>
                 <td>${ticket.asunto}</td>
-                <td><span style="${obtenerEstiloEstado(ticket.estado)} white-space: nowrap;">${(ticket.estado || 'SIN ESTADO').toUpperCase()}</span></td>
+                <td><span style="${obtenerEstiloEstado(ticket.estado)}">${(ticket.estado || 'SIN ESTADO').toUpperCase()}</span></td>
                 <td>${formatearFecha(ticket.fecha_creacion)}</td>
                 <td><span style="${obtenerEstiloPrioridad(ticket.prioridad)}">${(ticket.prioridad || 'No definida').toUpperCase()}</span></td>
                 <td>

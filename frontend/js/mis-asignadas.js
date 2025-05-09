@@ -1,8 +1,14 @@
-const API_URL = 'http://localhost:4000/api/filtros';
-const TICKETS_URL = 'http://localhost:4000/api/asignadas/MisAsignadasTickets';
+// Comprobar si ya están definidas las constantes
+if (typeof API_URL === 'undefined') {
+    var API_URL = 'http://localhost:4000/api/filtros'; // Usamos 'var' para que sea accesible globalmente
+}
+
+
+var TICKETS_URL = 'http://localhost:4000/api/asignadas/MisAsignadasTickets';
+
 
 function initMisAsignadas() {
-    console.log("Panel Mis Solicitudes cargado");
+    console.log("Panel Mis Asignadas cargado");
 
     // Verificar si el usuario está autenticado
     const userData = JSON.parse(localStorage.getItem("userData"));
