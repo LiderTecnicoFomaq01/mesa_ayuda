@@ -128,19 +128,73 @@ body {
     gap: 8px;
 }
 
+.respuestas-ticket {
+    margin-top: 30px;
+    background-color: #f0f4fa;
+    padding: 20px;
+    border-radius: 8px;
+}
 
-.btn-salir {
-    background-color: #e74c3c;
+.respuestas-ticket h3 {
+    margin-bottom: 15px;
+    color: #0d6efd;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 18px;
+}
+
+#chat-mensajes {
+    max-height: 300px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding-right: 10px;
+}
+
+.mensaje-chat {
+    max-width: 70%;
+    padding: 10px 15px;
+    border-radius: 10px;
+    background-color: #e1f5fe;
+    color: #333;
+    position: relative;
+    font-size: 14px;
+}
+
+.mensaje-chat.usuario {
+    align-self: flex-end;
+    background-color: #d1e7dd;
+}
+
+.mensaje-chat.soporte {
+    align-self: flex-start;
+    background-color: #f0f0f0;
+}
+
+.mensaje-chat small {
+    display: block;
+    margin-top: 5px;
+    font-size: 11px;
+    color: #666;
+}
+
+.chat-form .btn-enviar {
+    background-color: #0d6efd;
+    color: #fff;
     border: none;
     padding: 10px 20px;
-    color: #fff;
-    border-radius: 4px;
     font-weight: bold;
+    border-radius: 4px;
     cursor: pointer;
-    display: block;
-    margin: 30px auto 0;
+    transition: background-color 0.3s;
 }
 
-.btn-salir:hover {
-    background-color: #c0392b;
+.chat-form .btn-enviar:hover {
+    background-color: #0a58ca;
 }
+
+
+
