@@ -23,7 +23,7 @@ exports.processTicketCreation = async ({ ticketData, files }) => {
       [
         ticketData.id_categoria,
         ticketData.id_usuario,
-        ticketData.id_estado || 1,
+        ticketData.id_estado || 2,
         asunto,
         descripcion
       ]

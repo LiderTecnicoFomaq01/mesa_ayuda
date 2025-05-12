@@ -40,9 +40,25 @@ exports.getFullTicketDetails = async (ticketId) => {
         WHERE id_ticket = ?;
     `;
 
+    const queryRespuestas = `
+        SELECT
+            r.id,
+            r.id_usuario AS id_usuario,
+            u.primer_nombre AS nombre_usuario,
+            u.primer_apellido AS apellido_usuario,
+            r.mensaje,
+            r.ruta_archivo,
+            r.fecha_respuesta
+        FROM respuestas_ticket r
+        JOIN usuarios u ON u.id = r.id_usuario
+        WHERE r.id_ticket = ?
+        ORDER BY r.fecha_respuesta ASC;
+    `;
+
     const [ticketRows] = await db.query(queryTicket, [ticketId]);
     const [camposRows] = await db.query(queryCampos, [ticketId, ticketId]);
     const [archivosRows] = await db.query(queryArchivos, [ticketId]);
+    const [respuestasRows] = await db.query(queryRespuestas, [ticketId]);
 
     if (ticketRows.length === 0) {
         throw new Error('Ticket no encontrado');
@@ -51,6 +67,7 @@ exports.getFullTicketDetails = async (ticketId) => {
     return {
         ticket: ticketRows[0],
         campos: camposRows,
-        archivos: archivosRows
+        archivos: archivosRows,
+        respuestas: respuestasRows
     };
 };

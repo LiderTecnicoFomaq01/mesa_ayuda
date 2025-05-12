@@ -12,12 +12,48 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!response.ok) throw new Error('Error al obtener los datos');
 
         const data = await response.json();
-        renderTicket(data);
+        renderTicket(data); // Aquí deberías tener la función que muestra los datos del ticket
+
+        // Mostrar las respuestas
+        renderRespuestas(data.respuestas || []);
     } catch (error) {
         console.error(error);
         document.getElementById('ticket-info').innerHTML = '<p>❗ Hubo un error cargando el ticket.</p>';
     }
 });
+
+// Nueva función para mostrar las respuestas directamente desde `data.respuestas`
+function renderRespuestas(respuestas) {
+    const chatMensajes = document.getElementById('chat-mensajes');
+    if (!chatMensajes) return;
+
+    const userData = JSON.parse(localStorage.getItem("userData")); // Traer el usuario logueado
+    const miID = userData?.id;
+    console.log(miID);
+
+    chatMensajes.innerHTML = ''; // Limpiar antes de insertar
+
+    respuestas.forEach(respuesta => {
+        const mensajeDiv = document.createElement('div');
+
+        // Comparamos el id del mensaje con el del usuario logueado
+        const esMio = String(respuesta.id_usuario) === String(miID);
+
+        mensajeDiv.classList.add('mensaje-chat');
+        mensajeDiv.classList.add(esMio ? 'usuario' : 'soporte'); // Clase para el estilo
+
+        const contenidoHTML = `
+            <p>${respuesta.mensaje}</p>
+            ${respuesta.ruta_archivo ? `<a href="http://localhost:4000/uploads/${respuesta.ruta_archivo}" target="_blank">📎 Ver archivo</a>` : ''}
+            <small><strong>${respuesta.nombre_usuario || 'Sistema'} ${respuesta.apellido_usuario || ''}</strong> | ${new Date(respuesta.fecha_respuesta).toLocaleString()}</small>
+        `;
+
+        mensajeDiv.innerHTML = contenidoHTML;
+        chatMensajes.appendChild(mensajeDiv);
+    });
+
+    chatMensajes.scrollTop = chatMensajes.scrollHeight; // Auto-scroll
+}
 
 function formatearFecha(fechaStr) {
     const fecha = new Date(fechaStr);

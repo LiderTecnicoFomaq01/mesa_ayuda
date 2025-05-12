@@ -4,7 +4,6 @@
 }
 
 body {
-    font-family: Arial, sans-serif;
     margin: 0;
     background-color: #f9f9f9;
 }
@@ -154,31 +153,53 @@ body {
     padding-right: 10px;
 }
 
+/* ESTILOS DE MENSAJES */
+
 .mensaje-chat {
     max-width: 70%;
     padding: 10px 15px;
     border-radius: 10px;
-    background-color: #e1f5fe;
     color: #333;
-    position: relative;
     font-size: 14px;
+    word-wrap: break-word;
+    position: relative;
+    display: flex;
+    flex-direction: column;
 }
 
 .mensaje-chat.usuario {
     align-self: flex-end;
     background-color: #d1e7dd;
+    text-align: right;
+    border: 1px solid #badbcc;
+    border-top-right-radius: 0;
 }
 
 .mensaje-chat.soporte {
     align-self: flex-start;
-    background-color: #f0f0f0;
+    background-color: #f8d7da;
+    text-align: left;
+    border: 1px solid #f5c2c7;
+    border-top-left-radius: 0;
+}
+
+.mensaje-chat p {
+    margin: 0 0 5px 0;
 }
 
 .mensaje-chat small {
-    display: block;
-    margin-top: 5px;
     font-size: 11px;
     color: #666;
+}
+
+.mensaje-chat a {
+    color: #0d6efd;
+    text-decoration: none;
+    font-size: 13px;
+}
+
+.mensaje-chat a:hover {
+    text-decoration: underline;
 }
 
 .chat-form .btn-enviar {
@@ -196,5 +217,8 @@ body {
     background-color: #0a58ca;
 }
 
-
-
+@media (max-width: 600px) {
+    .mensaje-chat {
+        max-width: 90%;
+    }
+}
