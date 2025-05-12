@@ -60,8 +60,22 @@ function renderAreas(areas, contenedor) {
         contenedorCategorias.id = `categorias-${area.id}`;
 
         boton.addEventListener('click', async (event) => {
-            seleccionarArea(area, event.currentTarget);
-            await cargarCategorias(area.id, contenedorCategorias);
+            // Cerrar cualquier contenedor de categorías abierto previamente
+            const contenedoresAbiertos = document.querySelectorAll('.categorias-contenedor');
+            contenedoresAbiertos.forEach(contenedorAbierto => {
+                if (contenedorAbierto !== contenedorCategorias) {
+                    contenedorAbierto.style.display = 'none';
+                }
+            });
+
+            // Alternar la visibilidad del contenedor de categorías actual
+            if (contenedorCategorias.style.display === 'block') {
+                contenedorCategorias.style.display = 'none';
+            } else {
+                contenedorCategorias.style.display = 'block';
+                seleccionarArea(area, event.currentTarget);
+                await cargarCategorias(area.id, contenedorCategorias);
+            }
         });
 
         divArea.appendChild(boton);

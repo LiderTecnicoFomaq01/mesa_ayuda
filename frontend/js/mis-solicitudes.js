@@ -247,7 +247,7 @@ async function cargarTickets(userId, filters = {}) {
                 <td>${ticket.area}</td>
                 <td>${ticket.categoria}</td>
                 <td>${ticket.asunto}</td>
-                <td><span style="${obtenerEstiloEstado(ticket.estado)}">${(ticket.estado || 'SIN ESTADO').toUpperCase()}</span></td>
+                <td><span style="${obtenerEstiloEstado(ticket.estado)} white-space: nowrap;">${(ticket.estado || 'SIN ESTADO').toUpperCase()}</span></td>
                 <td>${formatearFecha(ticket.fecha_creacion)}</td>
                 <td><span style="${obtenerEstiloPrioridad(ticket.prioridad)}">${(ticket.prioridad || 'No definida').toUpperCase()}</span></td>
                 <td>
