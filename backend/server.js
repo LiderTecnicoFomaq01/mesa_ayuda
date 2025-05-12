@@ -32,6 +32,7 @@ try {
   const solicitudesGeneralesTicketsRoutes = require('./src/routes/solicitudesGeneralesTicketsRoutes');
   const detalleTicketRoutes = require('./src/routes/detalle-ticket');
   const solicitudesAtendidasTicketsRoutes = require('./src/routes/solicitudesAtendidasRoutes');
+  const respuestaRoutes = require('./src/routes/respuestaRoutes');
 
   app.use('/api/detalle-ticket', detalleTicketRoutes);
   app.use('/api/filtros', filtrosRoutes);
@@ -42,6 +43,7 @@ try {
   app.use('/api/asignadas', misAsignadasTicketsRoutes);
   app.use('/api/generales', solicitudesGeneralesTicketsRoutes);
   app.use('/api/atendidas', solicitudesAtendidasTicketsRoutes);
+  app.use('/api/responder', respuestaRoutes);
   
   console.log('Todas las rutas cargadas correctamente');
 } catch (err) {

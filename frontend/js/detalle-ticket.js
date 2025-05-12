@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    // Obtener el parámetro de la URL (?radicado=...)
     const params = new URLSearchParams(window.location.search);
     const radicado = params.get('radicado');
 
@@ -23,16 +22,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 function formatearFecha(fechaStr) {
     const fecha = new Date(fechaStr);
     const dia = String(fecha.getDate()).padStart(2, '0');
-    const mes = String(fecha.getMonth() + 1).padStart(2, '0'); // meses van de 0 a 11
+    const mes = String(fecha.getMonth() + 1).padStart(2, '0');
     const anio = fecha.getFullYear();
     return `${dia}/${mes}/${anio}`;
 }
 
 function obtenerEstiloEstado(estado) {
-    if (!estado) return '';
-
     const estilosBase = 'color: white; font-weight: bold; padding: 4px 8px; border-radius: 6px; text-transform: uppercase;';
-
     const colores = {
         'cancelado': 'background-color: red;',
         'resuelto': 'background-color: #4caf50;',
@@ -41,10 +37,7 @@ function obtenerEstiloEstado(estado) {
         'pendiente': 'background-color: #ff9800;',
         'en proceso': 'background-color: #03a9f4;',
     };
-
-    const color = colores[estado.toLowerCase()] || 'background-color: #2196f3;';
-
-    return `${color} ${estilosBase}`;
+    return `${colores[estado.toLowerCase()] || 'background-color: #2196f3;'} ${estilosBase}`;
 }
 
 function renderTicket(data) {
@@ -52,7 +45,7 @@ function renderTicket(data) {
     const campos = data.campos;
     const archivos = data.archivos;
 
-    // Datos principales
+    // Renderizar info
     document.getElementById('radicado').textContent = ticket.radicado;
     document.getElementById('area').value = ticket.area;
     document.getElementById('categoria').value = ticket.categoria;
@@ -62,34 +55,9 @@ function renderTicket(data) {
     document.getElementById('asunto').value = ticket.asunto;
     document.getElementById('descripcion').value = ticket.descripcion;
 
-    // Estado
     const estadoBadge = document.getElementById('estado');
     estadoBadge.textContent = ticket.estado;
     estadoBadge.style.cssText = obtenerEstiloEstado(ticket.estado);
-
-    
-    const historicoContent = document.getElementById('historico-content');
-    if (campos.length > 0) {
-        let camposHtml = `<ul>`;
-        campos.forEach(campo => {
-            let valor = campo.valor_campo;
-    
-            // Convertir booleanos o cadenas tipo 'true'/'false'
-            if (valor === true || valor === 'true') {
-                valor = 'SI';
-            } else if (valor === false || valor === 'false') {
-                valor = 'NO';
-            } else {
-                valor = valor || 'N/A'; // Si está vacío o null
-            }
-    
-            camposHtml += `<li><strong>${campo.nombre_campo}:</strong> ${valor}</li>`;
-        });
-        camposHtml += `</ul>`;
-        historicoContent.innerHTML += camposHtml;
-    } else {
-        historicoContent.innerHTML += `<p>No hay campos adicionales.</p>`;
-    }    
 
     // Archivos
     const archivosContainer = document.getElementById('archivos');
@@ -99,8 +67,6 @@ function renderTicket(data) {
 
         archivos.forEach((archivo) => {
             const nombre = archivo.nombre_archivo;
-        
-            // Normaliza la ruta y extrae la parte después de 'uploads/'
             let rutaNormalizada = archivo.ruta_archivo.replace(/\\/g, '/');
             const indexUploads = rutaNormalizada.indexOf('uploads/');
             if (indexUploads !== -1) {
@@ -111,13 +77,10 @@ function renderTicket(data) {
 
             archivosHtml += `
                 <li style="margin-bottom: 15px;">
-                    <!-- Enlace de previsualización -->
                     <a href="#" onclick="previsualizarArchivo('${rutaNormalizada}', '${nombre}'); return false;" 
                     style="text-decoration: underline; color: #007bff; cursor: pointer;">
                         <i class="fas fa-file"></i> ${nombre}
                     </a>
-                    
-                    <!-- Botón de descarga -->
                     <button class="evidencia-descargar"
                             data-url="${downloadUrl}"
                             data-filename="${nombre}"
@@ -131,24 +94,20 @@ function renderTicket(data) {
         archivosHtml += `</ul>`;
         archivosContainer.innerHTML = archivosHtml;
 
-        // Manejador de descarga para los botones
         document.querySelectorAll('.evidencia-descargar').forEach(btn => {
-            btn.addEventListener('click', async function() {
+            btn.addEventListener('click', async function () {
                 const originalText = this.textContent;
                 this.textContent = "Preparando...";
                 this.disabled = true;
-                
+
                 try {
-                    const url = this.dataset.url;
-                    const filename = this.dataset.filename;
-                    
-                    const response = await fetch(url);
+                    const response = await fetch(this.dataset.url);
                     if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                    
+
                     const blob = await response.blob();
                     const tempLink = document.createElement('a');
                     tempLink.href = URL.createObjectURL(blob);
-                    tempLink.download = filename;
+                    tempLink.download = this.dataset.filename;
                     tempLink.style.display = 'none';
                     document.body.appendChild(tempLink);
                     tempLink.click();
@@ -156,7 +115,7 @@ function renderTicket(data) {
                         document.body.removeChild(tempLink);
                         URL.revokeObjectURL(tempLink.href);
                     }, 100);
-                    
+
                 } catch (error) {
                     console.error("Descarga fallida:", error);
                     alert(`No se pudo descargar: ${error.message}`);
@@ -166,27 +125,96 @@ function renderTicket(data) {
                 }
             });
         });
-        
+
     } else {
         archivosContainer.textContent = 'Sin adjuntos para mostrar';
     }
+
+    // Manejador de envío de respuesta
+    const respuestaForm = document.getElementById('form-respuesta');
+    const submitBtn = respuestaForm.querySelector('button[type="submit"]');
+
+    respuestaForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // Obtener datos del usuario
+        const userData = JSON.parse(localStorage.getItem("userData"));
+
+        if (!userData || !userData.id) {
+            alert('Usuario no autenticado');
+            window.location.href = '/login.html';
+            return;
+        }
+
+        // Configurar botón durante el envío
+        submitBtn.disabled = true;
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = `
+            <span class="spinner"></span>
+            <span class="button-text">Enviando...</span>
+        `;
+
+        const formData = new FormData(respuestaForm);
+        formData.append('id_ticket', ticket.radicado);
+        formData.append('id_usuario', userData.id);
+
+        // Mensaje de carga
+        const loadingMessage = document.createElement('div');
+        loadingMessage.className = 'loading-message';
+        loadingMessage.innerHTML = `<p>Enviando respuesta...</p>`;
+        respuestaForm.prepend(loadingMessage);
+
+        try {
+            const response = await fetch('http://localhost:4000/api/responder', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${userData.token}`
+                },
+                body: formData
+            });
+
+            const result = await response.json();
+            loadingMessage.remove();
+
+            if (!response.ok) {
+                throw new Error(result.message || 'Error al enviar la respuesta');
+            }
+
+            // Mensaje de éxito
+            const successMessage = document.createElement('div');
+            successMessage.className = 'success-message';
+            successMessage.innerHTML = `<p>Respuesta enviada correctamente</p>`;
+            respuestaForm.prepend(successMessage);
+
+            setTimeout(() => {
+                successMessage.remove();
+                respuestaForm.reset();
+            }, 4000);
+
+        } catch (error) {
+            loadingMessage.remove();
+
+            const errorMessage = document.createElement('div');
+            errorMessage.className = 'error-message';
+            errorMessage.textContent = `Error: ${error.message}`;
+            respuestaForm.prepend(errorMessage);
+
+            setTimeout(() => errorMessage.remove(), 5000);
+        } finally {
+            // Restaurar el botón
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        }
+    });
 }
 
-// Función para previsualizar el archivo en una nueva pestaña
 function previsualizarArchivo(ruta, nombre) {
     const extension = nombre.split('.').pop().toLowerCase();
     const fileUrl = `http://localhost:4000/uploads/${encodeURIComponent(ruta)}`;
 
-    // Verificar si es un archivo soportado (por ejemplo, PDF)
-    if (extension === 'pdf') {
-        window.open(fileUrl, '_blank'); // Esto abre el PDF en el visor del navegador
-    } else if (['jpg', 'jpeg', 'png', 'gif', 'bmp'].includes(extension)) {
-        window.open(fileUrl, '_blank'); // Esto abrirá las imágenes en el visor del navegador
-    } else if (extension === 'txt') {
-        window.open(fileUrl, '_blank'); // Abrir archivos de texto en una nueva pestaña
+    if (['pdf', 'jpg', 'jpeg', 'png', 'gif', 'bmp', 'txt'].includes(extension)) {
+        window.open(fileUrl, '_blank');
     } else {
-        // Si no se puede previsualizar, mostrar un mensaje
         alert(`El archivo ${nombre} no se puede previsualizar.`);
     }
 }
-
