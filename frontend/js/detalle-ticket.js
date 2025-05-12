@@ -59,6 +59,29 @@ function renderTicket(data) {
     estadoBadge.textContent = ticket.estado;
     estadoBadge.style.cssText = obtenerEstiloEstado(ticket.estado);
 
+    const historicoContent = document.getElementById('historico-content');
+    if (campos.length > 0) {
+        let camposHtml = `<ul>`;
+        campos.forEach(campo => {
+            let valor = campo.valor_campo;
+    
+            // Convertir booleanos o cadenas tipo 'true'/'false'
+            if (valor === true || valor === 'true') {
+                valor = 'SI';
+            } else if (valor === false || valor === 'false') {
+                valor = 'NO';
+            } else {
+                valor = valor || 'N/A'; // Si está vacío o null
+            }
+    
+            camposHtml += `<li><strong>${campo.nombre_campo}:</strong> ${valor}</li>`;
+        });
+        camposHtml += `</ul>`;
+        historicoContent.innerHTML += camposHtml;
+    } else {
+        historicoContent.innerHTML += `<p>No hay campos adicionales.</p>`;
+    }    
+
     // Archivos
     const archivosContainer = document.getElementById('archivos');
 
