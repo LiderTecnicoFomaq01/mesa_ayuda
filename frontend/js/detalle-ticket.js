@@ -23,6 +23,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         confirmarYActualizarEstado(5, 'cancelar');
       });
   
+      // Verifica el rol del usuario
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      const miID = userData?.rol;
+
+      // Mostrar el select si el rol es admin o usuario administrativo
+      if (miID === 'admin' || miID === 'usuario administrativo') {
+        document.getElementById('estado-group').style.display = 'flex';
+      }
+  
     } catch (error) {
       console.error(error);
       document.getElementById('ticket-info').innerHTML = '<p>❗ Hubo un error cargando el ticket.</p>';
@@ -43,9 +52,8 @@ function confirmarYActualizarEstado(estado, accion) {
       
     window.location.reload(); // Recarga la página justo después
      
-  }
+}
    
-
 // Nueva función para mostrar las respuestas directamente desde `data.respuestas`
 function renderRespuestas(respuestas) {
     const chatMensajes = document.getElementById('chat-mensajes');
@@ -53,7 +61,7 @@ function renderRespuestas(respuestas) {
 
     const userData = JSON.parse(localStorage.getItem("userData")); // Traer el usuario logueado
     const miID = userData?.id;
-    console.log(miID);
+    console.log(userData);
 
     chatMensajes.innerHTML = ''; // Limpiar antes de insertar
 
