@@ -85,19 +85,6 @@ async function enviarMensaje(radicado, mensaje) {
     }
 }
 
-// Ejemplo de cómo llamar la función enviarMensaje cuando el usuario envía un mensaje
-const formulario = document.getElementById('form-mensaje');
-formulario.addEventListener('submit', (e) => {
-    e.preventDefault(); // Evitar que el formulario se envíe de la forma tradicional
-
-    const mensaje = document.getElementById('mensaje').value;
-    if (mensaje.trim() !== '') {
-        const radicado = new URLSearchParams(window.location.search).get('radicado');
-        enviarMensaje(radicado, mensaje);
-        document.getElementById('mensaje').value = ''; // Limpiar el campo de texto
-    }
-});
-
 function formatearFecha(fechaStr) {
     const fecha = new Date(fechaStr);
     const dia = String(fecha.getDate()).padStart(2, '0');
