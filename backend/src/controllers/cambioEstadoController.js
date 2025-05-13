@@ -1,0 +1,27 @@
+const cambioEstadoService = require('../services/cambioEstadoService');
+
+const cambiarEstado = async (req, res) => {
+  const { radicado, estado } = req.body;
+
+  if (!radicado || !estado) {
+    return res.status(400).json({ mensaje: 'Radicado y estado son requeridos' });
+  }
+
+  try {
+    // Llamamos al servicio para actualizar el estado del ticket
+    const resultado = await cambioEstadoService.cambiarEstado(radicado, estado);
+
+    if (resultado) {
+      return res.status(200).json({ mensaje: 'Estado del ticket actualizado correctamente' });
+    } else {
+      return res.status(500).json({ mensaje: 'Error al cambiar el estado' });
+    }
+  } catch (error) {
+    console.error('Error al cambiar el estado:', error);
+    return res.status(500).json({ mensaje: 'Error al cambiar el estado' });
+  }
+};
+
+module.exports = {
+  cambiarEstado,
+};

@@ -1,26 +1,50 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const params = new URLSearchParams(window.location.search);
     const radicado = params.get('radicado');
-
+  
     if (!radicado) {
-        document.getElementById('ticket-info').innerHTML = '<p>❗ Ticket no encontrado.</p>';
-        return;
+      document.getElementById('ticket-info').innerHTML = '<p>❗ Ticket no encontrado.</p>';
+      return;
     }
-
+  
     try {
-        const response = await fetch(`http://localhost:4000/api/detalle-ticket/${encodeURIComponent(radicado)}`);
-        if (!response.ok) throw new Error('Error al obtener los datos');
-
-        const data = await response.json();
-        renderTicket(data); // Aquí deberías tener la función que muestra los datos del ticket
-
-        // Mostrar las respuestas
-        renderRespuestas(data.respuestas || []);
+      const response = await fetch(`http://localhost:4000/api/detalle-ticket/${encodeURIComponent(radicado)}`);
+      if (!response.ok) throw new Error('Error al obtener los datos');
+  
+      const data = await response.json();
+      renderTicket(data);
+      renderRespuestas(data.respuestas || []);
+  
+      document.getElementById('btn-finalizar').addEventListener('click', () => {
+        confirmarYActualizarEstado(4, 'finalizar');
+      });
+  
+      document.getElementById('btn-cancelar').addEventListener('click', () => {
+        confirmarYActualizarEstado(5, 'cancelar');
+      });
+  
     } catch (error) {
-        console.error(error);
-        document.getElementById('ticket-info').innerHTML = '<p>❗ Hubo un error cargando el ticket.</p>';
+      console.error(error);
+      document.getElementById('ticket-info').innerHTML = '<p>❗ Hubo un error cargando el ticket.</p>';
     }
 });
+  
+function confirmarYActualizarEstado(estado, accion) {
+    const confirmar = confirm(`¿Confirmas que deseas ${accion} este ticket?`);
+    if (!confirmar) return;
+  
+    const radicado = new URLSearchParams(window.location.search).get('radicado');
+  
+    fetch('http://localhost:4000/api/cambiar-estado', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ radicado, estado }),
+    })
+      
+    window.location.reload(); // Recarga la página justo después
+     
+  }
+   
 
 // Nueva función para mostrar las respuestas directamente desde `data.respuestas`
 function renderRespuestas(respuestas) {

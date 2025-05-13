@@ -21,8 +21,13 @@ app.use(express.urlencoded({ extended: true }));
 const uploadsPath = path.join(__dirname, 'src', 'uploads');
 app.use('/uploads', express.static(uploadsPath));
 
+
+
+
 // Importación segura de rutas
 try {
+  const cambioEstadoRoutes = require('./src/routes/cambioEstadoRoutes');
+  const bodyParser = require('body-parser');
   const authRoutes = require('./src/routes/authRoutes');
   const areasRoutes = require('./src/routes/areasRoutes');
   const ticketsRoutes = require('./src/routes/ticketsRoutes');
@@ -34,6 +39,8 @@ try {
   const solicitudesAtendidasTicketsRoutes = require('./src/routes/solicitudesAtendidasRoutes');
   const respuestaRoutes = require('./src/routes/respuestaRoutes');
 
+  app.use(bodyParser.json());  
+  app.use('/api', cambioEstadoRoutes);
   app.use('/api/detalle-ticket', detalleTicketRoutes);
   app.use('/api/filtros', filtrosRoutes);
   app.use('/api/auth', authRoutes);
