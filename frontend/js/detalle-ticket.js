@@ -44,7 +44,7 @@ function renderRespuestas(respuestas) {
 
         const contenidoHTML = `
             <p>${respuesta.mensaje}</p>
-            ${respuesta.ruta_archivo ? `<a href="http://localhost:4000/uploads/${respuesta.ruta_archivo}" target="_blank">📎 Ver archivo</a>` : ''}
+            ${respuesta.ruta_archivo ? `<a href="http://localhost:4000/uploads/${respuesta.ruta_archivo}" target="_blank">📁 Ver archivo</a>` : ''}
             <small><strong>${respuesta.nombre_usuario || 'Sistema'} ${respuesta.apellido_usuario || ''}</strong> | ${new Date(respuesta.fecha_respuesta).toLocaleString()}</small>
         `;
 
@@ -54,6 +54,49 @@ function renderRespuestas(respuestas) {
 
     chatMensajes.scrollTop = chatMensajes.scrollHeight; // Auto-scroll
 }
+
+// Función para enviar el mensaje
+async function enviarMensaje(radicado, mensaje) {
+    const respuesta = {
+        radicado,
+        mensaje,
+        id_usuario: JSON.parse(localStorage.getItem("userData")).id, // ID del usuario logueado
+    };
+
+    try {
+        const response = await fetch('http://localhost:4000/api/enviar-respuesta', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(respuesta),
+        });
+
+        if (!response.ok) {
+            throw new Error('Error al enviar el mensaje');
+        }
+
+        // Después de enviar el mensaje, recargamos la página completa
+        window.location.reload(); // Esto recargará toda la página para ver las respuestas actualizadas
+
+    } catch (error) {
+        console.error(error);
+        alert('Hubo un problema al enviar el mensaje.');
+    }
+}
+
+// Ejemplo de cómo llamar la función enviarMensaje cuando el usuario envía un mensaje
+const formulario = document.getElementById('form-mensaje');
+formulario.addEventListener('submit', (e) => {
+    e.preventDefault(); // Evitar que el formulario se envíe de la forma tradicional
+
+    const mensaje = document.getElementById('mensaje').value;
+    if (mensaje.trim() !== '') {
+        const radicado = new URLSearchParams(window.location.search).get('radicado');
+        enviarMensaje(radicado, mensaje);
+        document.getElementById('mensaje').value = ''; // Limpiar el campo de texto
+    }
+});
 
 function formatearFecha(fechaStr) {
     const fecha = new Date(fechaStr);
@@ -247,8 +290,8 @@ function renderTicket(data) {
 
             setTimeout(() => {
                 successMessage.remove();
-                respuestaForm.reset();
-            }, 4000);
+                window.location.reload();
+            }, 2000);
 
         } catch (error) {
             loadingMessage.remove();
