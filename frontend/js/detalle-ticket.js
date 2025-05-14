@@ -92,18 +92,28 @@ async function cargarEstados() {
 function confirmarYActualizarEstado(estado, accion) {
     const confirmar = confirm(`¿Confirmas que deseas ${accion} este ticket?`);
     if (!confirmar) return;
-  
+ 
     const radicado = new URLSearchParams(window.location.search).get('radicado');
-  
+ 
     fetch('http://localhost:4000/api/cambiar-estado', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ radicado, estado }),
     })
-      
-    window.location.reload(); // Recarga la página justo después
-     
-}
+    .then(response => response.json())  // Asegúrate de que la respuesta sea en formato JSON
+    .then(data => {
+      if (data.success) {
+        alert("Estado actualizado con éxito");
+        window.location.reload(); // Recarga la página si todo fue bien
+      } else {
+        alert("Error al actualizar el estado");
+      }
+    })
+    .catch(error => {
+      console.error("Error en la solicitud:", error);
+      alert("Ocurrió un error al intentar actualizar el estado");
+    });
+ } 
    
 // Nueva función para mostrar las respuestas directamente desde `data.respuestas`
 function renderRespuestas(respuestas) {

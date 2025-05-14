@@ -194,14 +194,14 @@ INSERT INTO usuarios (
 (1, '100000005', 'Diego', NULL, 'Fernández', 'López', 'usuario2@correo.com', 'usuario123', 3);
 
 INSERT INTO areas(nombre, descripcion) VALUES
-('soporte', 'Área encargada de brindar soporte técnico a usuarios'),
-('desarrollo', 'Área encargada del desarrollo de software'),
-('gestión de datos', 'Área encargada de la administración y análisis de datos'),
-('infraestructura', 'Área encargada de la infraestructura tecnológica');
+('soporte', 'solicitudes de correo, usuarios e incidentes con la plataforma'),
+('desarrollo', 'Desarrollos, cambios y ajustes de software'),
+('gestión de datos', 'Bases de datos, reportes y estadisticas'),
+('infraestructura', 'Seguridad de la plataforma');
 
 INSERT INTO estados_ticket(nombre_estado, descripcion) VALUES
 ('en curso', 'Ticket asignado y en proceso de resolución'),
-('esperando soporte', 'Ticket en espera de información o acción del equipo de soporte'),
+('pendiente', 'Ticket en espera de información o acción del equipo de soporte'),
 ('resuelto', 'Ticket concluido y a espera de cierre por parte del usuario'),
 ('finalizado', 'Ticket completado y cerrado'),
 ('cancelado', 'Ticket cancelado por el usuario o administrador');

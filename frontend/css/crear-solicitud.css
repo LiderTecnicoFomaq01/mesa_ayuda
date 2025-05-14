@@ -11,7 +11,7 @@
   
   .formulario-solicitud {
     max-width: 800px;
-    margin: 2rem auto;
+    margin: 0.5rem auto;
     padding: 2rem;
     background-color: #fff;
     border-radius: 12px;
@@ -22,8 +22,8 @@
   .formulario-solicitud h2 {
     color: var(--text);
     font-size: 1.8rem;
-    margin-bottom: 1.5rem;
-    padding-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
     border-bottom: 2px solid #f0f2f5;
     font-weight: 600;
   }
@@ -61,10 +61,12 @@
     background-color: #fff;
     color: var(--primary);
     border: 2px solid #bfdbfe;
-    min-height: 60px;
-    margin-bottom: 0.5rem;
-    font-size: 0.95rem;
+    min-height: 80px; /* antes: 60px */
+    padding: 1rem;     /* más espacio interno */
+    margin-bottom: 0.3rem; /* más separación entre botones */
+    font-size: 1rem;   /* texto más claro */
   }
+  
   
   .boton-area:hover {
     background-color: #eff6ff;

@@ -52,8 +52,11 @@ function renderAreas(areas, contenedor) {
 
         const boton = document.createElement('button');
         boton.className = 'boton-area';
-        boton.textContent = area.nombre;
         boton.dataset.areaId = area.id;
+
+        // Insertar nombre arriba y descripción abajo
+        boton.innerHTML = `<div><strong>${area.nombre}</strong></div><div class="descripcion">${area.descripcion}</div>`;
+
 
         const contenedorCategorias = document.createElement('div');
         contenedorCategorias.className = 'categorias-contenedor';

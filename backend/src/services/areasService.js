@@ -3,7 +3,7 @@ const db = require('../../dbConfig');
 module.exports = {
     obtenerAreas: async () => {
         try {
-            const [rows] = await db.execute("SELECT id, nombre FROM areas");
+            const [rows] = await db.execute("SELECT id, nombre, descripcion FROM areas");
             return rows;
         } catch (error) {
             console.error('Error en obtenerAreas:', error);
