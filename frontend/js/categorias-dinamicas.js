@@ -377,7 +377,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 formData.append('ticket', JSON.stringify({
                     id_categoria: parseInt(idCategoria),
                     id_usuario: userData.id,
-                    id_estado: 1,
+                    id_estado: 2,
                     asunto: asunto,
                     descripcion: descripcion,
                     campos: camposValues
