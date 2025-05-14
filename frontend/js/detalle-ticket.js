@@ -27,46 +27,46 @@ document.addEventListener('DOMContentLoaded', async () => {
         confirmarYActualizarEstado(5, 'cancelar');
       });
   
-      // Verifica el rol del usuario
-      const userData = JSON.parse(localStorage.getItem("userData"));
-      const miID = userData?.rol;
-
-      // Mostrar el select si el rol es admin o usuario administrativo
-        if (miID === 'admin' || miID === 'usuario administrativo') {
-            document.getElementById('estado-group').style.display = 'flex';
-        
-            // Cargar estados
-            await cargarEstados();
-        
-            // Agregar listener para cambiar estado automáticamente
-            const selectEstado = document.getElementById('filtro-estado');
-            selectEstado.addEventListener('change', async () => {
-            const nuevoEstado = selectEstado.value;
-            if (!nuevoEstado) return;
-        
-            const confirmar = confirm('¿Confirmas que deseas cambiar el estado del ticket?');
-            if (!confirmar) return;
-        
-            try {
-                const res = await fetch('http://localhost:4000/api/cambiar-estado', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ radicado, estado: nuevoEstado }),
-                });
-        
-                if (!res.ok) throw new Error('No se pudo actualizar el estado');
-                
-                window.location.reload(); // Recarga la página tras actualizar el estado
-            } catch (error) {
-                console.error('❌ Error al actualizar el estado:', error);
-            }
-            });
-        }
+      // 👉 Aquí llamas a la función modular para configurar el select
+      await configurarCambioDeEstado(radicado);
+  
     } catch (error) {
       console.error(error);
       document.getElementById('ticket-info').innerHTML = '<p>❗ Hubo un error cargando el ticket.</p>';
     }
 });
+
+async function configurarCambioDeEstado(radicado) {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    const miID = userData?.rol;
+  
+    if (miID === 'admin' || miID === 'usuario administrativo') {
+      document.getElementById('estado-group').style.display = 'flex';
+  
+      // Cargar opciones del select
+      await cargarEstados();
+  
+      const selectEstado = document.getElementById('filtro-estado');
+      selectEstado.addEventListener('change', async () => {
+        const nuevoEstado = selectEstado.value;
+        if (!nuevoEstado) return;
+  
+        const confirmar = confirm('¿Confirmas que deseas cambiar el estado del ticket?');
+        if (!confirmar) return;
+  
+
+        fetch('http://localhost:4000/api/cambiar-estado', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ radicado, estado: nuevoEstado }),
+        });
+  
+          setTimeout(() => {
+            window.location.reload();
+          }, 300);
+      });
+    }
+}  
 
 async function cargarEstados() {
     const selectEstado = document.getElementById('filtro-estado');
