@@ -124,40 +124,83 @@ function aplicarFiltros() {
 }
 
 // Calcular color de semáforo basado en tiempos traídos del backend
-function obtenerIndicativoSemaforo(fechaCreacion, tiempoVerde, tiempoAmarillo, estado, fechaCierre = null) {
+function obtenerIndicativoSemaforo(fechaCreacion, tiempoVerde, tiempoAmarillo, estado, contadorHoras = null, fechaCierre = null) {
     const ahora = new Date();
     const creacion = new Date(fechaCreacion);
-
     let fin = ahora;
 
-    // ✅ SOLO si está "resuelto", detenemos el contador (usamos fechaCierre si está disponible)
-    if (estado && estado.toLowerCase() === 'resuelto' && fechaCierre) {
-        fin = new Date(fechaCierre);
-    } else if (estado && estado.toLowerCase() === 'resuelto' && !fechaCierre) {
-        fin = ahora;  // Si no tienes fecha_cierre, congelamos en el tiempo actual (no sigue creciendo)
+    const estadoLower = estado?.toLowerCase();
+
+    // Si está resuelto/cancelado/finalizado y se tiene contadorHoras, solo mostrarlo
+    if (['resuelto', 'cancelado', 'finalizado'].includes(estadoLower)) {
+        const horas = contadorHoras ?? 0;
+        const tiempoTexto = horas >= 48 ? `${Math.floor(horas / 24)} d` : `${horas} h`;
+        return {
+            tiempoTexto,
+            color: getColorByHoras(horas, tiempoVerde, tiempoAmarillo)
+        };
     }
 
-    const horasTranscurridas = Math.floor((fin - creacion) / (1000 * 60 * 60));
+    // Si sigue activo, calcular horas hábiles desde la creación hasta ahora
+    const horasTranscurridas = calcularHorasHabiles(creacion, fin);
 
-    let tiempoTexto = `${horasTranscurridas} h`;
-    if (horasTranscurridas >= 48) {
-        const dias = Math.floor(horasTranscurridas / 24);
-        tiempoTexto = `${dias} d`;
+    const tiempoTexto = horasTranscurridas >= 48
+        ? `${Math.floor(horasTranscurridas / 24)} d`
+        : `${horasTranscurridas} h`;
+
+    return {
+        tiempoTexto,
+        color: getColorByHoras(horasTranscurridas, tiempoVerde, tiempoAmarillo)
+    };
+}
+
+// Función auxiliar para definir el color del semáforo
+function getColorByHoras(horas, tiempoVerde, tiempoAmarillo) {
+    if (tiempoVerde == null || tiempoAmarillo == null) return '#cccccc';
+    if (horas < tiempoVerde) return 'green';
+    if (horas < tiempoAmarillo) return 'orange';
+    return 'red';
+}
+
+// ✅ Función para contar solo horas hábiles
+function calcularHorasHabiles(fechaInicio, fechaFin) {
+    const MILISEGUNDOS_POR_HORA = 1000 * 60 * 60;
+    let totalMilisegundos = 0;
+
+    let actual = new Date(fechaInicio);
+
+    while (actual < fechaFin) {
+        const dia = actual.getDay();
+
+        // Solo lunes a viernes
+        if (dia >= 1 && dia <= 5) {
+            const bloques = [
+                { inicio: 8, fin: 12 },
+                { inicio: 13, fin: 17 }
+            ];
+
+            bloques.forEach(b => {
+                const inicioBloque = new Date(actual);
+                inicioBloque.setHours(b.inicio, 0, 0, 0);
+
+                const finBloque = new Date(actual);
+                finBloque.setHours(b.fin, 0, 0, 0);
+
+                const inicioValido = new Date(Math.max(inicioBloque, fechaInicio));
+                const finValido = new Date(Math.min(finBloque, fechaFin));
+
+                if (inicioValido < finValido) {
+                    totalMilisegundos += (finValido - inicioValido);
+                }
+            });
+        }
+
+        // Avanza al siguiente día
+        actual.setDate(actual.getDate() + 1);
+        actual.setHours(0, 0, 0, 0);
     }
 
-    let color = '#cccccc'; // neutro por defecto
-
-    if (tiempoVerde == null || tiempoAmarillo == null) {
-        color = '#cccccc'; // neutro si no hay data
-    } else if (horasTranscurridas < tiempoVerde) {
-        color = 'green';
-    } else if (horasTranscurridas < tiempoAmarillo) {
-        color = 'orange';
-    } else {
-        color = 'red';
-    }
-
-    return { tiempoTexto, color };
+    return Math.floor(totalMilisegundos / MILISEGUNDOS_POR_HORA);
 }
 
 function formatearFecha(fechaStr) {
@@ -193,6 +236,8 @@ function obtenerEstiloEstado(estado) {
             return 'background-color: #4caf50; color: white; font-weight: bold; padding: 4px 8px; border-radius: 6px; text-transform: uppercase;';
         case 'finalizado':
             return 'background-color: #2e7d32; color: white; font-weight: bold; padding: 4px 8px; border-radius: 6px; text-transform: uppercase;';
+        case 'pendiente':
+            return 'background-color: #ff9800; color: white; font-weight: bold; padding: 4px 8px; border-radius: 6px; text-transform: uppercase;';
         default:
             return 'background-color: #2196f3; color: white; font-weight: bold; padding: 4px 8px; border-radius: 6px; text-transform: uppercase;';
     }
