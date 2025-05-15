@@ -26,6 +26,7 @@ async function initCrearSolicitud() {
         console.log('Áreas recibidas:', areas);
 
         renderAreas(areas, contenedor);
+        initModalFormulario();
 
     } catch (error) {
         console.error('Error en initCrearSolicitud:', error);
@@ -56,7 +57,6 @@ function renderAreas(areas, contenedor) {
 
         // Insertar nombre arriba y descripción abajo
         boton.innerHTML = `<div><strong>${area.nombre}</strong></div><div class="descripcion">${area.descripcion}</div>`;
-
 
         const contenedorCategorias = document.createElement('div');
         contenedorCategorias.className = 'categorias-contenedor';
@@ -114,7 +114,7 @@ async function cargarCategorias(idArea, contenedor) {
         if (!response.ok) throw new Error('Error al obtener categorías');
 
         const categorias = await response.json();
-        console.log('Lista completa de categorías recibidas:', categorias); // Log 1: Todas las categorías
+        console.log('Lista completa de categorías recibidas:', categorias);
 
         contenedor.innerHTML = '';
 
@@ -129,18 +129,23 @@ async function cargarCategorias(idArea, contenedor) {
             boton.className = 'boton-categoria';
             boton.textContent = cat.nombre;
             
-            console.log('Creando botón para categoría:', {  // Log 2: Al crear cada botón
+            console.log('Creando botón para categoría:', {
                 id: cat.id, 
                 nombre: cat.nombre
             });
 
             boton.addEventListener('click', () => {
-                console.log('Categoría clickeada - ID:', cat.id); // Log 3: Al hacer clic
-                
+                console.log('Categoría clickeada - ID:', cat.id);
+
                 localStorage.setItem('categoriaSeleccionada', JSON.stringify(cat));
-                window.open(`../views/categorias-dinamicas.html?id=${cat.id}`, '_blank');
+
+                // Abrir modal
+                const modal = document.getElementById('modalFormulario');
+                modal.style.display = 'block';
+                
+                // Cargar el formulario dinámico
+                cargarFormulario(cat.id);
             });
-            
             contenedor.appendChild(boton);
         });
 
@@ -160,6 +165,285 @@ function mostrarError(mensaje) {
         </div>
     `;
 }
+
+// Inicializar el modal del formulario
+function initModalFormulario() {
+    const modal = document.getElementById('modalFormulario');
+    const closeBtn = document.querySelector('.close-modal');
+    
+    if (!modal || !closeBtn) return;
+    
+    closeBtn.addEventListener('click', () => {
+        modal.style.display = 'none';
+    });
+    
+    window.addEventListener('click', (event) => {
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+}
+
+// Función para cargar el formulario dinámico
+async function cargarFormulario(idCategoria) {
+    const formularioContainer = document.getElementById('formulario-container');
+    const formTitle = document.querySelector('.form-title');
+    
+    if (!idCategoria) {
+        formularioContainer.innerHTML = '<p class="error-message">No se ha especificado categoría</p>';
+        return;
+    }
+
+    try {
+        // 1. Obtener datos de la categoría desde localStorage
+        const categoriaStorage = localStorage.getItem('categoriaSeleccionada');
+        const categoria = categoriaStorage ? JSON.parse(categoriaStorage) : null;
+        
+        // 2. Actualizar título con el nombre de la categoría en mayúsculas
+        if (categoria?.nombre) {
+            formTitle.textContent = categoria.nombre.toUpperCase();
+        } else {
+            formTitle.textContent = 'FORMULARIO DE TICKET'; // Fallback
+        }
+
+        // 3. Obtener campos del formulario
+        const response = await fetch(`http://localhost:4000/api/areas/${idCategoria}/campos`);
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Error al obtener campos');
+        }
+        
+        const { data: campos } = await response.json();
+        
+        if (!campos || campos.length === 0) {
+            formularioContainer.innerHTML = '<p class="error-message">No hay campos configurados para esta categoría</p>';
+            return;
+        }
+        
+        // Crear formulario dinámico
+        const form = document.createElement('form');
+        form.id = 'dynamic-form';
+        form.enctype = 'multipart/form-data';
+        
+        // Campos dinámicos según la categoría
+        campos.forEach(campo => {
+            const fieldContainer = document.createElement('div');
+            fieldContainer.className = 'form-field';
+            
+            let input;
+            
+            switch(campo.tipo_campo) {
+                case 'texto':
+                    fieldContainer.innerHTML = `
+                        <label for="field-${campo.id}">${campo.nombre_campo}${campo.requerido ? '<span class="required">*</span>' : ''}</label>
+                        <input type="text" id="field-${campo.id}" name="field_${campo.id}" ${campo.requerido ? 'required' : ''} placeholder="Ingrese ${campo.nombre_campo.toLowerCase()}">
+                    `;
+                    break;
+                    
+                case 'numero':
+                    fieldContainer.innerHTML = `
+                        <label for="field-${campo.id}">${campo.nombre_campo}${campo.requerido ? '<span class="required">*</span>' : ''}</label>
+                        <input type="number" id="field-${campo.id}" name="field_${campo.id}" ${campo.requerido ? 'required' : ''} placeholder="Ingrese ${campo.nombre_campo.toLowerCase()}">
+                    `;
+                    break;
+                    
+                case 'fecha':
+                    fieldContainer.innerHTML = `
+                        <label for="field-${campo.id}">${campo.nombre_campo}${campo.requerido ? '<span class="required">*</span>' : ''}</label>
+                        <input type="date" id="field-${campo.id}" name="field_${campo.id}" ${campo.requerido ? 'required' : ''}>
+                    `;
+                    break;
+                    
+                case 'booleano':
+                    fieldContainer.innerHTML = `
+                        <div class="checkbox-group">
+                            <p class="checkbox-question">${campo.nombre_campo}${campo.requerido ? '<span class="required">*</span>' : ''}</p>
+                            <div class="checkbox-container">
+                                <input type="checkbox" id="field-${campo.id}" name="field_${campo.id}" ${campo.requerido ? 'required' : ''}>
+                                <label for="field-${campo.id}" class="checkbox-label">Marcar si aplica</label>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                
+                case 'textarea':
+                    fieldContainer.innerHTML = `
+                        <div class="textarea-group">
+                            <label for="field-${campo.id}" class="textarea-label">${campo.nombre_campo}${campo.requerido ? '<span class="required">*</span>' : ''}</label>
+                            <textarea id="field-${campo.id}" name="field_${campo.id}" ${campo.requerido ? 'required' : ''} rows="4" class="textarea-input" placeholder="Escribe aquí..."></textarea>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'archivo':
+                    fieldContainer.innerHTML = `
+                        <label for="field-${campo.id}">${campo.nombre_campo}${campo.requerido ? '<span class="required">*</span>' : ''}</label>
+                        <div class="file-input-container">
+                            <span class="file-input-button">Seleccionar archivo</span>
+                            <span class="file-input-name">Ningún archivo seleccionado</span>
+                            <input type="file" id="field-${campo.id}" name="field_${campo.id}" ${campo.requerido ? 'required' : ''} multiple>
+                        </div>
+                    `;
+                    
+                    // Agregar evento para mostrar nombre de archivo
+                    const fileInput = fieldContainer.querySelector('input[type="file"]');
+                    const fileNameSpan = fieldContainer.querySelector('.file-input-name');
+                    
+                    fileInput.addEventListener('change', (e) => {
+                        const names = Array.from(e.target.files).map(f => f.name).join(', ');
+                        fileNameSpan.textContent = names || 'Ningún archivo seleccionado';
+                    });
+                    break;
+                
+                case 'email':
+                    fieldContainer.innerHTML = `
+                        <div class="email-group">
+                            <label for="field-${campo.id}" class="email-label">${campo.nombre_campo}${campo.requerido ? '<span class="required">*</span>' : ''}</label>
+                            <input type="email" id="field-${campo.id}" name="field_${campo.id}" ${campo.requerido ? 'required' : ''} class="email-input">
+                        </div>
+                    `;
+                    
+                    // Validación de email
+                    const emailInput = fieldContainer.querySelector('input[type="email"]');
+                    emailInput.addEventListener('invalid', function (event) {
+                        if (emailInput.validity.typeMismatch) {
+                            emailInput.setCustomValidity('Por favor, ingresa un correo electrónico válido que contenga @.');
+                        } else {
+                            emailInput.setCustomValidity('');
+                        }
+                    });
+                    break;
+                    
+                default:
+                    fieldContainer.innerHTML = `
+                        <label for="field-${campo.id}">${campo.nombre_campo}${campo.requerido ? '<span class="required">*</span>' : ''}</label>
+                        <input type="text" id="field-${campo.id}" name="field_${campo.id}" ${campo.requerido ? 'required' : ''}>
+                    `;
+            }
+            
+            form.appendChild(fieldContainer);
+        });
+        
+        // Agregar botón de enviar
+        const submitBtn = document.createElement('button');
+        submitBtn.type = 'submit';
+        submitBtn.className = 'submit-button';
+        submitBtn.innerHTML = `
+            <span class="button-icon">📨</span>
+            <span class="button-text">Enviar Ticket</span>
+        `;
+        form.appendChild(submitBtn);
+        
+        // Limpiar el contenedor y agregar el formulario
+        formularioContainer.innerHTML = '';
+        formularioContainer.appendChild(form);
+        
+        // Manejar envío del formulario
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            try {
+                const userData = JSON.parse(localStorage.getItem("userData"));
+
+                // Configurar botón durante envío
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = `
+                    <span class="spinner"></span>
+                    <span class="button-text">Enviando...</span>
+                `;
+
+                // Crear FormData para enviar
+                const formData = new FormData();
+                const camposValues = {};
+
+                // Procesar todos los campos del formulario
+                campos.forEach(campo => {
+                    const input = form.querySelector(`[name="field_${campo.id}"]`) || 
+                                form.querySelector(`[name="archivo"]`);
+
+                    if (campo.tipo_campo === 'archivo') {
+                        // Manejar archivo adjunto
+                        const fileInput = form.querySelector('input[type="file"]');
+                        if (fileInput && fileInput.files.length > 0) {
+                            for (const file of fileInput.files) {
+                                formData.append('archivo', file);
+                            }
+                        }
+                    } else {
+                        // Manejar otros tipos de campos
+                        let value;
+
+                        if (input.type === 'checkbox') {
+                            value = input.checked;
+                        } else {
+                            value = input.value;
+                        }
+
+                        if (value !== '' && value !== null && value !== undefined) {
+                            camposValues[`field_${campo.id}`] = value;
+                        }
+                    }
+                });
+                
+                // Agregar los datos del ticket como JSON
+                const asunto = document.getElementById('asunto').value;
+                const descripcion = document.getElementById('descripcion').value;
+                formData.append('ticket', JSON.stringify({
+                    id_categoria: parseInt(idCategoria),
+                    id_usuario: userData.id,
+                    id_estado: 2,
+                    asunto: asunto,
+                    descripcion: descripcion,
+                    campos: camposValues
+                }));
+
+                // Enviar al backend
+                const response = await fetch('http://localhost:4000/api/tickets', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${userData.token}`
+                    },
+                    body: formData
+                });
+
+                const responseData = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(responseData.message || 'Error del servidor');
+                }
+
+                // Mostrar alerta de éxito
+                alert(`Ticket #${responseData.ticketId} enviado correctamente`);
+
+                // Limpiar los campos del formulario
+                form.reset();
+                document.getElementById('asunto').value = '';
+
+            } catch (error) {
+                console.error('Error al enviar el ticket:', error);
+                alert(`Error: ${error.message}`);
+            } finally {
+                // Restaurar el botón
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `
+                    <span class="button-icon">📨</span>
+                    <span class="button-text">Enviar Ticket</span>
+                `;
+            }
+        });
+        
+    } catch (error) {
+        console.error('Error:', error);
+        formTitle.textContent = 'FORMULARIO DE TICKET';
+        formularioContainer.innerHTML = `<div class="error-message">${error.message}</div>`;
+    }
+}
+
+document.getElementById('cerrarModal').addEventListener('click', function() {
+    document.getElementById('modalFormulario').style.display = 'none';
+});
+
 
 // Iniciar al cargar DOM
 if (document.readyState === 'loading') {

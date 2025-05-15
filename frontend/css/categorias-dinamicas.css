@@ -200,15 +200,6 @@ body {
     margin-bottom: 1rem;
 }
 
-.success-message {
-    color: var(--success-color);
-    padding: 1rem;
-    background-color: rgba(39, 174, 96, 0.1);
-    border-radius: 4px;
-    border-left: 4px solid var(--success-color);
-    margin-bottom: 1rem;
-}
-
 /* Estilos para grupos de checkbox */
 .checkbox-group {
     margin-bottom: 1.5rem;
