@@ -203,6 +203,13 @@ body {
     text-decoration: underline;
 }
 
+.form-group.botones-chat {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px; /* Espacio entre botones */
+}
+
 .chat-form .btn-enviar {
     background-color: #0d6efd;
     color: #fff;
@@ -210,8 +217,32 @@ body {
     padding: 10px 20px;
     font-weight: bold;
     border-radius: 4px;
+    max-width: 150px;
     cursor: pointer;
     transition: background-color 0.3s;
+}
+
+.chat-form .btn-interno {
+    background-color: #6c757d; /* Gris */
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-weight: bold;
+    border-radius: 4px;
+    max-width: 150px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.chat-form .btn-enviar,
+.chat-form .btn-interno {
+    width: 160px;          /* mismo ancho fijo */
+    height: 42px; 
+}
+
+
+.chat-form .btn-interno:hover {
+    background-color: #5a6268;
 }
 
 .chat-form .btn-enviar:hover {

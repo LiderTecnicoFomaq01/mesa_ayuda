@@ -37,36 +37,44 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 async function configurarCambioDeEstado(radicado) {
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    const miID = userData?.rol;
-  
-    if (miID === 'admin' || miID === 'usuario administrativo') {
-      document.getElementById('estado-group').style.display = 'flex';
-  
-      // Cargar opciones del select
-      await cargarEstados();
-  
-      const selectEstado = document.getElementById('filtro-estado');
-      selectEstado.addEventListener('change', async () => {
-        const nuevoEstado = selectEstado.value;
-        if (!nuevoEstado) return;
-  
-        const confirmar = confirm('¿Confirmas que deseas cambiar el estado del ticket?');
-        if (!confirmar) return;
-  
+  const userData = JSON.parse(localStorage.getItem("userData"));
+  const miID = userData?.rol;
 
-        fetch('http://localhost:4000/api/cambiar-estado', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ radicado, estado: nuevoEstado }),
-        });
-  
-          setTimeout(() => {
-            window.location.reload();
-          }, 300);
+  const estadoGroup = document.getElementById('estado-group');
+  const btnComentario = document.getElementById('btnComentarioInterno');
+
+  if (miID === 'admin' || miID === 'usuario administrativo') {
+    if (estadoGroup) estadoGroup.style.display = 'flex';
+    if (btnComentario) btnComentario.style.display = 'flex';
+
+    // Cargar opciones del select
+    await cargarEstados();
+
+    const selectEstado = document.getElementById('filtro-estado');
+    selectEstado.addEventListener('change', async () => {
+      const nuevoEstado = selectEstado.value;
+      if (!nuevoEstado) return;
+
+      const confirmar = confirm('¿Confirmas que deseas cambiar el estado del ticket?');
+      if (!confirmar) return;
+
+      await fetch('http://localhost:4000/api/cambiar-estado', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ radicado, estado: nuevoEstado }),
       });
-    }
-}  
+
+      setTimeout(() => {
+        window.location.reload();
+      }, 300);
+    });
+
+  } else {
+    if (estadoGroup) estadoGroup.style.display = 'none';
+    if (btnComentario) btnComentario.style.display = 'none';
+  }
+}
+  
 
 async function cargarEstados() {
     const selectEstado = document.getElementById('filtro-estado');

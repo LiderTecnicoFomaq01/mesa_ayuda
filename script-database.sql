@@ -155,6 +155,7 @@ CREATE TABLE respuestas_ticket (
   id_ticket INT NOT NULL,
   id_usuario INT NOT NULL,
   mensaje TEXT NOT NULL,
+  interno BOOLEAN NOT NULL DEFAULT FALSE,
   ruta_archivo VARCHAR(255),
   fecha_respuesta TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (id_ticket) REFERENCES tickets(id) ON DELETE CASCADE,
