@@ -48,6 +48,7 @@ exports.getFullTicketDetails = async (ticketId) => {
             u.primer_apellido AS apellido_usuario,
             r.mensaje,
             r.ruta_archivo,
+            r.interno,
             r.fecha_respuesta
         FROM respuestas_ticket r
         JOIN usuarios u ON u.id = r.id_usuario

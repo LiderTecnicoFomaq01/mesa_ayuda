@@ -38,19 +38,20 @@ body {
     text-transform: uppercase;
 }
 
-.btn-reabrir {
-    background-color: #ff9800;
-    border: none;
-    padding: 8px 15px;
-    color: #fff;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-    margin-left: 10px;
+.mensaje-chat.interno {
+  background-color: #fff5e6;
+  border-left: 4px solid #0d6efd;
+  padding: 10px;
 }
 
-.btn-reabrir:hover {
-    background-color: #e68a00;
+.etiqueta-interno {
+  display: inline-block;
+  background-color: #0d6efd;
+  color: white;
+  font-size: 0.75rem;
+  padding: 2px 6px;
+  margin-bottom: 5px;
+  border-radius: 4px;
 }
 
 .main-content {

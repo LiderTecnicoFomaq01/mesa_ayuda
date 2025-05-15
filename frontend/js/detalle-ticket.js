@@ -128,22 +128,26 @@ function renderRespuestas(respuestas) {
     const chatMensajes = document.getElementById('chat-mensajes');
     if (!chatMensajes) return;
 
-    const userData = JSON.parse(localStorage.getItem("userData")); // Traer el usuario logueado
+    const userData = JSON.parse(localStorage.getItem("userData"));
     const miID = userData?.id;
-    console.log(userData);
+    const miRol = userData?.rol;
 
-    chatMensajes.innerHTML = ''; // Limpiar antes de insertar
+    chatMensajes.innerHTML = '';
 
     respuestas.forEach(respuesta => {
-        const mensajeDiv = document.createElement('div');
+        const esInterno = Number(respuesta.interno) === 1;
+        const puedeVerInterno = miRol === 'admin' || miRol === 'usuario administrativo';
 
-        // Comparamos el id del mensaje con el del usuario logueado
+        if (esInterno && !puedeVerInterno) return;
+
+        const mensajeDiv = document.createElement('div');
         const esMio = String(respuesta.id_usuario) === String(miID);
 
-        mensajeDiv.classList.add('mensaje-chat');
-        mensajeDiv.classList.add(esMio ? 'usuario' : 'soporte'); // Clase para el estilo
+        mensajeDiv.classList.add('mensaje-chat', esMio ? 'usuario' : 'soporte');
+        if (esInterno) mensajeDiv.classList.add('interno');
 
         const contenidoHTML = `
+            ${esInterno ? '<span class="etiqueta-interno">🔒 Comentario interno</span>' : ''}
             <p>${respuesta.mensaje}</p>
             ${respuesta.ruta_archivo ? `<a href="http://localhost:4000/uploads/${respuesta.ruta_archivo}" target="_blank">📁 Ver archivo</a>` : ''}
             <small><strong>${respuesta.nombre_usuario || 'Sistema'} ${respuesta.apellido_usuario || ''}</strong> | ${new Date(respuesta.fecha_respuesta).toLocaleString()}</small>
@@ -153,37 +157,7 @@ function renderRespuestas(respuestas) {
         chatMensajes.appendChild(mensajeDiv);
     });
 
-    chatMensajes.scrollTop = chatMensajes.scrollHeight; // Auto-scroll
-}
-
-// Función para enviar el mensaje
-async function enviarMensaje(radicado, mensaje) {
-    const respuesta = {
-        radicado,
-        mensaje,
-        id_usuario: JSON.parse(localStorage.getItem("userData")).id, // ID del usuario logueado
-    };
-
-    try {
-        const response = await fetch('http://localhost:4000/api/enviar-respuesta', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(respuesta),
-        });
-
-        if (!response.ok) {
-            throw new Error('Error al enviar el mensaje');
-        }
-
-        // Después de enviar el mensaje, recargamos la página completa
-        window.location.reload(); // Esto recargará toda la página para ver las respuestas actualizadas
-
-    } catch (error) {
-        console.error(error);
-        alert('Hubo un problema al enviar el mensaje.');
-    }
+    chatMensajes.scrollTop = chatMensajes.scrollHeight;
 }
 
 function formatearFecha(fechaStr) {
@@ -396,6 +370,78 @@ function renderTicket(data) {
             submitBtn.innerHTML = originalText;
         }
     });
+
+const comentarioInternoBtn = document.getElementById('btnComentarioInterno');
+
+// Lógica para botón de comentario interno
+comentarioInternoBtn.addEventListener('click', async () => {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+
+    if (!userData || !userData.id) {
+        alert('Usuario no autenticado');
+        window.location.href = '/login.html';
+        return;
+    }
+
+    comentarioInternoBtn.disabled = true;
+    const originalText = comentarioInternoBtn.innerHTML;
+    comentarioInternoBtn.innerHTML = `
+        <span class="spinner"></span>
+        <span class="button-text">Enviando...</span>
+    `;
+
+    const formData = new FormData(respuestaForm);
+    formData.append('id_ticket', ticket.radicado);
+    formData.append('id_usuario', userData.id);
+    formData.append('interno', true); // <-- Este es el campo clave
+
+    const loadingMessage = document.createElement('div');
+    loadingMessage.className = 'loading-message';
+    loadingMessage.innerHTML = `<p>Enviando comentario interno...</p>`;
+    respuestaForm.prepend(loadingMessage);
+
+    try {
+        const response = await fetch('http://localhost:4000/api/responder', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${userData.token}`
+            },
+            body: formData
+        });
+
+        const result = await response.json();
+        loadingMessage.remove();
+
+        if (!response.ok) {
+            throw new Error(result.message || 'Error al enviar el comentario interno');
+        }
+
+        const successMessage = document.createElement('div');
+        successMessage.className = 'success-message';
+        successMessage.innerHTML = `<p>Comentario interno enviado correctamente</p>`;
+        respuestaForm.prepend(successMessage);
+
+        setTimeout(() => {
+            successMessage.remove();
+            window.location.reload();
+        }, 2000);
+
+    } catch (error) {
+        loadingMessage.remove();
+
+        const errorMessage = document.createElement('div');
+        errorMessage.className = 'error-message';
+        errorMessage.textContent = `Error: ${error.message}`;
+        respuestaForm.prepend(errorMessage);
+
+        setTimeout(() => errorMessage.remove(), 5000);
+    } finally {
+        comentarioInternoBtn.disabled = false;
+        comentarioInternoBtn.innerHTML = originalText;
+    }
+});
+
+
 }
 
 function previsualizarArchivo(ruta, nombre) {

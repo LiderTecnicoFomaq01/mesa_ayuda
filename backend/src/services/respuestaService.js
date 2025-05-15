@@ -3,7 +3,7 @@ const fsPromises = fs.promises;
 const path = require('path');
 const pool = require('../../dbConfig');
 
-exports.guardarRespuesta = async ({ id_ticket, id_usuario, mensaje, files }) => {
+exports.guardarRespuesta = async ({ id_ticket, id_usuario, mensaje, files, interno = false }) => {
   let conn;
 
   try {
@@ -17,7 +17,7 @@ exports.guardarRespuesta = async ({ id_ticket, id_usuario, mensaje, files }) => 
     let rutaArchivoRelativa = null;
 
     // Procesar archivos
-    if (files.length > 0) {
+    if (files && files.length > 0) {
       const baseDir = path.join(__dirname, '..', 'uploads');
       const ticketDir = path.join(baseDir, id_ticket.toString());
 
@@ -38,9 +38,9 @@ exports.guardarRespuesta = async ({ id_ticket, id_usuario, mensaje, files }) => 
     }
 
     const [resultado] = await conn.query(
-      `INSERT INTO respuestas_ticket (id_ticket, id_usuario, mensaje, ruta_archivo)
-       VALUES (?, ?, ?, ?)`,
-      [id_ticket, id_usuario, mensaje, rutaArchivoRelativa]
+      `INSERT INTO respuestas_ticket (id_ticket, id_usuario, mensaje, interno, ruta_archivo)
+       VALUES (?, ?, ?, ?, ?)`,
+      [id_ticket, id_usuario, mensaje, interno === true || interno === 'true' ? 1 : 0, rutaArchivoRelativa]
     );
 
     await conn.commit();
