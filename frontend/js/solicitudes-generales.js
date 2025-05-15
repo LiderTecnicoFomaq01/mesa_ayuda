@@ -127,22 +127,24 @@ function aplicarFiltros() {
 function obtenerIndicativoSemaforo(fechaCreacion, tiempoVerde, tiempoAmarillo, estado, contadorHoras = null, fechaCierre = null) {
     const ahora = new Date();
     const creacion = new Date(fechaCreacion);
-    let fin = ahora;
-
     const estadoLower = estado?.toLowerCase();
 
-    // Si está resuelto/cancelado/finalizado y se tiene contadorHoras, solo mostrarlo
+    // Validar si el estado está cerrado y se debe usar el contadorHoras tal cual
     if (['resuelto', 'cancelado', 'finalizado'].includes(estadoLower)) {
-        const horas = contadorHoras ?? 0;
-        const tiempoTexto = horas >= 48 ? `${Math.floor(horas / 24)} d` : `${horas} h`;
+        const horas = Number(contadorHoras) ?? 0;
+
+        const tiempoTexto = horas >= 48
+            ? `${Math.floor(horas / 24)} d`
+            : `${horas} h`;
+
         return {
             tiempoTexto,
             color: getColorByHoras(horas, tiempoVerde, tiempoAmarillo)
         };
     }
 
-    // Si sigue activo, calcular horas hábiles desde la creación hasta ahora
-    const horasTranscurridas = calcularHorasHabiles(creacion, fin);
+    // Si está activo, calcular las horas hábiles desde la creación hasta ahora
+    const horasTranscurridas = calcularHorasHabiles(creacion, ahora);
 
     const tiempoTexto = horasTranscurridas >= 48
         ? `${Math.floor(horasTranscurridas / 24)} d`
@@ -294,7 +296,7 @@ async function cargarTickets(userId, filters = {}) {
         }
 
         ticketsFiltrados.forEach(ticket => {
-            const { tiempoTexto, color } = obtenerIndicativoSemaforo(ticket.fecha_creacion, ticket.tiempo_verde, ticket.tiempo_amarillo);
+            const { tiempoTexto, color } = obtenerIndicativoSemaforo(ticket.fecha_creacion, ticket.tiempo_verde, ticket.tiempo_amarillo, ticket.estado, ticket.contador_horas, ticket.hora_solucion);
             const row = document.createElement('tr');
 
             row.innerHTML = `

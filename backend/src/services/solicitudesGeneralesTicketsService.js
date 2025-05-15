@@ -11,6 +11,8 @@ const getTicketsByUserId = async (usuarioId) => {
         u.primer_apellido AS Apellido,
         et.nombre_estado AS estado,
         t.fecha_creacion AS fecha_creacion,
+        t.hora_solucion AS hora_solucion,
+        t.contador_horas AS contador_horas,
         t.asunto AS asunto,
         pt.nombre_prioridad AS prioridad,
         pt.tiempo_min_horas AS tiempo_verde,
