@@ -238,6 +238,8 @@ function obtenerEstiloEstado(estado) {
             return 'background-color: #4caf50; color: white; font-weight: bold; padding: 4px 8px; border-radius: 6px; text-transform: uppercase;';
         case 'finalizado':
             return 'background-color: #2e7d32; color: white; font-weight: bold; padding: 4px 8px; border-radius: 6px; text-transform: uppercase;';
+        case 'pendiente':
+            return 'background-color: #ff9800; color: white; font-weight: bold; padding: 4px 8px; border-radius: 6px; text-transform: uppercase;';
         default:
             return 'background-color: #2196f3; color: white; font-weight: bold; padding: 4px 8px; border-radius: 6px; text-transform: uppercase;';
     }
