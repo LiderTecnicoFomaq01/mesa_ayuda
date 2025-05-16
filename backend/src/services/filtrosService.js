@@ -5,15 +5,26 @@ const getAreas = async () => {
     return rows;
 };
 
-const getUsuarios = async () => {
-    const [rows] = await db.query(
-        'SELECT id, primer_nombre, primer_apellido, email FROM usuarios'
-    );
-    return rows;
-};
 
 const getEstados = async () => {
     const [rows] = await db.query('SELECT id, UPPER(nombre_estado) AS nombre_estado FROM estados_ticket');
+    return rows;
+};
+
+const getUsuarios = async (categoriaId = null) => {
+    let query = `
+        SELECT u.id, u.primer_nombre, u.primer_apellido, u.email FROM categoria_encargados ce
+        JOIN usuarios u ON ce.id_usuario = u.id
+    `;
+    const params = [];
+
+    if (categoriaId) {
+        query += ' WHERE ce.id_categoria = ?';
+        params.push(categoriaId);
+    }
+
+    console.log("Consulta ejecutada:", query, params);
+    const [rows] = await db.query(query, params);
     return rows;
 };
 
@@ -27,7 +38,6 @@ const getCategorias = async (areaId = null) => {
     }
 
     console.log("Consulta ejecutada:", query); // Muestra la consulta SQL para verificarla
-
     const [rows] = await db.query(query, params); // Ejecuta la consulta con los parámetros
     return rows; // Devuelve las categorías obtenidas
 };

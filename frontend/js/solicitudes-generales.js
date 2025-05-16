@@ -32,41 +32,53 @@ function configurarEventosFiltros() {
     const btnLimpiar = document.getElementById('btn-limpiar-filtros');
     const btnAplicar = document.getElementById('btn-aplicar-filtros');
 
-    // Evento para cargar categorías al cambiar área
+    // 1) Cuando cambie el área → cargar categorías
     if (selectArea) {
         selectArea.addEventListener('change', (event) => {
             const idAreaSeleccionada = event.target.value;
             cargarCategorias(idAreaSeleccionada);
+
+            // Además, limpiamos y deshabilitamos el combo de usuarios y estado
+            selectUsuarios.innerHTML = '<option value="">Seleccione un usuario</option>';
+            selectUsuarios.disabled = true;
         });
     }
 
-    // Evento para aplicar filtros
+    // 2) Cuando cambie la categoría → cargar usuarios
+    if (selectCategoria) {
+        selectCategoria.addEventListener('change', (event) => {
+            const idCategoriaSeleccionada = event.target.value;
+            cargarUsuarios(idCategoriaSeleccionada);
+
+            // Habilitar el combo de usuarios solo si hay categoría
+            selectUsuarios.disabled = !idCategoriaSeleccionada;
+        });
+    }
+
+    // 3) Aplicar filtros
     if (btnAplicar) {
         btnAplicar.addEventListener('click', aplicarFiltros);
     }
 
-    // Evento para limpiar filtros
+    // 4) Limpiar filtros
     if (btnLimpiar) {
         btnLimpiar.addEventListener('click', () => {
-            // Limpiar los valores de los combobox
+            // Reset de todos los selects y textbox
             selectArea.value = '';
-            selectCategoria.value = '';
+            selectCategoria.innerHTML = '<option value="">Seleccione una categoría</option>';
+            selectUsuarios.innerHTML = '<option value="">Seleccione un usuario</option>';
             selectEstado.value = '';
-            selectUsuarios.value = '';
+            selectUsuarios.disabled = true;
 
-            // Limpiar el textbox de radicado
             const inputRadicado = document.getElementById('filtro-radicado');
-            if (inputRadicado) {
-                inputRadicado.value = ''; // Limpiar el valor del textbox
-            }
+            if (inputRadicado) inputRadicado.value = '';
 
-            // Recargar categorías
-            cargarCategorias();
-
-            // Volver a cargar los tickets sin filtros
-            const userId = sessionStorage.getItem('userId'); // Corrección aquí
+            // Recargar totalmente el árbol: áreas, categorías vacías
+            cargarAreas();
+            // Y cargar tickets sin filtros
+            const userId = sessionStorage.getItem('userId');
             if (userId) {
-                cargarTickets(userId); // Llamar a la función para cargar todos los tickets
+                cargarTickets(userId);
             }
         });
     }
@@ -365,12 +377,15 @@ async function cargarAreas() {
     }
 }
 
-async function cargarUsuarios() {
+async function cargarUsuarios(idCategoria = '') {
     const selectUsuarios = document.getElementById('filtro-usuario');
     if (!selectUsuarios) return;
 
     try {
-        const res = await fetch(`${API_URL}/usuarios`);
+        let url = `${API_URL}/usuarios`;
+        if (idCategoria) url += `?categoria_id=${idCategoria}`;
+
+        const res = await fetch(url);
         if (!res.ok) throw new Error('Error al cargar usuarios');
         const data = await res.json();
 
@@ -378,13 +393,14 @@ async function cargarUsuarios() {
         data.forEach(usuario => {
             const option = document.createElement('option');
             option.value = usuario.id;
-            option.textContent = usuario.email;
+            option.textContent = `${usuario.primer_nombre} ${usuario.primer_apellido}`;
             selectUsuarios.appendChild(option);
         });
     } catch (error) {
         console.error('Error al cargar usuarios:', error);
     }
 }
+
 
 async function cargarEstados() {
     const selectEstado = document.getElementById('filtro-estado');

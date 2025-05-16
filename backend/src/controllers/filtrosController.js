@@ -10,10 +10,13 @@ const getAreas = async (req, res) => {
 };
 
 const getUsuarios = async (req, res) => {
+    const categoriaId = req.query.categoria_id || null;
+
     try {
-        const usuarios = await combosService.getUsuarios();
+        const usuarios = await combosService.getUsuarios(categoriaId);
         res.json(usuarios);
-    } catch (err) {
+    } catch (error) {
+        console.error('Error al obtener usuarios:', error);
         res.status(500).json({ error: 'Error al obtener usuarios' });
     }
 };
