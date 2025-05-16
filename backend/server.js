@@ -38,8 +38,10 @@ try {
   const detalleTicketRoutes = require('./src/routes/detalle-ticket');
   const solicitudesAtendidasTicketsRoutes = require('./src/routes/solicitudesAtendidasRoutes');
   const respuestaRoutes = require('./src/routes/respuestaRoutes');
+  const redireccionarRoutes = require('./src/routes/redireccionarRoutes');
 
   app.use(bodyParser.json());  
+  app.use('/api', redireccionarRoutes);
   app.use('/api', cambioEstadoRoutes);
   app.use('/api/detalle-ticket', detalleTicketRoutes);
   app.use('/api/filtros', filtrosRoutes);

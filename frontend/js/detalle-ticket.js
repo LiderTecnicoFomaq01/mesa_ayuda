@@ -491,8 +491,127 @@ comentarioInternoBtn.addEventListener('click', async () => {
 });
 }
 
-document.getElementById('btnRedireccionar').addEventListener('click', () => {
-  document.getElementById('modalRedireccion').style.display = 'flex';
+// Cargar áreas en combo-area
+async function cargarAreasRedireccion() {
+    const selectArea = document.getElementById('combo-area');
+    selectArea.innerHTML = '<option value="">Cargando áreas…</option>';
+
+    try {
+        const res = await fetch(`${API_URL}/areas`);
+        if (!res.ok) throw new Error('Error al cargar áreas');
+        const data = await res.json();
+
+        selectArea.innerHTML = '<option value="">Seleccione un área</option>';
+        data.forEach(area => {
+            const option = document.createElement('option');
+            option.value = area.id;
+            option.textContent = area.nombre;
+            selectArea.appendChild(option);
+        });
+    } catch (error) {
+        console.error('Error al cargar áreas:', error);
+        selectArea.innerHTML = '<option value="">Error al cargar</option>';
+    }
+}
+
+// Cargar categorías en combo-categoria según área seleccionada
+async function cargarCategoriasRedireccion(idArea = '') {
+    const selectCategoria = document.getElementById('combo-categoria');
+    selectCategoria.innerHTML = '<option value="">Cargando categorías…</option>';
+    selectCategoria.disabled = true;
+
+    try {
+        let url = `${API_URL}/categorias`;
+        if (idArea) url += `?area_id=${idArea}`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('Error al cargar categorías');
+        const data = await res.json();
+
+        selectCategoria.innerHTML = '<option value="">Seleccione una categoría</option>';
+        data.forEach(cat => {
+            const option = document.createElement('option');
+            option.value = cat.id;
+            option.textContent = cat.nombre;
+            selectCategoria.appendChild(option);
+        });
+
+        selectCategoria.disabled = false;
+    } catch (error) {
+        console.error('Error al cargar categorías:', error);
+        selectCategoria.innerHTML = '<option value="">Error al cargar</option>';
+    }
+}
+
+// Cargar usuarios en combo-responsable según categoría seleccionada
+async function cargarUsuariosRedireccion(idCategoria = '') {
+    const selectUsuarios = document.getElementById('combo-responsable');
+    selectUsuarios.innerHTML = '<option value="">Cargando responsables…</option>';
+    selectUsuarios.disabled = true;
+
+    try {
+        let url = `${API_URL}/usuarios`;
+        if (idCategoria) url += `?categoria_id=${idCategoria}`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('Error al cargar usuarios');
+        const data = await res.json();
+
+        selectUsuarios.innerHTML = '<option value="">Seleccione un responsable</option>';
+        data.forEach(usuario => {
+            const option = document.createElement('option');
+            option.value = usuario.id;
+            option.textContent = `${usuario.primer_nombre} ${usuario.primer_apellido}`;
+            selectUsuarios.appendChild(option);
+        });
+
+        selectUsuarios.disabled = false;
+    } catch (error) {
+        console.error('Error al cargar usuarios:', error);
+        selectUsuarios.innerHTML = '<option value="">Error al cargar</option>';
+    }
+}
+
+// Mostrar modal y cargar áreas
+document.getElementById('btnRedireccionar').addEventListener('click', async () => {
+    document.getElementById('modalRedireccion').style.display = 'flex';
+    await cargarAreasRedireccion();
+
+    // Resetear combos dependientes
+    const comboCategoria = document.getElementById('combo-categoria');
+    const comboResponsable = document.getElementById('combo-responsable');
+    comboCategoria.innerHTML = '<option value="">Seleccione una categoría</option>';
+    comboResponsable.innerHTML = '<option value="">Seleccione un responsable</option>';
+    comboCategoria.disabled = true;
+    comboResponsable.disabled = true;
+});
+
+// Evento para cargar categorías al seleccionar un área
+document.getElementById('combo-area').addEventListener('change', async (e) => {
+    const areaId = e.target.value;
+
+    const comboResponsable = document.getElementById('combo-responsable');
+    comboResponsable.innerHTML = '<option value="">Seleccione un responsable</option>';
+    comboResponsable.disabled = true;
+
+    if (areaId) {
+        await cargarCategoriasRedireccion(areaId);
+    } else {
+        const comboCategoria = document.getElementById('combo-categoria');
+        comboCategoria.innerHTML = '<option value="">Seleccione una categoría</option>';
+        comboCategoria.disabled = true;
+    }
+});
+
+// Evento para cargar usuarios al seleccionar una categoría
+document.getElementById('combo-categoria').addEventListener('change', async (e) => {
+    const categoriaId = e.target.value;
+
+    if (categoriaId) {
+        await cargarUsuariosRedireccion(categoriaId);
+    } else {
+        const comboResponsable = document.getElementById('combo-responsable');
+        comboResponsable.innerHTML = '<option value="">Seleccione un responsable</option>';
+        comboResponsable.disabled = true;
+    }
 });
 
 document.getElementById('btnCerrarModal').addEventListener('click', () => {

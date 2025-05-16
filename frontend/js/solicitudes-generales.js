@@ -401,7 +401,6 @@ async function cargarUsuarios(idCategoria = '') {
     }
 }
 
-
 async function cargarEstados() {
     const selectEstado = document.getElementById('filtro-estado');
     if (!selectEstado) return;

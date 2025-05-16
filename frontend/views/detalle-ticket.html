@@ -104,30 +104,30 @@
                 <i class="fas fa-times-circle"></i> Cancelar
             </button>
         </div>  
-        <div id="modalRedireccion" class="modal-overlay">
+                <!-- tu modal -->
+        <div id="modalRedireccion" class="modal-overlay" style="display:none;">
             <div class="modal-content">
                 <span id="btnCerrarModal" class="close-button">&times;</span>
                 <h3>Redireccionar Ticket</h3>
 
                 <div class="form-group">
-                <label for="combo2">Área</label>
-                <select id="combo2">
-                    <option value="">Seleccione</option>
+                <label for="combo-area">Área</label>
+                <select id="combo-area">
+                    <option value="">Seleccione un área</option>
                 </select>
                 </div>
-                
+
                 <div class="form-group">
-                <label for="combo1">Categoría</label>
-                <select id="combo1">
-                    <option value="">Seleccione</option>
-                    <!-- Opciones dinámicas o estáticas -->
+                <label for="combo-categoria">Categoría</label>
+                <select id="combo-categoria" disabled>
+                    <option value="">Seleccione una categoría</option>
                 </select>
                 </div>
-                
+
                 <div class="form-group">
-                <label for="combo3">Responsable</label>
-                <select id="combo3">
-                    <option value="">Seleccione</option>
+                <label for="combo-responsable">Responsable</label>
+                <select id="combo-responsable" disabled>
+                    <option value="">Seleccione un responsable</option>
                 </select>
                 </div>
 
