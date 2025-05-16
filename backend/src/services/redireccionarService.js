@@ -7,7 +7,7 @@ async function redireccionarTicket(ticketId, usuarioId, categoriaId) {
     await connection.beginTransaction();
 
     const updateAsignacion = `
-      UPDATE asignaciones_usuarios
+      UPDATE asignaciones_ticket
       SET id_usuario = ?, fecha_asignacion = NOW()
       WHERE id_ticket = ?;
     `;

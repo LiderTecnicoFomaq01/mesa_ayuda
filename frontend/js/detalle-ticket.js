@@ -93,7 +93,56 @@ async function configurarCambioDeEstado(radicado) {
     if (btnRedireccionar) btnRedireccionar.style.display = 'none';
   }
 }
-  
+
+document.getElementById('btnAplicarRedireccion').addEventListener('click', async () => {
+  const areaSelect = document.getElementById('combo-area');
+  const categoriaSelect = document.getElementById('combo-categoria');
+  const responsableSelect = document.getElementById('combo-responsable');
+
+  const areaId = areaSelect.value;
+  const categoriaId = categoriaSelect.value;
+  const usuarioId = responsableSelect.value;
+
+  if (!areaId || !categoriaId || !usuarioId) {
+    alert('Faltan campos por llenar. Por favor seleccione área, categoría y responsable.');
+    return;
+  }
+    const params = new URLSearchParams(window.location.search);
+    const ticketId = params.get('radicado');
+   
+  if (!ticketId) {
+    alert('No se pudo obtener el ID del ticket.');
+    return;
+  }
+
+  try {
+    const redireccionResponse = await fetch('http://localhost:4000/api/redireccionar', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        ticketId,
+        usuarioId,
+        categoriaId
+      })
+    });
+
+    const result = await redireccionResponse.json();
+
+    if (redireccionResponse.ok) {
+      alert('Ticket redireccionado con éxito.');
+      document.getElementById('modalRedireccion').style.display = 'none';
+      window.location.reload();
+    } else {
+      alert(`Error al redireccionar: ${result.error}`);
+    }
+
+  } catch (error) {
+    console.error('Error en la redirección:', error);
+    alert('Error inesperado al redireccionar el ticket.');
+  }
+});
 
 async function cargarEstados() {
     const selectEstado = document.getElementById('filtro-estado');
