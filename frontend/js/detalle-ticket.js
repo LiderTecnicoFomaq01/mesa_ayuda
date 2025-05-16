@@ -3,38 +3,54 @@ if (typeof API_URL === 'undefined') {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-    const params = new URLSearchParams(window.location.search);
-    const radicado = params.get('radicado');
-  
-    if (!radicado) {
-      document.getElementById('ticket-info').innerHTML = '<p>❗ Ticket no encontrado.</p>';
-      return;
+  const params = new URLSearchParams(window.location.search);
+  const radicado = params.get('radicado');
+
+  if (!radicado) {
+    document.getElementById('ticket-info').innerHTML = '<p>❗ Ticket no encontrado.</p>';
+    return;
+  }
+
+  try {
+    const response = await fetch(`http://localhost:4000/api/detalle-ticket/${encodeURIComponent(radicado)}`);
+    if (!response.ok) throw new Error('Error al obtener los datos');
+
+    const data = await response.json();
+    renderTicket(data);
+    renderRespuestas(data.respuestas || []);
+
+    // 🔒 Validación de dueño y estado
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    const miID = userData.id;
+    const esDueno = miID === data.ticket.id_usuario;
+    const estadoTicket = data.ticket.estado.toLowerCase(); // en minúsculas por si acaso
+
+    if (esDueno) {
+      // Mostrar botón cancelar
+      document.getElementById('btn-cancelar').style.display = '';
+
+      // Mostrar botón finalizar solo si el estado es "resuelto"
+      if (estadoTicket === 'resuelto') {
+        document.getElementById('btn-finalizar').style.display = '';
+      }
     }
-  
-    try {
-      const response = await fetch(`http://localhost:4000/api/detalle-ticket/${encodeURIComponent(radicado)}`);
-      if (!response.ok) throw new Error('Error al obtener los datos');
-  
-      const data = await response.json();
-      renderTicket(data);
-      renderRespuestas(data.respuestas || []);
-  
-      document.getElementById('btn-finalizar').addEventListener('click', () => {
-        confirmarYActualizarEstado(4, 'finalizar');
-      });
-  
-      document.getElementById('btn-cancelar').addEventListener('click', () => {
-        confirmarYActualizarEstado(5, 'cancelar');
-      });
-  
-      // 👉 Aquí llamas a la función modular para configurar el select
-      await configurarCambioDeEstado(radicado);
-  
-    } catch (error) {
-      console.error(error);
-      document.getElementById('ticket-info').innerHTML = '<p>❗ Hubo un error cargando el ticket.</p>';
-    }
+
+    document.getElementById('btn-finalizar').addEventListener('click', () => {
+      confirmarYActualizarEstado(4, 'finalizar');
+    });
+
+    document.getElementById('btn-cancelar').addEventListener('click', () => {
+      confirmarYActualizarEstado(5, 'cancelar');
+    });
+
+    await configurarCambioDeEstado(radicado);
+
+  } catch (error) {
+    console.error(error);
+    document.getElementById('ticket-info').innerHTML = '<p>❗ Hubo un error cargando el ticket.</p>';
+  }
 });
+
 
 async function configurarCambioDeEstado(radicado) {
   const userData = JSON.parse(localStorage.getItem("userData"));

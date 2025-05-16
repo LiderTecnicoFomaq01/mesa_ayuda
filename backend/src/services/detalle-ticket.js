@@ -3,6 +3,7 @@ const db = require('../../dbConfig'); // Ajusta según tu estructura
 exports.getFullTicketDetails = async (ticketId) => {
     const queryTicket = `
         SELECT 
+            u.id AS id_usuario,
             u.primer_nombre AS nombre,
             u.primer_apellido AS apellido,
             u.email AS email,
