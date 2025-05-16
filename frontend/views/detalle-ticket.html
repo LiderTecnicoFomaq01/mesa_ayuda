@@ -104,7 +104,36 @@
                 <i class="fas fa-times-circle"></i> Cancelar
             </button>
         </div>  
-        
+        <div id="modalRedireccion" class="modal-overlay">
+            <div class="modal-content">
+                <span id="btnCerrarModal" class="close-button">&times;</span>
+                <h3>Redireccionar Ticket</h3>
+
+                <div class="form-group">
+                <label for="combo2">Área</label>
+                <select id="combo2">
+                    <option value="">Seleccione</option>
+                </select>
+                </div>
+                
+                <div class="form-group">
+                <label for="combo1">Categoría</label>
+                <select id="combo1">
+                    <option value="">Seleccione</option>
+                    <!-- Opciones dinámicas o estáticas -->
+                </select>
+                </div>
+                
+                <div class="form-group">
+                <label for="combo3">Responsable</label>
+                <select id="combo3">
+                    <option value="">Seleccione</option>
+                </select>
+                </div>
+
+                <button id="btnAplicarRedireccion" class="btn-interno">Aplicar</button>
+            </div>
+        </div>
     </main>     
 
     <script src="../js/detalle-ticket.js"></script>

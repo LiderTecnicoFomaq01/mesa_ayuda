@@ -489,9 +489,15 @@ comentarioInternoBtn.addEventListener('click', async () => {
         comentarioInternoBtn.innerHTML = originalText;
     }
 });
-
-
 }
+
+document.getElementById('btnRedireccionar').addEventListener('click', () => {
+  document.getElementById('modalRedireccion').style.display = 'flex';
+});
+
+document.getElementById('btnCerrarModal').addEventListener('click', () => {
+  document.getElementById('modalRedireccion').style.display = 'none';
+});
 
 function previsualizarArchivo(ruta, nombre) {
     const extension = nombre.split('.').pop().toLowerCase();
