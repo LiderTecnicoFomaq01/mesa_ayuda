@@ -58,10 +58,12 @@ async function configurarCambioDeEstado(radicado) {
 
   const estadoGroup = document.getElementById('estado-group');
   const btnComentario = document.getElementById('btnComentarioInterno');
+  const btnRedireccionar = document.getElementById('btnRedireccionar');
 
   if (miID === 'admin' || miID === 'usuario administrativo') {
     if (estadoGroup) estadoGroup.style.display = 'flex';
     if (btnComentario) btnComentario.style.display = 'flex';
+    if (btnRedireccionar) btnRedireccionar.style.display = 'inline-flex';
 
     // Cargar opciones del select
     await cargarEstados();
@@ -88,6 +90,7 @@ async function configurarCambioDeEstado(radicado) {
   } else {
     if (estadoGroup) estadoGroup.style.display = 'none';
     if (btnComentario) btnComentario.style.display = 'none';
+    if (btnRedireccionar) btnRedireccionar.style.display = 'none';
   }
 }
   
