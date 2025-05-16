@@ -108,37 +108,64 @@ function confirmarYActualizarEstado(estado, accion) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ radicado, estado }),
     })
-    .then(response => response.json())  // Asegúrate de que la respuesta sea en formato JSON
-    .then(data => {
-      if (data.success) {
-        alert("Estado actualizado con éxito");
-        window.location.reload(); // Recarga la página si todo fue bien
-      } else {
-        alert("Error al actualizar el estado");
-      }
-    })
-    .catch(error => {
-      console.error("Error en la solicitud:", error);
-      alert("Ocurrió un error al intentar actualizar el estado");
-    });
- } 
+    window.location.reload(); // Recarga la página si todo fue bien
+} 
    
 // Nueva función para mostrar las respuestas directamente desde `data.respuestas`
+let mostrarSoloInternos = false;
+
 function renderRespuestas(respuestas) {
     const chatMensajes = document.getElementById('chat-mensajes');
     if (!chatMensajes) return;
 
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    const miID = userData?.id;
-    const miRol = userData?.rol;
+    const userData = JSON.parse(localStorage.getItem("userData")) || {};
+    const miID = userData.id;
+    const miRol = userData.rol;
 
+    // ¿Este usuario puede ver internos?
+    const puedeVerInterno = miRol === 'admin' || miRol === 'usuario administrativo';
+
+    // --- 1) Inyectar el botón de toggle (solo si tiene permisos) ---
+    let toggleBtn = document.getElementById('toggleInterno');
+    if (puedeVerInterno && !toggleBtn) {
+        toggleBtn = document.createElement('button');
+        toggleBtn.id = 'toggleInterno';
+        toggleBtn.classList.add('btn-toggle-interno');
+        toggleBtn.innerHTML = '<i class="fas fa-lock"></i>';
+        // posición absoluta dentro del contenedor
+        chatMensajes.style.position = 'relative';
+        chatMensajes.appendChild(toggleBtn);
+
+        toggleBtn.addEventListener('click', () => {
+            mostrarSoloInternos = !mostrarSoloInternos;
+            toggleBtn.innerHTML = mostrarSoloInternos
+                ? '<i class="fas fa-lock-open"></i>'
+                : '<i class="fas fa-lock"></i>';
+            // volver a renderizar con el nuevo estado
+            renderRespuestas(respuestas);
+        });
+    }
+
+    // --- 2) Limpiar mensajes dejando el botón intacto ---
+    // Extraemos el botón (si existe) antes de limpiar:
+    if (toggleBtn) chatMensajes.removeChild(toggleBtn);
     chatMensajes.innerHTML = '';
+    if (toggleBtn) chatMensajes.appendChild(toggleBtn);
 
+    // --- 3) Renderizar cada respuesta según el filtro ---
     respuestas.forEach(respuesta => {
         const esInterno = Number(respuesta.interno) === 1;
-        const puedeVerInterno = miRol === 'admin' || miRol === 'usuario administrativo';
 
-        if (esInterno && !puedeVerInterno) return;
+        // Si pedimos SOLO internos...
+        if (mostrarSoloInternos) {
+            // ...pero no es interno, lo saltamos
+            if (!esInterno) return;
+            // y si no tiene permiso, también
+            if (!puedeVerInterno) return;
+        } else {
+            // modo “todos”: ocultar internos si no tiene permiso
+            if (esInterno && !puedeVerInterno) return;
+        }
 
         const mensajeDiv = document.createElement('div');
         const esMio = String(respuesta.id_usuario) === String(miID);
@@ -146,14 +173,17 @@ function renderRespuestas(respuestas) {
         mensajeDiv.classList.add('mensaje-chat', esMio ? 'usuario' : 'soporte');
         if (esInterno) mensajeDiv.classList.add('interno');
 
-        const contenidoHTML = `
+        mensajeDiv.innerHTML = `
             ${esInterno ? '<span class="etiqueta-interno">🔒 Comentario interno</span>' : ''}
             <p>${respuesta.mensaje}</p>
-            ${respuesta.ruta_archivo ? `<a href="http://localhost:4000/uploads/${respuesta.ruta_archivo}" target="_blank">📁 Ver archivo</a>` : ''}
-            <small><strong>${respuesta.nombre_usuario || 'Sistema'} ${respuesta.apellido_usuario || ''}</strong> | ${new Date(respuesta.fecha_respuesta).toLocaleString()}</small>
+            ${respuesta.ruta_archivo 
+                ? `<a href="http://localhost:4000/uploads/${respuesta.ruta_archivo}" target="_blank">📁 Ver archivo</a>` 
+                : ''}
+            <small>
+              <strong>${respuesta.nombre_usuario || 'Sistema'} ${respuesta.apellido_usuario || ''}</strong> | 
+              ${new Date(respuesta.fecha_respuesta).toLocaleString()}
+            </small>
         `;
-
-        mensajeDiv.innerHTML = contenidoHTML;
         chatMensajes.appendChild(mensajeDiv);
     });
 

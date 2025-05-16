@@ -19,9 +19,8 @@ header {
     top: 0;
     left: 0;
     width: 100%;
-    z-index: 1000;
     height: 70px;
-    border-bottom: 3px solid #d3d3d3;
+    z-index: 1000;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
@@ -71,11 +70,13 @@ header {
 /* Barra lateral */
 .sidebar {
     width: 280px;
-    background: #2c3e50;
+    background: linear-gradient(to bottom right, #1CA1D9, #4B6592, #842147);
     color: white;
     padding: 20px 0;
-    height: calc(100vh - 70px);
     position: fixed;
+    top: 75px; /* Justo debajo del header */
+    left: 0;
+    height: calc(100vh - 70px);
     overflow-y: auto;
     box-shadow: 2px 0 5px rgba(0,0,0,0.1);
 }
@@ -86,18 +87,16 @@ header {
     border-radius: 4px;
     background: rgba(255, 255, 255, 0.1);
     transition: all 0.3s ease;
-    border-left: 4px solid #e74c3c;
     cursor: pointer;
 }
 
 .modulo:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(231, 76, 60, 0.2);
     border-left: 4px solid #1CA1D9;
 }
 
 .modulo.active {
     background: rgba(255, 255, 255, 0.25);
-    border-left: 4px solid #1CA1D9;
     font-weight: bold;
 }
 
@@ -137,15 +136,9 @@ header {
     display: block;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
 /* Módulos de admin */
 .admin-module {
     display: none;
-    border-left: 4px solid #e74c3c;
 }
 
 .admin-panel {
@@ -164,4 +157,9 @@ body.admin .admin-module:hover {
 body.admin .admin-module.active {
     background: rgba(231, 76, 60, 0.3);
     border-left: 4px solid #e74c3c;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }

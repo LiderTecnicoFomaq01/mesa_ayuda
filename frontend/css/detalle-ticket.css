@@ -235,6 +235,17 @@ body {
     transition: background-color 0.3s;
 }
 
+/* Botón toggle */
+.btn-toggle-interno {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
 .chat-form .btn-enviar,
 .chat-form .btn-interno {
     width: 160px;          /* mismo ancho fijo */
