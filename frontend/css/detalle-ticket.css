@@ -235,6 +235,7 @@ body {
     background-color: #0d6efd;
     color: #fff;
     border: none;
+    margin: 0px;
     padding: 10px 20px;
     font-weight: bold;
     border-radius: 4px;
@@ -312,17 +313,17 @@ body {
     transform: scale(1);
 }
 
-/* Estilo para el botón de cancelar */
-.btn-accion.cancelar {
-    background-color: #dc3545;
+/* Estilo para el botón de pendiente */
+.btn-accion.pendiente {
+    background-color: #ff9800;
 }
 
-.btn-accion.cancelar:hover {
-    background-color: #c82333;
+.btn-accion.pendiente:hover {
+    background-color: #e68900;
     transform: scale(1.05);
 }
 
-.btn-accion.cancelar:active {
+.btn-accion.pendiente:active {
     transform: scale(1);
 }
 
@@ -392,6 +393,86 @@ body {
     text-align: center;
     display: flex;
     align-items: center;
+}
+
+/* Modal de Satisfacción */
+.modal-satisfaccion {
+  display: none;
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  justify-content: center; align-items: center;
+  z-index: 1000;
+}
+
+.modal-contenido-satisfaccion {
+  background: #fff;
+  padding: 30px 20px;
+  border-radius: 8px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  position: relative;
+  font-family: Arial, sans-serif;
+}
+
+.cerrar-satisfaccion {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.pregunta {
+  margin-bottom: 1.5em;
+}
+
+.pregunta label {
+  display: block;
+  margin-bottom: 0.6em;
+}
+
+.estrellas {
+  unicode-bidi: bidi-override;
+  direction: rtl;
+  font-size: 2rem;
+  text-align: center;
+}
+
+.estrellas input {
+  display: none;
+}
+
+.estrellas label {
+  cursor: pointer;
+  display: inline-block;
+  color: #ccc;
+  transition: color 0.3s;
+}
+
+.estrellas input:checked ~ label,
+.estrellas label:hover,
+.estrellas label:hover ~ label {
+  color: gold;
+}
+
+button[type="submit"] {
+  background: #007acc;
+  color: #fff;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  width: 100%; /* Botón del largo del modal */
+  margin-top: 1.5em;
+  transition: background 0.3s;
+}
+
+button[type="submit"]:hover {
+  background: #005fa3;
 }
 
 @media (max-width: 600px) {

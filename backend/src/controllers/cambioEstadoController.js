@@ -12,10 +12,17 @@ const cambiarEstado = async (req, res) => {
     const resultado = await cambioEstadoService.cambiarEstado(radicado, estado);
 
     if (resultado) {
-      return res.status(200).json({ mensaje: 'Estado del ticket actualizado correctamente' });
+      return res.status(200).json({
+        ok: true, // ✅ Esto es lo que espera el frontend
+        mensaje: 'Estado del ticket actualizado correctamente'
+      });
     } else {
-      return res.status(500).json({ mensaje: 'Error al cambiar el estado' });
+      return res.status(500).json({
+        ok: false, // ⚠️ También útil para el frontend
+        mensaje: 'Error al cambiar el estado'
+      });
     }
+
   } catch (error) {
     console.error('Error al cambiar el estado:', error);
     return res.status(500).json({ mensaje: 'Error al cambiar el estado' });

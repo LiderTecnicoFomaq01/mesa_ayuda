@@ -26,21 +26,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     const estadoTicket = data.ticket.estado.toLowerCase(); // en minúsculas por si acaso
 
     if (esDueno) {
-      // Mostrar botón cancelar
-      document.getElementById('btn-cancelar').style.display = '';
-
       // Mostrar botón finalizar solo si el estado es "resuelto"
       if (estadoTicket === 'resuelto') {
         document.getElementById('btn-finalizar').style.display = '';
+        document.getElementById('btn-pendiente').style.display = '';
       }
     }
 
     document.getElementById('btn-finalizar').addEventListener('click', () => {
-      confirmarYActualizarEstado(4, 'finalizar');
+        confirmarYActualizarEstado(4, 'finalizar');
     });
 
-    document.getElementById('btn-cancelar').addEventListener('click', () => {
-      confirmarYActualizarEstado(5, 'cancelar');
+    document.getElementById('btn-pendiente').addEventListener('click', () => {
+      confirmarYActualizarEstado(2, 'pendiente');
     });
 
     await configurarCambioDeEstado(radicado);
@@ -165,19 +163,37 @@ async function cargarEstados() {
     }
 }
   
-function confirmarYActualizarEstado(estado, accion) {
+async function confirmarYActualizarEstado(estado, accion) {
     const confirmar = confirm(`¿Confirmas que deseas ${accion} este ticket?`);
     if (!confirmar) return;
- 
+
     const radicado = new URLSearchParams(window.location.search).get('radicado');
- 
-    fetch('http://localhost:4000/api/cambiar-estado', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ radicado, estado }),
-    })
-    window.location.reload(); // Recarga la página si todo fue bien
-} 
+
+    try {
+        const response = await fetch('http://localhost:4000/api/cambiar-estado', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ radicado, estado }),
+        });
+
+        const data = await response.json();
+
+        if (data.ok) {
+            // Sólo mostramos el modal de satisfacción si la acción es 'finalizar'
+            if (accion === 'finalizar') {
+                document.getElementById('ticket_id').value = radicado;
+                document.getElementById('modal-satisfaccion').style.display = 'flex';
+                return;
+            }
+            window.location.reload();
+        } else {
+            alert('Hubo un error al cambiar el estado del ticket.');
+        }
+    } catch (error) {
+        console.error(error);
+        alert('Error de red al cambiar el estado.');
+    }
+}
    
 // Nueva función para mostrar las respuestas directamente desde `data.respuestas`
 let mostrarSoloInternos = false;
@@ -668,6 +684,11 @@ document.getElementById('combo-categoria').addEventListener('change', async (e) 
 document.getElementById('btnCerrarModal').addEventListener('click', () => {
   document.getElementById('modalRedireccion').style.display = 'none';
 });
+
+  // Cerrar modal al hacer clic en la X
+document.querySelector('.cerrar-satisfaccion').onclick = () => {
+    modalSatisfaccion.style.display = 'none';
+};
 
 function previsualizarArchivo(ruta, nombre) {
     const extension = nombre.split('.').pop().toLowerCase();

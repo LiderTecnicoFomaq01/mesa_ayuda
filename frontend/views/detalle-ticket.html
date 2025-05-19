@@ -103,8 +103,8 @@
             <button id="btn-finalizar" class="btn-accion finalizar" style="display: none">
                 <i class="fas fa-check-circle"></i> Finalizar
             </button>
-            <button id="btn-cancelar" class="btn-accion cancelar" style="display: none">
-                <i class="fas fa-times-circle"></i> Cancelar
+            <button id="btn-pendiente" class="btn-accion pendiente" style="display: none">
+                <i class="fas fa-times-circle"></i> Rechazar
             </button>
         </div>  
                 <!-- tu modal -->
@@ -135,6 +135,47 @@
                 </div>
 
                 <button id="btnAplicarRedireccion" class="btn-interno">Aplicar</button>
+            </div>
+        </div>
+
+        <div id="modal-satisfaccion" class="modal-satisfaccion">
+            <div class="modal-contenido-satisfaccion">
+                <span class="cerrar-satisfaccion">&times;</span>
+                <h2>Encuesta de Satisfacción</h2>
+                <form id="formEncuestaSatisfaccion">
+                <!-- Campo oculto con el ID del ticket -->
+                <input type="hidden" name="ticket_id" id="ticket_id" value="1234">
+                
+                <!-- Pregunta 1 -->
+                <div class="pregunta">
+                    <label>¿Se encuentra satisfecho con la atención ofrecida por el especialista de la mesa de servicio?</label>
+                    <label><input type="radio" name="q1" value="si" required> Sí</label>
+                    <label><input type="radio" name="q1" value="no"> No</label>
+                </div>
+
+                <!-- Pregunta 2 -->
+                <div class="pregunta">
+                    <label>¿Cómo califica el tiempo desde que reportó el caso hasta que fue resuelto?</label>
+                    <label><input type="radio" name="q2" value="Excelente" required> Excelente</label>
+                    <label><input type="radio" name="q2" value="Bueno"> Bueno</label>
+                    <label><input type="radio" name="q2" value="Regular"> Regular</label>
+                    <label><input type="radio" name="q2" value="Malo"> Malo</label>
+                </div>
+
+                <!-- Pregunta 3 -->
+                <div class="pregunta">
+                    <label>¿El especialista demostró destreza y habilidad en la atención y/o solución ofrecida?</label>
+                    <div class="estrellas">
+                    <input type="radio" name="q3" value="1" id="star1"><label for="star1">★</label>
+                    <input type="radio" name="q3" value="2" id="star2"><label for="star2">★</label>
+                    <input type="radio" name="q3" value="3" id="star3"><label for="star3">★</label>
+                    <input type="radio" name="q3" value="4" id="star4"><label for="star4">★</label>
+                    <input type="radio" name="q3" value="5" id="star5" required><label for="star5">★</label>
+                    </div>
+                </div>
+
+                <button type="submit">Enviar</button>
+                </form>
             </div>
         </div>
     </main>     
