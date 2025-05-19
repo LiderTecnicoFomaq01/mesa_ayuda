@@ -96,24 +96,28 @@ document.getElementById('btnAplicarRedireccion').addEventListener('click', async
   const areaSelect = document.getElementById('combo-area');
   const categoriaSelect = document.getElementById('combo-categoria');
   const responsableSelect = document.getElementById('combo-responsable');
+  const justificacion = document.getElementById('justificacion').value.trim();
 
   const areaId = areaSelect.value;
   const categoriaId = categoriaSelect.value;
   const usuarioId = responsableSelect.value;
 
-  if (!areaId || !categoriaId || !usuarioId) {
-    alert('Faltan campos por llenar. Por favor seleccione área, categoría y responsable.');
+  if (!areaId || !categoriaId || !usuarioId || !justificacion) {
+    alert('Faltan campos por llenar. Por favor complete todos los campos incluyendo la justificación.');
     return;
   }
-    const params = new URLSearchParams(window.location.search);
-    const ticketId = params.get('radicado');
-   
-  if (!ticketId) {
-    alert('No se pudo obtener el ID del ticket.');
+
+  const params = new URLSearchParams(window.location.search);
+  const ticketId = params.get('radicado');
+
+  const userData = JSON.parse(localStorage.getItem("userData"));
+  if (!ticketId || !userData || !userData.id) {
+    alert('No se pudo obtener el ID del ticket o el usuario.');
     return;
   }
 
   try {
+    // 1. Redireccionamiento
     const redireccionResponse = await fetch('http://localhost:4000/api/redireccionar', {
       method: 'POST',
       headers: {
@@ -128,19 +132,42 @@ document.getElementById('btnAplicarRedireccion').addEventListener('click', async
 
     const result = await redireccionResponse.json();
 
-    if (redireccionResponse.ok) {
-      alert('Ticket redireccionado con éxito.');
-      document.getElementById('modalRedireccion').style.display = 'none';
-      window.location.reload();
-    } else {
+    if (!redireccionResponse.ok) {
       alert(`Error al redireccionar: ${result.error}`);
+      return;
     }
 
+    // 2. Enviar la justificación como respuesta interna
+    const formData = new FormData();
+    formData.append('id_ticket', ticketId);
+    formData.append('id_usuario', userData.id);
+    formData.append('mensaje', justificacion);
+    formData.append('interno', true);
+
+    const respuestaResponse = await fetch('http://localhost:4000/api/responder', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${userData.token}`
+      },
+      body: formData
+    });
+
+    const respuestaResult = await respuestaResponse.json();
+
+    if (!respuestaResponse.ok) {
+      throw new Error(respuestaResult.message || 'Error al guardar la justificación');
+    }
+
+    alert('Ticket redireccionado y justificación guardada con éxito.');
+    document.getElementById('modalRedireccion').style.display = 'none';
+    window.location.reload();
+
   } catch (error) {
-    console.error('Error en la redirección:', error);
-    alert('Error inesperado al redireccionar el ticket.');
+    console.error('Error:', error);
+    alert('Error inesperado durante la redirección o al guardar la justificación.');
   }
 });
+
 
 async function cargarEstados() {
     const selectEstado = document.getElementById('filtro-estado');
