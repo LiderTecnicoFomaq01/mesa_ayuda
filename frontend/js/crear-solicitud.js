@@ -342,9 +342,11 @@ async function cargarFormulario(idCategoria) {
         // Manejar envío del formulario
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
+            e.stopPropagation();
 
             try {
                 const userData = JSON.parse(localStorage.getItem("userData"));
+                if (!userData) throw new Error("No hay datos de usuario");
 
                 // Configurar botón durante envío
                 submitBtn.disabled = true;
@@ -353,48 +355,37 @@ async function cargarFormulario(idCategoria) {
                     <span class="button-text">Enviando...</span>
                 `;
 
-                // Crear FormData para enviar
                 const formData = new FormData();
                 const camposValues = {};
 
-                // Procesar todos los campos del formulario
+                // Procesar campos normales
                 campos.forEach(campo => {
-                    const input = form.querySelector(`[name="field_${campo.id}"]`) || 
-                                form.querySelector(`[name="archivo"]`);
-
-                    if (campo.tipo_campo === 'archivo') {
-                        // Manejar archivo adjunto
-                        const fileInput = form.querySelector('input[type="file"]');
-                        if (fileInput && fileInput.files.length > 0) {
-                            for (const file of fileInput.files) {
-                                formData.append('archivo', file);
+                    if (campo.tipo_campo !== 'archivo') {
+                        const input = form.querySelector(`[name="field_${campo.id}"]`);
+                        if (input) {
+                            let value = input.type === 'checkbox' ? input.checked : input.value;
+                            if (value !== '' && value !== null && value !== undefined) {
+                                camposValues[`field_${campo.id}`] = value;
                             }
-                        }
-                    } else {
-                        // Manejar otros tipos de campos
-                        let value;
-
-                        if (input.type === 'checkbox') {
-                            value = input.checked;
-                        } else {
-                            value = input.value;
-                        }
-
-                        if (value !== '' && value !== null && value !== undefined) {
-                            camposValues[`field_${campo.id}`] = value;
                         }
                     }
                 });
-                
-                // Agregar los datos del ticket como JSON
-                const asunto = document.getElementById('asunto').value;
-                const descripcion = document.getElementById('descripcion').value;
+
+                // Procesar archivos
+                const fileInput = form.querySelector('input[type="file"]');
+                if (fileInput?.files?.length > 0) {
+                    for (const file of fileInput.files) {
+                        formData.append('archivo', file);
+                    }
+                }
+
+                // Agregar datos del ticket
                 formData.append('ticket', JSON.stringify({
                     id_categoria: parseInt(idCategoria),
                     id_usuario: userData.id,
                     id_estado: 2,
-                    asunto: asunto,
-                    descripcion: descripcion,
+                    asunto: document.getElementById('asunto').value,
+                    descripcion: document.getElementById('descripcion').value,
                     campos: camposValues
                 }));
 
@@ -407,24 +398,24 @@ async function cargarFormulario(idCategoria) {
                     body: formData
                 });
 
-                const responseData = await response.json();
-
                 if (!response.ok) {
-                    throw new Error(responseData.message || 'Error del servidor');
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Error del servidor');
                 }
 
-                // Mostrar alerta de éxito
+                const responseData = await response.json();
                 alert(`Ticket #${responseData.ticketId} enviado correctamente`);
 
-                // Limpiar los campos del formulario
+                // Limpiar formulario (sin cerrar el modal)
                 form.reset();
+                if (fileInput) fileInput.value = ''; // Limpiar input de archivo
                 document.getElementById('asunto').value = '';
+                document.getElementById('descripcion').value = '';
 
             } catch (error) {
                 console.error('Error al enviar el ticket:', error);
                 alert(`Error: ${error.message}`);
             } finally {
-                // Restaurar el botón
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = `
                     <span class="button-icon">📨</span>
