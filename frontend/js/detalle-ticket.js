@@ -195,24 +195,26 @@ function renderRespuestas(respuestas) {
 
     // --- 1) Inyectar el botón de toggle (solo si tiene permisos) ---
     let toggleBtn = document.getElementById('toggleInterno');
-    if (puedeVerInterno && !toggleBtn) {
-        toggleBtn = document.createElement('button');
-        toggleBtn.id = 'toggleInterno';
-        toggleBtn.classList.add('btn-toggle-interno');
-        toggleBtn.innerHTML = '<i class="fas fa-lock"></i>';
-        // posición absoluta dentro del contenedor
-        chatMensajes.style.position = 'relative';
-        chatMensajes.appendChild(toggleBtn);
 
-        toggleBtn.addEventListener('click', () => {
+    if (puedeVerInterno) {
+        if (!toggleBtn) {
+            toggleBtn = document.createElement('button');
+            toggleBtn.id = 'toggleInterno';
+            toggleBtn.classList.add('btn-toggle-interno');
+            toggleBtn.innerHTML = '<i class="fas fa-lock"></i>';
+            chatMensajes.appendChild(toggleBtn);
+        }
+
+        // Asegúrate de no duplicar el listener
+        toggleBtn.onclick = () => {
             mostrarSoloInternos = !mostrarSoloInternos;
             toggleBtn.innerHTML = mostrarSoloInternos
                 ? '<i class="fas fa-lock-open"></i>'
                 : '<i class="fas fa-lock"></i>';
-            // volver a renderizar con el nuevo estado
             renderRespuestas(respuestas);
-        });
+        };
     }
+
 
     // --- 2) Limpiar mensajes dejando el botón intacto ---
     // Extraemos el botón (si existe) antes de limpiar:

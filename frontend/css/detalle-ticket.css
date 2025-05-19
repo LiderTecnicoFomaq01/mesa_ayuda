@@ -165,13 +165,14 @@ body {
 }
 
 #chat-mensajes {
+    position: relative;
     max-height: 300px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
     gap: 15px;
     margin-bottom: 20px;
-    padding-right: 10px;
+    padding: 40px 10px 10px 10px;
 }
 
 /* ESTILOS DE MENSAJES */
@@ -256,13 +257,15 @@ body {
 
 /* Botón toggle */
 .btn-toggle-interno {
-  position: absolute;
-  top: 8px;
-  right: 8px;
+  position: sticky;
+  top: 0;
+  align-self: flex-end;     /* fuerza que se pegue a la derecha */
+  margin-bottom: 5px;
   background: transparent;
   border: none;
   font-size: 1.2rem;
   cursor: pointer;
+  z-index: 10;
 }
 
 .chat-form .btn-enviar,
