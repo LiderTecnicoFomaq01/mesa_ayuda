@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     await configurarCambioDeEstado(radicado);
 
-    // --- Cierre de modal ---
+    // --- Cierre de modal finalizar---
     const modalSatisfaccion = document.getElementById('modal-satisfaccion');
     const cerrarBtn = document.querySelector('.cerrar-satisfaccion');
 
@@ -71,8 +71,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!cambio.ok) throw new Error('Error al cambiar el estado');
         // Cierra el modal al finalizar
         modalSatisfaccion.style.display = 'none';
-        // Refresca o muestra mensaje
-        alert('¡Encuesta enviada y ticket finalizado!');
         // (Opcional) recarga detalles o redirige
         location.reload();
       } catch (err) {
@@ -80,6 +78,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         alert('Hubo un error al enviar la encuesta o cambiar el estado.');
       }
     });
+
+    // --- Cierre de modal rechazar---
+    const modalRechazar = document.getElementById('modal-rechazar');
+    const rechazarCerrarBtn = document.querySelector('.cerrar-rechazar');
+
+    if (modalRechazar && rechazarCerrarBtn) {
+    rechazarCerrarBtn.addEventListener('click', () => {
+        modalRechazar.style.display = 'none';
+    });
+    } else {
+    console.warn('No se encontró el modal de rechazar o el botón de cerrar');
+    }
+
 
   } catch (error) {
     console.error(error);
@@ -243,11 +254,9 @@ async function confirmarYActualizarEstado(estado, accion) {
                 return;
             }
             if (accion === 'pendiente') {
-                    await fetch('http://localhost:4000/api/cambiar-estado', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ radicado, estado }),
-                });
+                document.getElementById('ticket_id').value = radicado;
+                document.getElementById('modal-rechazar').style.display = 'flex';
+                return;
             }
 
             window.location.reload();
