@@ -70,7 +70,7 @@ header {
 /* Barra lateral */
 .sidebar {
     width: 280px;
-    background: linear-gradient(to bottom, #1CA1D9, #4B6592, #842147);
+    background: linear-gradient(to right bottom, #1CA1D9, #4B6592, #842147);
     color: white;
     padding: 20px 0;
     position: fixed;
