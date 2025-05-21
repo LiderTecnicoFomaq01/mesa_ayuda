@@ -19,14 +19,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderTicket(data);
     renderRespuestas(data.respuestas || []);
 
-    // 🔒 Validación de dueño y estado
     const userData = JSON.parse(localStorage.getItem("userData"));
     const miID = userData.id;
     const esDueno = miID === data.ticket.id_usuario;
-    const estadoTicket = data.ticket.estado.toLowerCase(); // en minúsculas por si acaso
+    const estadoTicket = data.ticket.estado.toLowerCase();
 
     if (esDueno) {
-      // Mostrar botón finalizar solo si el estado es "resuelto"
       if (estadoTicket === 'resuelto') {
         document.getElementById('btn-finalizar').style.display = '';
         document.getElementById('btn-pendiente').style.display = '';
@@ -34,7 +32,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     document.getElementById('btn-finalizar').addEventListener('click', () => {
-        confirmarYActualizarEstado(4, 'finalizar');
+      confirmarYActualizarEstado(4, 'finalizar');
     });
 
     document.getElementById('btn-pendiente').addEventListener('click', () => {
@@ -43,12 +41,51 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     await configurarCambioDeEstado(radicado);
 
+    // --- Cierre de modal ---
+    const modalSatisfaccion = document.getElementById('modal-satisfaccion');
+    const cerrarBtn = document.querySelector('.cerrar-satisfaccion');
+
+    if (modalSatisfaccion && cerrarBtn) {
+      cerrarBtn.addEventListener('click', () => {
+        modalSatisfaccion.style.display = 'none';
+      });
+    } else {
+      console.warn('No se encontró el modal o el botón de cerrar');
+    }
+
+    // --- Envío de la encuesta y cambio de estado a "finalizar" ---
+    const formEncuesta = document.getElementById('formEncuestaSatisfaccion');
+    formEncuesta.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      // Todos los campos tienen `required`, así que si llega aquí, están llenos
+      const formData = new FormData(formEncuesta);
+      const respuestas = Object.fromEntries(formData.entries());
+      // (Opcional) puedes enviar estas respuestas al backend si tu endpoint lo admite
+
+      try {
+        const cambio = await fetch('http://localhost:4000/api/cambiar-estado', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ radicado, estado: 4 })
+        });
+        if (!cambio.ok) throw new Error('Error al cambiar el estado');
+        // Cierra el modal al finalizar
+        modalSatisfaccion.style.display = 'none';
+        // Refresca o muestra mensaje
+        alert('¡Encuesta enviada y ticket finalizado!');
+        // (Opcional) recarga detalles o redirige
+        location.reload();
+      } catch (err) {
+        console.error(err);
+        alert('Hubo un error al enviar la encuesta o cambiar el estado.');
+      }
+    });
+
   } catch (error) {
     console.error(error);
     document.getElementById('ticket-info').innerHTML = '<p>❗ Hubo un error cargando el ticket.</p>';
   }
 });
-
 
 async function configurarCambioDeEstado(radicado) {
   const userData = JSON.parse(localStorage.getItem("userData"));
@@ -191,27 +228,28 @@ async function cargarEstados() {
 }
   
 async function confirmarYActualizarEstado(estado, accion) {
-    const confirmar = confirm(`¿Confirmas que deseas ${accion} este ticket?`);
+    const confirmar = confirm(`¿Confirmas que deseas dejar en ${accion} este ticket?`);
     if (!confirmar) return;
 
     const radicado = new URLSearchParams(window.location.search).get('radicado');
 
     try {
-        const response = await fetch('http://localhost:4000/api/cambiar-estado', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ radicado, estado }),
-        });
 
-        const data = await response.json();
-
-        if (data.ok) {
+        if (confirmar) {
             // Sólo mostramos el modal de satisfacción si la acción es 'finalizar'
             if (accion === 'finalizar') {
                 document.getElementById('ticket_id').value = radicado;
                 document.getElementById('modal-satisfaccion').style.display = 'flex';
                 return;
             }
+            if (accion === 'pendiente') {
+                    await fetch('http://localhost:4000/api/cambiar-estado', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ radicado, estado }),
+                });
+            }
+
             window.location.reload();
         } else {
             alert('Hubo un error al cambiar el estado del ticket.');
@@ -711,11 +749,6 @@ document.getElementById('combo-categoria').addEventListener('change', async (e) 
 document.getElementById('btnCerrarModal').addEventListener('click', () => {
   document.getElementById('modalRedireccion').style.display = 'none';
 });
-
-  // Cerrar modal al hacer clic en la X
-document.querySelector('.cerrar-satisfaccion').onclick = () => {
-    modalSatisfaccion.style.display = 'none';
-};
 
 function previsualizarArchivo(ruta, nombre) {
     const extension = nombre.split('.').pop().toLowerCase();
