@@ -425,12 +425,12 @@ body {
 }
 
 .pregunta {
-  margin-bottom: 1.5em;
+  margin-bottom: 15px;
 }
 
 .pregunta label {
   display: block;
-  margin-bottom: 0.6em;
+  margin-bottom: 10px;
 }
 
 .estrellas {
@@ -457,7 +457,7 @@ body {
   color: gold;
 }
 
-button[type="submit"] {
+button.modal1-submit{
   background: #28a745;
   color: #fff;
   border: none;
@@ -467,11 +467,10 @@ button[type="submit"] {
   font-size: 1rem;
   font-weight: bold;
   width: 100%; /* Botón del largo del modal */
-  margin-top: 1.5em;
   transition: background 0.3s;
 }
 
-button[type="submit"]:hover {
+button.modal1-submit:hover {
   background: #218838;
 }
 
@@ -519,7 +518,7 @@ textarea#motivoRechazo {
   margin-top: 0.5em;
 }
 
-button[type="submit"] {
+button.modal2-submit {
   background: #ff9800;
   color: #fff;
   border: none;
@@ -533,7 +532,7 @@ button[type="submit"] {
   transition: background 0.3s;
 }
 
-button[type="submit"]:hover {
+button.modal2-submit:hover {
   background: #e68900;
 }
 

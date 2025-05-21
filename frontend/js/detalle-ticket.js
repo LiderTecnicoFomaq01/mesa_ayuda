@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const cambio = await fetch('http://localhost:4000/api/cambiar-estado', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ radicado, estado: 4 })
+            body: JSON.stringify({ radicado, estado: 2 })
             });
             if (!cambio.ok) throw new Error('Error al cambiar el estado');
 
