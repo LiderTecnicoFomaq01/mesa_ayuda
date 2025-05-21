@@ -79,19 +79,81 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     });
 
-    // --- Cierre de modal rechazar---
-    const modalRechazar = document.getElementById('modal-rechazar');
-    const rechazarCerrarBtn = document.querySelector('.cerrar-rechazar');
-
-    if (modalRechazar && rechazarCerrarBtn) {
-    rechazarCerrarBtn.addEventListener('click', () => {
-        modalRechazar.style.display = 'none';
-    });
-    } else {
-    console.warn('No se encontró el modal de rechazar o el botón de cerrar');
+    // Botón para abrir modal rechazar
+    const btnRechazar = document.getElementById('btn-rechazar');
+    if (btnRechazar) {
+        btnRechazar.addEventListener('click', () => {
+        const modalRechazar = document.getElementById('modal-rechazar');
+        modalRechazar.style.display = 'flex';  // o 'block' si usas ese estilo
+        });
     }
 
+    // Cerrar modal rechazar
+    const modalRechazar = document.getElementById('modal-rechazar');
+    const rechazarCerrarBtn = document.querySelector('.cerrar-rechazar');
+    if (modalRechazar && rechazarCerrarBtn) {
+        rechazarCerrarBtn.addEventListener('click', () => {
+        modalRechazar.style.display = 'none';
+        });
+    } else {
+        console.warn('No se encontró el modal de rechazar o el botón de cerrar');
+    }
 
+    // Envío del formulario de rechazar ticket
+    const formRechazar = document.getElementById('formRechazarTicket');
+    if (formRechazar) {
+        formRechazar.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        try {
+            const justificacion = document.getElementById('motivoRechazo').value.trim();
+            if (!justificacion) {
+            alert('Por favor escribe un motivo para rechazar el ticket.');
+            return;
+            }
+
+            const userData = JSON.parse(localStorage.getItem("userData"));
+            if (!userData) throw new Error('Usuario no autenticado');
+            
+            // Cambiar estado a 4 (rechazado)
+            const cambio = await fetch('http://localhost:4000/api/cambiar-estado', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ radicado, estado: 4 })
+            });
+            if (!cambio.ok) throw new Error('Error al cambiar el estado');
+
+            // Guardar justificación como mensaje
+            const formData = new FormData();
+            formData.append('id_ticket', radicado);
+            formData.append('id_usuario', userData.id);
+            formData.append('mensaje', justificacion);
+            formData.append('interno', false);
+
+            const respuestaResponse = await fetch('http://localhost:4000/api/responder', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${userData.token}`
+            },
+            body: formData
+            });
+
+            const respuestaResult = await respuestaResponse.json();
+            if (!respuestaResponse.ok) {
+            throw new Error(respuestaResult.message || 'Error al guardar la justificación');
+            }
+
+            alert('Ticket rechazado y justificación guardada con éxito.');
+            modalRechazar.style.display = 'none';
+            location.reload();
+
+        } catch (err) {
+            console.error('❌ Error al rechazar ticket:', err);
+            alert('Hubo un error al rechazar el ticket o guardar la justificación.');
+        }
+    });
+
+    }
   } catch (error) {
     console.error(error);
     document.getElementById('ticket-info').innerHTML = '<p>❗ Hubo un error cargando el ticket.</p>';
