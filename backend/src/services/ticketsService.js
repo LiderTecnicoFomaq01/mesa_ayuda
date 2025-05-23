@@ -3,7 +3,7 @@ const fsPromises = fs.promises;
 const path = require('path');
 const pool = require('../../dbConfig');
 
-exports.processTicketCreation = async ({ ticketData, files }) => {
+exports.processTicketCreation = async ({ ticketData, files, fileInfos }) => {
   let conn;
   try {
     // Validación básica
@@ -17,130 +17,124 @@ exports.processTicketCreation = async ({ ticketData, files }) => {
     const asunto = (ticketData.asunto || 'Sin asunto').toString().trim();
     const descripcion = (ticketData.descripcion || 'Sin descripcion').toString().trim();
 
+    // 1) Crear el ticket
     const [ticketResult] = await conn.query(
-      
       'INSERT INTO tickets (id_categoria, id_usuario, id_estado, asunto, descripcion_caso) VALUES (?, ?, ?, ?, ?)',
-      [
-        ticketData.id_categoria,
-        ticketData.id_usuario,
-        ticketData.id_estado || 2,
-        asunto,
-        descripcion
-      ]
+      [ticketData.id_categoria, ticketData.id_usuario, ticketData.id_estado || 2, asunto, descripcion]
     );
-
     const ticketId = ticketResult.insertId;
 
-    // Procesar campos dinámicos
+    // 2) Detectar campos con archivos (por si quieres excluirlos en valores NO-archivo)
+    const camposConArchivo = new Set();
+    (fileInfos || []).forEach(info => {
+      if (info?.id_campo != null) camposConArchivo.add(String(info.id_campo));
+    });
+
+    // 3) Guardar valores de campos NO archivo
     for (const [key, value] of Object.entries(ticketData.campos || {})) {
-      if (key.startsWith('field_')) {
-        const campoId = key.replace('field_', '');
-        
-        if (value !== null && value !== undefined && value !== '') {
-          await conn.query(
-            'INSERT INTO valores_campos (id_ticket, id_campo, valor) VALUES (?, ?, ?)',
-            [ticketId, campoId, String(value)]
-          );
-        }
+      if (!key.startsWith('field_')) continue;
+      const campoId = key.replace('field_', '');
+      if (value != null && value !== '' && !camposConArchivo.has(campoId)) {
+        await conn.query(
+          'INSERT INTO valores_campos (id_ticket, id_campo, valor) VALUES (?, ?, ?)',
+          [ticketId, campoId, String(value)]
+        );
       }
     }
 
-    // Procesar archivos adjuntos (adaptado para tu estructura de tabla)
+    // 4) Procesar y guardar archivos
+    const rutasPorCampo = {};
+
     if (files && files.length > 0) {
       const uploadBaseDir = path.join(__dirname, '..', 'uploads');
-      const ticketUploadDir = path.join(uploadBaseDir, ticketId.toString());
+      const ticketUploadDir = path.join(uploadBaseDir, String(ticketId));
 
-      try {
-        // Asegurar directorios
-        if (!fs.existsSync(uploadBaseDir)) {
-          await fsPromises.mkdir(uploadBaseDir, { recursive: true });
+      if (!fs.existsSync(uploadBaseDir)) {
+        await fsPromises.mkdir(uploadBaseDir, { recursive: true });
+      }
+      await fsPromises.mkdir(ticketUploadDir, { recursive: true });
+
+      for (const file of files) {
+        // 4.1) Extraer id_campo desde file.fieldname (debe ser "field_{id}")
+        const match = file.fieldname.match(/^field_(\d+)$/);
+        const idCampo = match ? match[1] : null;
+
+        if (!file.path || !fs.existsSync(file.path)) {
+          console.error(`Archivo temporal no encontrado: ${file.path}`);
+          continue;
         }
-        await fsPromises.mkdir(ticketUploadDir, { recursive: true });
 
-        for (const file of files) {
-          if (!file.path || !fs.existsSync(file.path)) {
-            console.error(`Archivo temporal no encontrado: ${file.path}`);
-            continue;
-          }
+        // 4.2) Normalizar nombre y mover archivo
+        const correctedName = Buffer.from(file.originalname, 'binary').toString('utf8');
+        const safeName = correctedName.replace(/[^a-zA-Z0-9._-]/g, '_');
+        const destPath = path.join(ticketUploadDir, safeName);
+        await fsPromises.rename(file.path, destPath);
 
-          // Corregir encoding del nombre del archivo
-          const correctedName = Buffer.from(file.originalname, 'binary').toString('utf8');
-          const safeFileName = correctedName.replace(/[^a-zA-Z0-9._-]/g, '_');
-          const newPath = path.join(ticketUploadDir, safeFileName);
+        // 4.3) Insertar en ticket_archivos
+        await conn.query(
+          'INSERT INTO ticket_archivos (id_ticket, id_campo, ruta_archivo, nombre_original) VALUES (?, ?, ?, ?)',
+          [ticketId, idCampo, destPath, correctedName]
+        );
 
-          // Mover archivo
-          await fsPromises.rename(file.path, newPath);
-          console.log(`Archivo movido exitosamente a: ${newPath}`);
-
-          // Insertar metadatos (sin id_campo)
-          await conn.query(
-            'INSERT INTO ticket_archivos (id_ticket, ruta_archivo, nombre_original) VALUES (?, ?, ?)',
-            [ticketId, newPath, correctedName]
-          );
+        // 4.4) Agrupar rutas para later insertar en valores_campos
+        if (idCampo != null) {
+          if (!rutasPorCampo[idCampo]) rutasPorCampo[idCampo] = [];
+          rutasPorCampo[idCampo].push(destPath);
         }
-      } catch (dirError) {
-        console.error('Error al crear directorios:', dirError);
-        throw new Error('Error al preparar el almacenamiento para archivos adjuntos');
       }
     }
 
-    // Buscar encargados y su cantidad de tickets asignados (por esa categoría)
+    // 4c) Insertar JSON con rutas en valores_campos
+    for (const [campoId, rutas] of Object.entries(rutasPorCampo)) {
+      await conn.query(
+        `INSERT INTO valores_campos (id_ticket, id_campo, valor)
+         VALUES (?, ?, ?)
+         ON DUPLICATE KEY UPDATE valor = VALUES(valor)`,
+        [ticketId, campoId, JSON.stringify(rutas)]
+      );
+    }
+
+    // 5) Asignación automática de responsable
     const [encargados] = await conn.query(
-      `
-      SELECT ce.id_usuario, ce.contador_tickets
-      FROM categoria_encargados ce
-      WHERE ce.id_categoria = ?
-      ORDER BY ce.contador_tickets ASC, ce.fecha_asignacion ASC
-      LIMIT 1
-      `,
+      `SELECT id_usuario, contador_tickets
+       FROM categoria_encargados
+       WHERE id_categoria = ?
+       ORDER BY contador_tickets ASC, fecha_asignacion ASC
+       LIMIT 1`,
       [ticketData.id_categoria]
     );
 
-    if (encargados.length === 0) {
-      console.warn(`No hay encargados para la categoría ID ${ticketData.id_categoria}`);
-    } else {
-      const encargado = encargados[0];
-
-      // Insertar la asignación
+    if (encargados.length) {
+      const { id_usuario } = encargados[0];
       await conn.query(
         'INSERT INTO asignaciones_ticket (id_ticket, id_usuario) VALUES (?, ?)',
-        [ticketId, encargado.id_usuario]
+        [ticketId, id_usuario]
       );
-
-      // Incrementar el contador en categoria_encargados
       await conn.query(
-        `
-        UPDATE categoria_encargados
-        SET contador_tickets = contador_tickets + 1
-        WHERE id_categoria = ? AND id_usuario = ?
-        `,
-        [ticketData.id_categoria, encargado.id_usuario]
+        `UPDATE categoria_encargados
+         SET contador_tickets = contador_tickets + 1
+         WHERE id_categoria = ? AND id_usuario = ?`,
+        [ticketData.id_categoria, id_usuario]
       );
-
-      console.log(`Ticket asignado equitativamente al usuario ID: ${encargado.id_usuario}`);
+    } else {
+      console.warn(`Sin encargados para categoría ${ticketData.id_categoria}`);
     }
 
     await conn.commit();
     return { success: true, ticketId };
-    
-  } catch (error) {
+  } catch (err) {
     if (conn) await conn.rollback();
-    console.error('Error en processTicketCreation:', error);
-    
-    // Limpieza de archivos temporales
+    console.error('Error en processTicketCreation:', err);
+
+    // Limpiar archivos temporales si algo falla
     if (files) {
-      for (const file of files) {
-        if (file.path && fs.existsSync(file.path)) {
-          try {
-            await fsPromises.unlink(file.path);
-          } catch (unlinkError) {
-            console.error('Error al limpiar archivo temporal:', unlinkError);
-          }
+      for (const f of files) {
+        if (f.path && fs.existsSync(f.path)) {
+          await fsPromises.unlink(f.path).catch(() => {});
         }
       }
     }
-    
-    throw error;
+    throw err;
   } finally {
     if (conn) conn.release();
   }

@@ -1,12 +1,20 @@
-// config/multerConfig.js
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { v4: uuidv4 } = require('uuid'); // Para IDs más únicos
 
-const tempDir = path.join(__dirname, '..', 'uploads', 'temp'); // correcto
+// Directorio temporal (mejor manejo de rutas)
+const tempDir = path.resolve(__dirname, '..', 'uploads', 'temp');
 
-if (!fs.existsSync(tempDir)) {
-  fs.mkdirSync(tempDir, { recursive: true });
+// Aseguramos que el directorio exista (con manejo de errores)
+try {
+  if (!fs.existsSync(tempDir)) {
+    fs.mkdirSync(tempDir, { recursive: true });
+    console.log(`Directorio temporal creado: ${tempDir}`);
+  }
+} catch (err) {
+  console.error('Error al crear directorio temporal:', err);
+  process.exit(1); // Salir si no podemos crear el directorio
 }
 
 const storage = multer.diskStorage({
@@ -14,11 +22,29 @@ const storage = multer.diskStorage({
     cb(null, tempDir);
   },
   filename: (req, file, cb) => {
-    const uniqueName = Date.now() + '-' + file.originalname;
+    const fileExt = path.extname(file.originalname);
+    const uniqueName = `${uuidv4()}${fileExt}`; // Mejor que Date.now()
     cb(null, uniqueName);
   }
 });
 
-const upload = multer({ storage });
+// Filtros de archivo (seguridad básica)
+const fileFilter = (req, file, cb) => {
+  const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+  if (allowedTypes.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new Error('Tipo de archivo no permitido'), false);
+  }
+};
+
+// Configuración final de Multer
+const upload = multer({
+  storage,
+  fileFilter,
+  limits: {
+    fileSize: 5 * 1024 * 1024 // Límite de 5MB
+  }
+});
 
 module.exports = upload;
