@@ -313,139 +313,111 @@ document.addEventListener('DOMContentLoaded', async () => {
             form.appendChild(fieldContainer);
         });
         
-        // Agregar botón de enviar
-        const submitBtn = document.createElement('button');
-        submitBtn.type = 'submit';
-        submitBtn.className = 'submit-button';
-        submitBtn.textContent = 'Enviar Ticket';
-        form.appendChild(submitBtn);
-        
-        // Limpiar el contenedor y agregar el formulario
-        formularioContainer.innerHTML = '';
-        formularioContainer.appendChild(form);
-        
-        // Manejar envío del formulario
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-        
-            try {
-                const userData = JSON.parse(localStorage.getItem("userData"));
-        
-                // Configurar botón durante envío
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = `
-                    <span class="spinner"></span>
-                    <span class="button-text">Enviando...</span>
-                `;
-        
-                // Crear FormData para enviar
-                const formData = new FormData();
-                const camposValues = {};
-        
-                // Procesar todos los campos del formulario
-                campos.forEach(campo => {
-                    const input = form.querySelector(`[name="field_${campo.id}"]`) || 
-                                  form.querySelector(`[name="archivo"]`);
-        
-                    if (campo.tipo_campo === 'archivo') {
-                        // Manejar archivo adjunto
-                        const fileInput = form.querySelector('input[type="file"]');
-                        if (fileInput && fileInput.files.length > 0) {
-                            for (const file of fileInput.files) {
-                                formData.append('archivo', file);  // el mismo campo se puede repetir
-                            }
-                        }
-                    } else {
-                        // Manejar otros tipos de campos
-                        let value;
-        
-                        if (input.type === 'checkbox') {
-                            value = input.checked;
-                        } else {
-                            value = input.value;
-                        }
-        
-                        if (value !== '' && value !== null && value !== undefined) {
-                            camposValues[`field_${campo.id}`] = value;
-                        }
-                    }
-                });
-                // Agregar los datos del ticket como JSON
+      // Agregar botón de enviar
+const submitBtn = document.createElement('button');
+submitBtn.type = 'submit';
+submitBtn.className = 'submit-button';
+submitBtn.textContent = 'Enviar Ticket';
+form.appendChild(submitBtn);
 
-                const asunto = document.getElementById('asunto').value;
-                const descripcion = document.getElementById('descripcion').value;
-                formData.append('ticket', JSON.stringify({
-                    id_categoria: parseInt(idCategoria),
-                    id_usuario: userData.id,
-                    id_estado: 2,
-                    asunto: asunto,
-                    descripcion: descripcion,
-                    campos: camposValues
-                }));
-        
-                // Mostrar mensaje de carga mientras se envía el archivo
-                const loadingMessage = document.createElement('div');
-                loadingMessage.className = 'loading-message';
-                loadingMessage.innerHTML = `
-                    <p>Subiendo archivo...</p>
-                `;
-                form.prepend(loadingMessage);
-        
-                // Enviar al backend
-                const response = await fetch('http://localhost:4000/api/tickets', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${userData.token}`
-                        // No establecer Content-Type, FormData lo hará automáticamente
-                    },
-                    body: formData
-                });
-        
-                const responseData = await response.json();
-        
-                // Eliminar el mensaje de carga una vez que la respuesta sea recibida
-                loadingMessage.remove();
-        
-                if (!response.ok) {
-                    throw new Error(responseData.message || 'Error del servidor');
+// Limpiar el contenedor y agregar el formulario
+formularioContainer.innerHTML = '';
+formularioContainer.appendChild(form);
+
+// Manejar envío del formulario
+form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    try {
+        const userData = JSON.parse(localStorage.getItem("userData"));
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `
+            <span class="spinner"></span>
+            <span class="button-text">Enviando...</span>
+        `;
+
+        const formData = new FormData();
+        const camposValues = {};
+        const fileInfosArray = [];
+
+        campos.forEach(campo => {
+            const input = form.querySelector(`[name="field_${campo.id}"]`);
+
+            if (campo.tipo_campo === 'archivo') {
+                if (input && input.files.length > 0) {
+                    const fileNames = [];
+
+                    for (const file of input.files) {
+                        formData.append(campo.id, file); // nombre del campo único
+                        fileInfosArray.push({
+                            id_campo: campo.id,
+                            nombre_original: file.name
+                        });
+                        fileNames.push(file.name);
+                    }
+
+                    camposValues[campo.id];
                 }
-        
-                // Mostrar confirmación de éxito
-                const successMessage = document.createElement('div');
-                successMessage.className = 'success-message';
-                successMessage.innerHTML = `
-                    <p>Ticket #${responseData.ticketId} enviado correctamente</p>
-                    <p>Archivo adjunto: ${responseData.fileName || 'Ninguno'}</p>
-                `;
-                form.prepend(successMessage);
-        
-                // Eliminar el mensaje de éxito después de un retraso (dependiendo si hay archivo o no)
-                const delay = responseData.fileName ? 7000 : 3000;  // 7s si hay archivo, 3s si no
-                setTimeout(() => {
-                    successMessage.remove();
-                }, delay);
-        
-                // Limpiar los campos del formulario después de un pequeño retraso
-                setTimeout(() => {
-                    form.reset();
-                    document.getElementById('asunto').value = '';
-                }, delay);
-        
-            } catch (error) {
-                console.error('Error al enviar el ticket:', error);
-                const errorMessage = document.createElement('div');
-                errorMessage.className = 'error-message';
-                errorMessage.textContent = `Error: ${error.message}`;
-                form.prepend(errorMessage);
-            } finally {
-                // Restaurar el botón
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = `
-                    <span class="button-icon">📨</span>
-                    <span class="button-text">Enviar Ticket</span>
-                `;
+            } else {
+                if (!input) return;
+
+                let value = input.type === 'checkbox' ? input.checked : input.value;
+
+                if (value !== '' && value !== null && value !== undefined) {
+                    camposValues[`field_${campo.id}`] = value;
+                }
             }
         });
+
+        // Agregar info general
+        const asunto = document.getElementById('asunto').value.trim();
+        const descripcion = document.getElementById('descripcion').value.trim();
+
+        formData.append('ticket', JSON.stringify({
+            id_categoria: parseInt(idCategoria),
+            id_usuario: userData.id,
+            id_estado: 2,
+            asunto,
+            descripcion,
+            campos: camposValues
+        }));
+
+        // Agregar metadata de archivos
+        formData.append('fileInfos', JSON.stringify(fileInfosArray));
+
+        // Enviar
+        const response = await fetch('http://localhost:4000/api/tickets', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${userData.token}`
+            },
+            body: formData
+        });
+
+        const responseData = await response.json();
+
+        if (!response.ok) {
+            throw new Error(responseData.message || 'Error del servidor');
+        }
+
+        const delay = responseData.fileName ? 7000 : 3000;
+        setTimeout(() => successMessage.remove(), delay);
+        setTimeout(() => form.reset(), delay);
+
+    } catch (error) {
+        const errorMessage = document.createElement('div');
+        errorMessage.className = 'error-message';
+        errorMessage.textContent = `Error: ${error.message}`;
+        form.prepend(errorMessage);
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `
+            <span class="button-icon">📨</span>
+            <span class="button-text">Enviar Ticket</span>
+        `;
+    }
+});
         
     } catch (error) {
         console.error('Error:', error);

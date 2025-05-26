@@ -70,11 +70,11 @@ header {
 /* Barra lateral */
 .sidebar {
     width: 280px;
-    background: linear-gradient(to bottom right, #1CA1D9, #4B6592, #842147);
+    background: linear-gradient(to right bottom, #1CA1D9, #4B6592, #842147);
     color: white;
     padding: 20px 0;
     position: fixed;
-    top: 75px; /* Justo debajo del header */
+    top: 90px; /* Justo debajo del header */
     left: 0;
     height: calc(100vh - 70px);
     overflow-y: auto;

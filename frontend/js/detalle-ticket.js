@@ -19,19 +19,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderTicket(data);
     renderRespuestas(data.respuestas || []);
 
-    // 🔒 Validación de dueño y estado
     const userData = JSON.parse(localStorage.getItem("userData"));
     const miID = userData.id;
     const esDueno = miID === data.ticket.id_usuario;
-    const estadoTicket = data.ticket.estado.toLowerCase(); // en minúsculas por si acaso
+    const estadoTicket = data.ticket.estado.toLowerCase();
 
     if (esDueno) {
-      // Mostrar botón cancelar
-      document.getElementById('btn-cancelar').style.display = '';
-
-      // Mostrar botón finalizar solo si el estado es "resuelto"
       if (estadoTicket === 'resuelto') {
         document.getElementById('btn-finalizar').style.display = '';
+        document.getElementById('btn-pendiente').style.display = '';
       }
     }
 
@@ -39,18 +35,130 @@ document.addEventListener('DOMContentLoaded', async () => {
       confirmarYActualizarEstado(4, 'finalizar');
     });
 
-    document.getElementById('btn-cancelar').addEventListener('click', () => {
-      confirmarYActualizarEstado(5, 'cancelar');
+    document.getElementById('btn-pendiente').addEventListener('click', () => {
+      confirmarYActualizarEstado(2, 'pendiente');
     });
 
     await configurarCambioDeEstado(radicado);
 
+    // --- Cierre de modal finalizar---
+    const modalSatisfaccion = document.getElementById('modal-satisfaccion');
+    const cerrarBtn = document.querySelector('.cerrar-satisfaccion');
+
+    if (modalSatisfaccion && cerrarBtn) {
+      cerrarBtn.addEventListener('click', () => {
+        modalSatisfaccion.style.display = 'none';
+      });
+    } else {
+      console.warn('No se encontró el modal o el botón de cerrar');
+    }
+
+    // --- Envío de la encuesta y cambio de estado a "finalizar" ---
+    const formEncuesta = document.getElementById('formEncuestaSatisfaccion');
+    formEncuesta.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      // Todos los campos tienen `required`, así que si llega aquí, están llenos
+      const formData = new FormData(formEncuesta);
+      const respuestas = Object.fromEntries(formData.entries());
+      // (Opcional) puedes enviar estas respuestas al backend si tu endpoint lo admite
+
+      try {
+        const cambio = await fetch('http://localhost:4000/api/cambiar-estado', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ radicado, estado: 4 })
+        });
+        if (!cambio.ok) throw new Error('Error al cambiar el estado');
+        // Cierra el modal al finalizar
+        modalSatisfaccion.style.display = 'none';
+        // (Opcional) recarga detalles o redirige
+        location.reload();
+      } catch (err) {
+        console.error(err);
+        alert('Hubo un error al enviar la encuesta o cambiar el estado.');
+      }
+    });
+
+    // Botón para abrir modal rechazar
+    const btnRechazar = document.getElementById('btn-rechazar');
+    if (btnRechazar) {
+        btnRechazar.addEventListener('click', () => {
+        const modalRechazar = document.getElementById('modal-rechazar');
+        modalRechazar.style.display = 'flex';  // o 'block' si usas ese estilo
+        });
+    }
+
+    // Cerrar modal rechazar
+    const modalRechazar = document.getElementById('modal-rechazar');
+    const rechazarCerrarBtn = document.querySelector('.cerrar-rechazar');
+    if (modalRechazar && rechazarCerrarBtn) {
+        rechazarCerrarBtn.addEventListener('click', () => {
+        modalRechazar.style.display = 'none';
+        });
+    } else {
+        console.warn('No se encontró el modal de rechazar o el botón de cerrar');
+    }
+
+    // Envío del formulario de rechazar ticket
+    const formRechazar = document.getElementById('formRechazarTicket');
+    if (formRechazar) {
+        formRechazar.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        try {
+            const justificacion = document.getElementById('motivoRechazo').value.trim();
+            if (!justificacion) {
+            alert('Por favor escribe un motivo para rechazar el ticket.');
+            return;
+            }
+
+            const userData = JSON.parse(localStorage.getItem("userData"));
+            if (!userData) throw new Error('Usuario no autenticado');
+            
+            // Cambiar estado a 4 (rechazado)
+            const cambio = await fetch('http://localhost:4000/api/cambiar-estado', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ radicado, estado: 1 })
+            });
+            if (!cambio.ok) throw new Error('Error al cambiar el estado');
+
+            // Guardar justificación como mensaje
+            const formData = new FormData();
+            formData.append('id_ticket', radicado);
+            formData.append('id_usuario', userData.id);
+            formData.append('mensaje', justificacion);
+            formData.append('interno', false);
+
+            const respuestaResponse = await fetch('http://localhost:4000/api/responder', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${userData.token}`
+            },
+            body: formData
+            });
+
+            const respuestaResult = await respuestaResponse.json();
+            if (!respuestaResponse.ok) {
+            throw new Error(respuestaResult.message || 'Error al guardar la justificación');
+            }
+
+            alert('Ticket rechazado y justificación guardada con éxito.');
+            modalRechazar.style.display = 'none';
+            location.reload();
+
+        } catch (err) {
+            console.error('❌ Error al rechazar ticket:', err);
+            alert('Hubo un error al rechazar el ticket o guardar la justificación.');
+        }
+    });
+
+    }
   } catch (error) {
     console.error(error);
     document.getElementById('ticket-info').innerHTML = '<p>❗ Hubo un error cargando el ticket.</p>';
   }
 });
-
 
 async function configurarCambioDeEstado(radicado) {
   const userData = JSON.parse(localStorage.getItem("userData"));
@@ -98,24 +206,28 @@ document.getElementById('btnAplicarRedireccion').addEventListener('click', async
   const areaSelect = document.getElementById('combo-area');
   const categoriaSelect = document.getElementById('combo-categoria');
   const responsableSelect = document.getElementById('combo-responsable');
+  const justificacion = document.getElementById('justificacion').value.trim();
 
   const areaId = areaSelect.value;
   const categoriaId = categoriaSelect.value;
   const usuarioId = responsableSelect.value;
 
-  if (!areaId || !categoriaId || !usuarioId) {
-    alert('Faltan campos por llenar. Por favor seleccione área, categoría y responsable.');
+  if (!areaId || !categoriaId || !usuarioId || !justificacion) {
+    alert('Faltan campos por llenar. Por favor complete todos los campos incluyendo la justificación.');
     return;
   }
-    const params = new URLSearchParams(window.location.search);
-    const ticketId = params.get('radicado');
-   
-  if (!ticketId) {
-    alert('No se pudo obtener el ID del ticket.');
+
+  const params = new URLSearchParams(window.location.search);
+  const ticketId = params.get('radicado');
+
+  const userData = JSON.parse(localStorage.getItem("userData"));
+  if (!ticketId || !userData || !userData.id) {
+    alert('No se pudo obtener el ID del ticket o el usuario.');
     return;
   }
 
   try {
+    // 1. Redireccionamiento
     const redireccionResponse = await fetch('http://localhost:4000/api/redireccionar', {
       method: 'POST',
       headers: {
@@ -130,19 +242,42 @@ document.getElementById('btnAplicarRedireccion').addEventListener('click', async
 
     const result = await redireccionResponse.json();
 
-    if (redireccionResponse.ok) {
-      alert('Ticket redireccionado con éxito.');
-      document.getElementById('modalRedireccion').style.display = 'none';
-      window.location.reload();
-    } else {
+    if (!redireccionResponse.ok) {
       alert(`Error al redireccionar: ${result.error}`);
+      return;
     }
 
+    // 2. Enviar la justificación como respuesta interna
+    const formData = new FormData();
+    formData.append('id_ticket', ticketId);
+    formData.append('id_usuario', userData.id);
+    formData.append('mensaje', justificacion);
+    formData.append('interno', true);
+
+    const respuestaResponse = await fetch('http://localhost:4000/api/responder', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${userData.token}`
+      },
+      body: formData
+    });
+
+    const respuestaResult = await respuestaResponse.json();
+
+    if (!respuestaResponse.ok) {
+      throw new Error(respuestaResult.message || 'Error al guardar la justificación');
+    }
+
+    alert('Ticket redireccionado y justificación guardada con éxito.');
+    document.getElementById('modalRedireccion').style.display = 'none';
+    window.location.reload();
+
   } catch (error) {
-    console.error('Error en la redirección:', error);
-    alert('Error inesperado al redireccionar el ticket.');
+    console.error('Error:', error);
+    alert('Error inesperado durante la redirección o al guardar la justificación.');
   }
 });
+
 
 async function cargarEstados() {
     const selectEstado = document.getElementById('filtro-estado');
@@ -165,19 +300,36 @@ async function cargarEstados() {
     }
 }
   
-function confirmarYActualizarEstado(estado, accion) {
-    const confirmar = confirm(`¿Confirmas que deseas ${accion} este ticket?`);
+async function confirmarYActualizarEstado(estado, accion) {
+    const confirmar = confirm(`¿Confirmas que deseas dejar en ${accion} este ticket?`);
     if (!confirmar) return;
- 
+
     const radicado = new URLSearchParams(window.location.search).get('radicado');
- 
-    fetch('http://localhost:4000/api/cambiar-estado', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ radicado, estado }),
-    })
-    window.location.reload(); // Recarga la página si todo fue bien
-} 
+
+    try {
+
+        if (confirmar) {
+            // Sólo mostramos el modal de satisfacción si la acción es 'finalizar'
+            if (accion === 'finalizar') {
+                document.getElementById('ticket_id').value = radicado;
+                document.getElementById('modal-satisfaccion').style.display = 'flex';
+                return;
+            }
+            if (accion === 'pendiente') {
+                document.getElementById('ticket_id').value = radicado;
+                document.getElementById('modal-rechazar').style.display = 'flex';
+                return;
+            }
+
+            window.location.reload();
+        } else {
+            alert('Hubo un error al cambiar el estado del ticket.');
+        }
+    } catch (error) {
+        console.error(error);
+        alert('Error de red al cambiar el estado.');
+    }
+}
    
 // Nueva función para mostrar las respuestas directamente desde `data.respuestas`
 let mostrarSoloInternos = false;

@@ -2,16 +2,25 @@ const ticketsService = require('../services/ticketsService');
 
 exports.createTicket = async (req, res) => {
   try {
-    // Parsear datos del ticket
+    // 1. Parsear datos del ticket
     const ticketData = JSON.parse(req.body.ticket);
-    
-    // Obtener archivos (ya no necesitamos fileInfo)
+
+    // 2. Leer archivos subidos
     const files = req.files ? Object.values(req.files) : [];
 
-    // Procesar ticket
+    // 3. Leer la info de cada archivo: puede venir en req.body['archivos_info[]']
+    let rawInfos = req.body['archivos_info[]'] || [];
+    if (!Array.isArray(rawInfos)) {
+      rawInfos = [rawInfos];
+    }
+    const fileInfos = rawInfos.map(infoStr => JSON.parse(infoStr));
+    // Ahora fileInfos es un array de { id_campo, nombre_original } en el mismo orden que files
+
+    // 4. Llamar al servicio pasándole ambos arrays
     const result = await ticketsService.processTicketCreation({
       ticketData,
-      files
+      files,
+      fileInfos
     });
 
     res.status(201).json({
