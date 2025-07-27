@@ -42,3 +42,23 @@ exports.login = async (req, res) => {
         });
     }
 };
+
+exports.changePassword = async (req, res) => {
+    try {
+        const { newPassword } = req.body;
+        const userId = req.user.id;
+
+        if (!newPassword) {
+            return res.status(400).json({
+                success: false,
+                message: 'Nueva contraseña requerida'
+            });
+        }
+
+        await authService.cambiarContraseña(userId, newPassword);
+        res.json({ success: true, message: 'Contraseña actualizada correctamente' });
+    } catch (error) {
+        console.error('Error en changePassword:', error);
+        res.status(500).json({ success: false, message: 'Error al cambiar la contraseña' });
+    }
+};

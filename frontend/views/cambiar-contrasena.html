@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cambiar Contraseña</title>
+  <link rel="stylesheet" href="../css/auth.css" />
+</head>
+<body>
+  <header>
+    <img src="/frontend/public/assets/img/Logo.png" alt="Logo FOMAG" class="logo" />
+    <h1>Mesa de ayuda FOMAG</h1>
+  </header>
+
+  <main>
+    <section class="login-container" aria-labelledby="change-title">
+      <h2 id="change-title">Actualizar Contraseña</h2>
+      <div class="login-fields">
+        <label for="newPassword">Nueva contraseña</label>
+        <div class="password-wrapper">
+          <input type="password" id="newPassword" placeholder="Nueva contraseña" required />
+        </div>
+        <button id="changeBtn">Guardar</button>
+        <p id="changeMessage" class="message"></p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 FOMAG. Todos los derechos reservados.</p>
+  </footer>
+
+  <script src="../js/cambiar-contrasena.js"></script>
+</body>
+</html>

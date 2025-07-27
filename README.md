@@ -66,6 +66,9 @@ La base de datos utiliza **MySQL**. El script de creación se encuentra en: mesa
 
 Este script debe ejecutarse antes de iniciar el sistema para crear las tablas necesarias.
 
+Los usuarios de ejemplo definidos en `datos_iniciales.sql` se crean con contraseñas cifradas.
+Al iniciar sesión por primera vez se solicitará al usuario que actualice su contraseña para activar la cuenta.
+
 ### Levantamiento del Servidor
 
 Para levantar el backend localmente:
