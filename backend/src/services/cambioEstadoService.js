@@ -1,4 +1,5 @@
 const db = require('../../dbConfig');
+const { enviarCorreo } = require('./emailService');
 
 /**
  * Calcula horas hábiles entre dos fechas (lunes a viernes, 8-12 y 13-17).
@@ -141,6 +142,38 @@ const cambiarEstado = async (radicado, nuevoEstado) => {
         }
 
         console.log('✅ Cambio de estado completado.');
+
+        try {
+            const [userRows] = await db.query(
+                `SELECT u.email, u.primer_nombre, u.primer_apellido
+                 FROM usuarios u
+                 JOIN tickets t ON t.id_usuario = u.id
+                 WHERE t.id = ?`,
+                [radicado]
+            );
+
+            const [estadoRows] = await db.query(
+                'SELECT nombre_estado FROM estados_ticket WHERE id = ?',
+                [nuevoEstado]
+            );
+
+            if (userRows.length && estadoRows.length && [1,3,4].includes(Number(nuevoEstado))) {
+                const { email, primer_nombre } = userRows[0];
+                const { nombre_estado } = estadoRows[0];
+
+                await enviarCorreo({
+                    to: email,
+                    subject: `Actualización de su ticket #${radicado}`,
+                    text: `Hola ${primer_nombre},\n\nEl estado de su ticket ${radicado} ha cambiado a \"${nombre_estado}\".`,
+                    html: `<p>Hola ${primer_nombre},</p><p>El estado de su ticket <strong>${radicado}</strong> ha cambiado a <strong>${nombre_estado}</strong>.</p>`
+                });
+
+                console.log('📧 Notificación enviada a', email);
+            }
+        } catch (notifyErr) {
+            console.error('Error al enviar correo de notificación:', notifyErr);
+        }
+
         return true;
     } catch (err) {
         console.error('❌ Error al cambiar el estado:', err);
