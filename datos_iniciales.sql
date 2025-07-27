@@ -4,15 +4,15 @@ INSERT INTO usuarios (
   tipo_documento_id, numero_documento, primer_nombre, segundo_nombre,
   primer_apellido, segundo_apellido, email, contraseña, rol_id
 ) VALUES
-(2, '200000002', 'María', 'José', 'Rodríguez', 'López', 'admin2@correo.com', 'admin123', 1),
-(1, '100000003', 'Andrés', 'Felipe', 'García', 'Torres', 'usuario_admin3@correo.com', 'admin123', 2),
-(3, 'CE1234567', 'Paula', 'Andrea', 'Ramírez', 'Vargas', 'usuario_admin4@correo.com', 'admin123', 2),
-(4, 'P7654321', 'Camila', NULL, 'Suárez', 'Mejía', 'usuario_admin5@correo.com', 'admin123', 2),
-(1, '100000001', 'Carlos', 'Andrés', 'Pérez', 'Gómez', 'admin1@correo.com', 'admin123', 1),
-(4, 'P1234567', 'Luisa', NULL, 'Martínez', 'Díaz', 'usuario_admin1@correo.com', 'admin123', 2),
-(3, 'CE9876543', 'Juan', 'Esteban', 'Córdoba', NULL, 'usuario_admin2@correo.com', 'admin123', 2),
-(4, 'P76543216', 'María', 'Camila', 'Ruiz', 'Sánchez', 'usuario1@correo.com', 'usuario123', 3),
-(1, '100000005', 'Diego', NULL, 'Fernández', 'López', 'usuario2@correo.com', 'usuario123', 3);
+(2, '200000002', 'María', 'José', 'Rodríguez', 'López', 'admin2@correo.com', '$2b$10$VktcUyLyfUV8IteoBffHmeO.bOUaD0HM5X.ViS5IQqrJF7zcIAyzC', 1),
+(1, '100000003', 'Andrés', 'Felipe', 'García', 'Torres', 'usuario_admin3@correo.com', '$2b$10$VktcUyLyfUV8IteoBffHmeO.bOUaD0HM5X.ViS5IQqrJF7zcIAyzC', 2),
+(3, 'CE1234567', 'Paula', 'Andrea', 'Ramírez', 'Vargas', 'usuario_admin4@correo.com', '$2b$10$VktcUyLyfUV8IteoBffHmeO.bOUaD0HM5X.ViS5IQqrJF7zcIAyzC', 2),
+(4, 'P7654321', 'Camila', NULL, 'Suárez', 'Mejía', 'usuario_admin5@correo.com', '$2b$10$VktcUyLyfUV8IteoBffHmeO.bOUaD0HM5X.ViS5IQqrJF7zcIAyzC', 2),
+(1, '100000001', 'Carlos', 'Andrés', 'Pérez', 'Gómez', 'admin1@correo.com', '$2b$10$VktcUyLyfUV8IteoBffHmeO.bOUaD0HM5X.ViS5IQqrJF7zcIAyzC', 1),
+(4, 'P1234567', 'Luisa', NULL, 'Martínez', 'Díaz', 'usuario_admin1@correo.com', '$2b$10$VktcUyLyfUV8IteoBffHmeO.bOUaD0HM5X.ViS5IQqrJF7zcIAyzC', 2),
+(3, 'CE9876543', 'Juan', 'Esteban', 'Córdoba', NULL, 'usuario_admin2@correo.com', '$2b$10$VktcUyLyfUV8IteoBffHmeO.bOUaD0HM5X.ViS5IQqrJF7zcIAyzC', 2),
+(4, 'P76543216', 'María', 'Camila', 'Ruiz', 'Sánchez', 'usuario1@correo.com', '$2b$10$qg8YS80GD/imgBbuJfiYOOyVygtc6hYrKRr/aZqZrkL1O7.7b.yzS', 3),
+(1, '100000005', 'Diego', NULL, 'Fernández', 'López', 'usuario2@correo.com', '$2b$10$qg8YS80GD/imgBbuJfiYOOyVygtc6hYrKRr/aZqZrkL1O7.7b.yzS', 3);
 
 INSERT INTO categorias (id_area, id_prioridad, nombre, descripcion)
 VALUES

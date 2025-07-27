@@ -31,18 +31,18 @@ document.getElementById('loginBtn').addEventListener('click', async () => {
 
         if (data.success) {
             showMessage(`Bienvenido ${data.user.nombre}!`, 'success');
-            
+
             // Almacenar datos de sesión
             localStorage.setItem('authToken', data.token);
             localStorage.setItem('userData', JSON.stringify(data.user));
-            
-            // Redirigir después de 1.5 segundos
+
+            // Redirigir según si debe cambiar contraseña
             setTimeout(() => {
-                // Verificar la ruta correcta (asegúrate que panel-principal.html esté en la raíz)
-                window.location.href = 'panel-principal.html';
-                
-                // Si está en otra ubicación, especifica la ruta completa:
-                // window.location.href = '/ruta/correcta/panel-principal.html';
+                if (data.user.mustChangePassword) {
+                    window.location.href = 'cambiar-contrasena.html';
+                } else {
+                    window.location.href = 'panel-principal.html';
+                }
             }, 1500);
         } else {
             throw new Error(data.message || 'Error en la autenticación');

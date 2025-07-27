@@ -57,8 +57,8 @@ exports.autenticarUsuario = async (email, password) => {
             };
         }
 
-        // 7. Verificar contraseña (comparación directa con normalización)
-        const isMatch = password.trim() === (user.contraseña || '').trim();
+        // 7. Verificar contraseña utilizando bcrypt
+        const isMatch = await bcrypt.compare(password, user.contraseña || '');
         console.log('[DEBUG] Resultado comparación:', isMatch);
 
         if (!isMatch) {
@@ -87,26 +87,25 @@ exports.autenticarUsuario = async (email, password) => {
             };
         }
 
-        // 8. Resetear intentos y actualizar último login si el login es exitoso
-        await db.query(`
-            UPDATE usuarios 
-            SET 
-                intentos_fallidos = 0, 
-                bloqueado = FALSE, 
-                fecha_desbloqueo = NULL,
-                ultimo_login = NOW()
-            WHERE id = ?
-        `, [user.id]);
+        // 8. Resetear intentos y actualizar último login
+        const isFirstLogin = !user.ultimo_login;
+        let updateQuery = `UPDATE usuarios SET intentos_fallidos = 0, bloqueado = FALSE, fecha_desbloqueo = NULL`;
+        if (!isFirstLogin) {
+            updateQuery += ', ultimo_login = NOW()';
+        }
+        updateQuery += ' WHERE id = ?';
+        await db.query(updateQuery, [user.id]);
 
         // 9. Preparar datos de usuario para el token
-        return { 
-            success: true, 
+        return {
+            success: true,
             user: {
                 id: user.id,
                 email: user.email,
                 rol: user.rol,
                 nombre: `${user.primer_nombre} ${user.primer_apellido}`,
-                ultimo_login: new Date() // También puedes devolver la fecha actual
+                ultimo_login: isFirstLogin ? null : new Date(),
+                mustChangePassword: isFirstLogin
             }
         };
     } catch (error) {
@@ -115,6 +114,20 @@ exports.autenticarUsuario = async (email, password) => {
             stack: error.stack,
             sqlError: error.sqlMessage
         });
+        throw error;
+    }
+};
+
+exports.cambiarContraseña = async (userId, newPassword) => {
+    try {
+        const hashed = await bcrypt.hash(newPassword, 10);
+        await db.query(
+            `UPDATE usuarios SET contraseña = ?, ultimo_login = NOW(), intentos_fallidos = 0, bloqueado = FALSE, fecha_desbloqueo = NULL WHERE id = ?`,
+            [hashed, userId]
+        );
+        return { success: true };
+    } catch (error) {
+        console.error('Error cambiando la contraseña:', error);
         throw error;
     }
 };
