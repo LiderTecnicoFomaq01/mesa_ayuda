@@ -78,7 +78,9 @@ Para levantar el backend localmente:
 2. Navega a la carpeta del backend:
    cd mesa-ayuda/backend
 3. Instala las dependencias (si es necesario):
-   npm install express mysql2 multer cors dotenv jsonwebtoken bcrypt
+   npm install express mysql2 multer cors dotenv jsonwebtoken bcrypt nodemailer
+4. Configura las variables de entorno en `.env` con las credenciales SMTP:
+   EMAIL_HOST, EMAIL_PORT, EMAIL_USER, EMAIL_PASS y EMAIL_FROM
 5. Inicia el servidor:
    node server.js
 
