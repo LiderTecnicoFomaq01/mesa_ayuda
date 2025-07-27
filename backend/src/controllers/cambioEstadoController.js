@@ -2,9 +2,14 @@ const cambioEstadoService = require('../services/cambioEstadoService');
 
 const cambiarEstado = async (req, res) => {
   const { radicado, estado } = req.body;
+  const userRole = req.user?.rol;
 
   if (!radicado || !estado) {
     return res.status(400).json({ mensaje: 'Radicado y estado son requeridos' });
+  }
+
+  if (Number(estado) === 5 && userRole !== 'admin') {
+    return res.status(403).json({ mensaje: 'Solo los administradores pueden cancelar tickets' });
   }
 
   try {

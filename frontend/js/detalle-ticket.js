@@ -282,14 +282,20 @@ document.getElementById('btnAplicarRedireccion').addEventListener('click', async
 async function cargarEstados() {
     const selectEstado = document.getElementById('filtro-estado');
     if (!selectEstado) return;
-  
+
     try {
       const res = await fetch(`${API_URL}/estados`);
       if (!res.ok) throw new Error('Error al cargar estados');
       const data = await res.json();
-  
+
+      const userData = JSON.parse(localStorage.getItem("userData")) || {};
+      const esAdmin = userData.rol === 'admin';
+
       selectEstado.innerHTML = '<option value="">Seleccione un estado</option>';
       data.forEach(estado => {
+        if (!esAdmin && estado.nombre_estado.toLowerCase() === 'cancelado') {
+          return; // ocultar opción cancelar para roles no admin
+        }
         const option = document.createElement('option');
         option.value = estado.id;
         option.textContent = estado.nombre_estado;
