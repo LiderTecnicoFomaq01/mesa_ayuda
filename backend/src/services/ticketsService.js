@@ -49,15 +49,31 @@ exports.processTicketCreation = async ({ ticketData, files, fileInfos }) => {
       const uploadBaseDir = path.join(__dirname, '..', 'uploads');
       const ticketUploadDir = path.join(uploadBaseDir, String(ticketId));
 
+      // Determinar id_campo por defecto para archivos de esta categoría
+      let defaultArchivoCampoId = null;
+      const [campoRows] = await conn.query(
+        'SELECT id FROM campos_tickets WHERE id_categoria = ? AND tipo_campo = "archivo" LIMIT 1',
+        [ticketData.id_categoria]
+      );
+      if (campoRows.length) {
+        defaultArchivoCampoId = campoRows[0].id;
+      }
+
       if (!fs.existsSync(uploadBaseDir)) {
         await fsPromises.mkdir(uploadBaseDir, { recursive: true });
       }
       await fsPromises.mkdir(ticketUploadDir, { recursive: true });
 
-      for (const file of files) {
-        // 4.1) Extraer id_campo desde file.fieldname (debe ser "field_{id}")
+      for (const [idx, file] of files.entries()) {
+        // 4.1) Determinar id_campo
         const match = file.fieldname.match(/^field_(\d+)$/);
-        const idCampo = match ? match[1] : null;
+        let idCampo = match ? match[1] : null;
+        if (!idCampo && fileInfos && fileInfos[idx] && fileInfos[idx].id_campo) {
+          idCampo = String(fileInfos[idx].id_campo);
+        }
+        if (!idCampo) {
+          idCampo = defaultArchivoCampoId;
+        }
 
         if (!file.path || !fs.existsSync(file.path)) {
           console.error(`Archivo temporal no encontrado: ${file.path}`);
