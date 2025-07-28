@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       try {
         const userData = JSON.parse(localStorage.getItem("userData"));
 
-        await fetch('http://localhost:4000/api/encuesta-satisfaccion', {
+        const encuestaPromise = fetch('http://localhost:4000/api/encuesta-satisfaccion', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           body: JSON.stringify(respuestas)
         });
 
-        const cambio = await fetch('http://localhost:4000/api/cambiar-estado', {
+        const cambioPromise = fetch('http://localhost:4000/api/cambiar-estado', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -81,7 +81,9 @@ document.addEventListener('DOMContentLoaded', async () => {
           body: JSON.stringify({ radicado, estado: 4 })
         });
 
-        if (!cambio.ok) throw new Error('Error al cambiar el estado');
+        const [encuesta, cambio] = await Promise.all([encuestaPromise, cambioPromise]);
+
+        if (!encuesta.ok || !cambio.ok) throw new Error('Error al enviar datos');
 
         modalSatisfaccion.style.display = 'none';
         location.reload();
