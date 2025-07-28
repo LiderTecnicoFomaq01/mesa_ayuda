@@ -55,8 +55,9 @@ exports.processTicketCreation = async ({ ticketData, files, fileInfos }) => {
       await fsPromises.mkdir(ticketUploadDir, { recursive: true });
 
       for (const file of files) {
-        // 4.1) Extraer id_campo desde file.fieldname (debe ser "field_{id}")
-        const match = file.fieldname.match(/^field_(\d+)$/);
+        // 4.1) Extraer id_campo desde file.fieldname
+        // Se aceptan nombres "field_{id}" o solo el ID numerico
+        const match = file.fieldname.match(/^(?:field_)?(\d+)$/);
         const idCampo = match ? match[1] : null;
 
         if (!file.path || !fs.existsSync(file.path)) {
