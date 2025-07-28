@@ -30,8 +30,9 @@ const storage = multer.diskStorage({
 });
 
 // Filtros de archivo (seguridad básica)
+  // Se permiten imágenes, PDF, documentos y archivos comprimidos
 const fileFilter = (req, file, cb) => {
-  const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+  const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/zip', 'application/x-zip-compressed', 'text/plain'];
   if (allowedTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
