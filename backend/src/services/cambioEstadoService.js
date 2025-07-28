@@ -50,13 +50,14 @@ function calcularHorasHabiles(fechaInicio, fechaFin) {
 const cambiarEstado = async (radicado, nuevoEstado) => {
     try {
         const [rows] = await db.query(
-            `SELECT fecha_creacion, hora_solucion, contador_horas FROM tickets WHERE id = ?`,
+            `SELECT id_estado, fecha_creacion, hora_solucion, contador_horas FROM tickets WHERE id = ?`,
             [radicado]
         );
 
         if (rows.length === 0) throw new Error('No se encontró el ticket');
 
         const ticket = rows[0];
+        const estadoAnterior = ticket.id_estado;
         const ahora = new Date();
 
         console.log('======= CAMBIO DE ESTADO =======');
@@ -157,7 +158,11 @@ const cambiarEstado = async (radicado, nuevoEstado) => {
                 [nuevoEstado]
             );
 
-            if (userRows.length && estadoRows.length && [1,3,4].includes(Number(nuevoEstado))) {
+            const shouldNotify =
+                [3, 4].includes(Number(nuevoEstado)) ||
+                (Number(nuevoEstado) === 1 && Number(estadoAnterior) === 2);
+
+            if (userRows.length && estadoRows.length && shouldNotify) {
                 const { email, primer_nombre } = userRows[0];
                 const { nombre_estado } = estadoRows[0];
 
