@@ -33,8 +33,9 @@ document.getElementById('loginBtn').addEventListener('click', async () => {
             showMessage(`Bienvenido ${data.user.nombre}!`, 'success');
 
             // Almacenar datos de sesión
+            const userWithToken = { ...data.user, token: data.token };
             localStorage.setItem('authToken', data.token);
-            localStorage.setItem('userData', JSON.stringify(data.user));
+            localStorage.setItem('userData', JSON.stringify(userWithToken));
 
             // Redirigir según si debe cambiar contraseña
             setTimeout(() => {
