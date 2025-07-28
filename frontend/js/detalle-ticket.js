@@ -57,13 +57,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     const formEncuesta = document.getElementById('formEncuestaSatisfaccion');
     formEncuesta.addEventListener('submit', async (e) => {
       e.preventDefault();
-      // Todos los campos tienen `required`, así que si llega aquí, están llenos
       const formData = new FormData(formEncuesta);
       const respuestas = Object.fromEntries(formData.entries());
-      // (Opcional) puedes enviar estas respuestas al backend si tu endpoint lo admite
 
       try {
         const userData = JSON.parse(localStorage.getItem("userData"));
+
+        await fetch('http://localhost:4000/api/encuesta-satisfaccion', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${userData.token}`
+          },
+          body: JSON.stringify(respuestas)
+        });
+
         const cambio = await fetch('http://localhost:4000/api/cambiar-estado', {
           method: 'POST',
           headers: {
@@ -72,10 +80,10 @@ document.addEventListener('DOMContentLoaded', async () => {
           },
           body: JSON.stringify({ radicado, estado: 4 })
         });
+
         if (!cambio.ok) throw new Error('Error al cambiar el estado');
-        // Cierra el modal al finalizar
+
         modalSatisfaccion.style.display = 'none';
-        // (Opcional) recarga detalles o redirige
         location.reload();
       } catch (err) {
         console.error(err);

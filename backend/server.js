@@ -38,6 +38,7 @@ try {
   const detalleTicketRoutes = require('./src/routes/detalle-ticket');
   const solicitudesAtendidasTicketsRoutes = require('./src/routes/solicitudesAtendidasRoutes');
   const respuestaRoutes = require('./src/routes/respuestaRoutes');
+  const satisfaccionRoutes = require('./src/routes/satisfaccionRoutes');
   const redireccionarRoutes = require('./src/routes/redireccionarRoutes');
 
   app.use(bodyParser.json());  
@@ -53,7 +54,8 @@ try {
   app.use('/api/generales', solicitudesGeneralesTicketsRoutes);
   app.use('/api/atendidas', solicitudesAtendidasTicketsRoutes);
   app.use('/api/responder', respuestaRoutes);
-  
+  app.use('/api', satisfaccionRoutes);
+
   console.log('Todas las rutas cargadas correctamente');
 } catch (err) {
   console.error('Error al cargar rutas:', err);
