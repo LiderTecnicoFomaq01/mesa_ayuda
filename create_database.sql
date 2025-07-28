@@ -162,6 +162,16 @@ CREATE TABLE respuestas_ticket (
   FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
 ) ENGINE=InnoDB;
 
+-- Tabla de encuestas de satisfacción
+CREATE TABLE encuestas_satisfaccion (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  ticket_id INT NOT NULL,
+  q1 ENUM('si','no') NOT NULL,
+  q3 INT NOT NULL,
+  fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (ticket_id) REFERENCES tickets(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
 -- Insertar datos iniciales
 INSERT INTO tipo_documento (nombre, abreviatura, descripcion) VALUES
 ('Cédula de Ciudadanía', 'CC', 'Documento de identificación para ciudadanos colombianos mayores de edad.'),
