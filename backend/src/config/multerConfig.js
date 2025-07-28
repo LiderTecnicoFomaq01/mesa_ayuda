@@ -1,7 +1,8 @@
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const { v4: uuidv4 } = require('uuid'); // Para IDs más únicos
+// Utiliza el generador de UUID integrado de Node para evitar dependencias extra
+const { randomUUID } = require('crypto');
 
 // Directorio temporal (mejor manejo de rutas)
 const tempDir = path.resolve(__dirname, '..', 'uploads', 'temp');
@@ -23,14 +24,15 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     const fileExt = path.extname(file.originalname);
-    const uniqueName = `${uuidv4()}${fileExt}`; // Mejor que Date.now()
+    const uniqueName = `${randomUUID()}${fileExt}`; // Mejor que Date.now()
     cb(null, uniqueName);
   }
 });
 
 // Filtros de archivo (seguridad básica)
+  // Se permiten imágenes, PDF, documentos y archivos comprimidos
 const fileFilter = (req, file, cb) => {
-  const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+  const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/zip', 'application/x-zip-compressed', 'text/plain'];
   if (allowedTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
