@@ -166,14 +166,18 @@ const cambiarEstado = async (radicado, nuevoEstado) => {
                 const { email, primer_nombre } = userRows[0];
                 const { nombre_estado } = estadoRows[0];
 
-                await enviarCorreo({
+                enviarCorreo({
                     to: email,
                     subject: `Actualización de su ticket #${radicado}`,
                     text: `Hola ${primer_nombre},\n\nEl estado de su ticket ${radicado} ha cambiado a \"${nombre_estado}\".`,
                     html: `<p>Hola ${primer_nombre},</p><p>El estado de su ticket <strong>${radicado}</strong> ha cambiado a <strong>${nombre_estado}</strong>.</p>`
+                })
+                .then(() => {
+                    console.log('📧 Notificación enviada a', email);
+                })
+                .catch(notifyErr => {
+                    console.error('Error al enviar correo de notificación:', notifyErr);
                 });
-
-                console.log('📧 Notificación enviada a', email);
             }
         } catch (notifyErr) {
             console.error('Error al enviar correo de notificación:', notifyErr);
