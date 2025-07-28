@@ -3,9 +3,14 @@ const cambioEstadoService = require('../services/cambioEstadoService');
 const cambiarEstado = async (req, res) => {
   const { radicado, estado } = req.body;
   const userRole = req.user?.rol;
+  const permittedRoles = ['admin', 'usuario administrativo'];
 
   if (!radicado || !estado) {
     return res.status(400).json({ mensaje: 'Radicado y estado son requeridos' });
+  }
+
+  if (!permittedRoles.includes(userRole)) {
+    return res.status(403).json({ mensaje: 'No autorizado para cambiar estados' });
   }
 
   if (Number(estado) === 5 && userRole !== 'admin') {
