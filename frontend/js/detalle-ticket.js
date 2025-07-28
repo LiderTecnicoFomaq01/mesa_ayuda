@@ -63,9 +63,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       // (Opcional) puedes enviar estas respuestas al backend si tu endpoint lo admite
 
       try {
+        const userData = JSON.parse(localStorage.getItem("userData")) || {};
+        const token = userData.token || localStorage.getItem('authToken');
         const cambio = await fetch('http://localhost:4000/api/cambiar-estado', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
           body: JSON.stringify({ radicado, estado: 4 })
         });
         if (!cambio.ok) throw new Error('Error al cambiar el estado');
@@ -112,13 +117,17 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
             }
 
-            const userData = JSON.parse(localStorage.getItem("userData"));
+            const userData = JSON.parse(localStorage.getItem("userData")) || {};
+            const token = userData.token || localStorage.getItem('authToken');
             if (!userData) throw new Error('Usuario no autenticado');
-            
+
             // Cambiar estado a 4 (rechazado)
             const cambio = await fetch('http://localhost:4000/api/cambiar-estado', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
             body: JSON.stringify({ radicado, estado: 1 })
             });
             if (!cambio.ok) throw new Error('Error al cambiar el estado');
@@ -133,7 +142,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const respuestaResponse = await fetch('http://localhost:4000/api/responder', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${userData.token}`
+                'Authorization': `Bearer ${token}`
             },
             body: formData
             });
@@ -184,9 +193,14 @@ async function configurarCambioDeEstado(radicado) {
       const confirmar = confirm('¿Confirmas que deseas cambiar el estado del ticket?');
       if (!confirmar) return;
 
+      const userData = JSON.parse(localStorage.getItem("userData")) || {};
+      const token = userData.token || localStorage.getItem('authToken');
       await fetch('http://localhost:4000/api/cambiar-estado', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({ radicado, estado: nuevoEstado }),
       });
 
@@ -254,10 +268,11 @@ document.getElementById('btnAplicarRedireccion').addEventListener('click', async
     formData.append('mensaje', justificacion);
     formData.append('interno', true);
 
+    const token = userData.token || localStorage.getItem('authToken');
     const respuestaResponse = await fetch('http://localhost:4000/api/responder', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${userData.token}`
+        'Authorization': `Bearer ${token}`
       },
       body: formData
     });
@@ -590,7 +605,7 @@ function renderTicket(data) {
             const response = await fetch('http://localhost:4000/api/responder', {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${userData.token}`
+                    'Authorization': `Bearer ${token}`
                 },
                 body: formData
             });
@@ -659,10 +674,11 @@ comentarioInternoBtn.addEventListener('click', async () => {
     respuestaForm.prepend(loadingMessage);
 
     try {
+        const token = userData.token || localStorage.getItem('authToken');
         const response = await fetch('http://localhost:4000/api/responder', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${userData.token}`
+                'Authorization': `Bearer ${token}`
             },
             body: formData
         });
