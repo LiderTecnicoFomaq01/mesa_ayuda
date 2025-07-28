@@ -1,4 +1,5 @@
 const cambioEstadoService = require('../services/cambioEstadoService');
+console.log('[DEBUG] req.user:', require.user);
 
 const cambiarEstado = async (req, res) => {
   const { radicado, estado } = req.body;

@@ -201,9 +201,9 @@ async function configurarCambioDeEstado(radicado) {
         body: JSON.stringify({ radicado, estado: nuevoEstado }),
       });
 
-      setTimeout(() => {
-        window.location.reload();
-      }, 300);
+    setTimeout(() => {
+    window.location.reload();
+    }, 300);
     });
 
   } else {
