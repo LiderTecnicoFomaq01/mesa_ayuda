@@ -4,9 +4,10 @@ const areasController = require('../controllers/areasController');
 
 // Rutas existentes
 router.get('/', areasController.obtenerAreas);
+// Obtener las categorías de un área específica
 router.get('/:idArea/categorias', areasController.obtenerCategoriasPorArea);
 
-// Nueva ruta para obtener campos por categoría
-router.get('/:id/campos', areasController.getCamposByCategoria);
+// Obtener los campos asociados a una categoría
+router.get('/:idCategoria/campos', areasController.getCamposByCategoria);
 
 module.exports = router;
