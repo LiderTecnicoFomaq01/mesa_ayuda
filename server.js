@@ -8,7 +8,7 @@ const app = express();
 
 // ✅ Configuración CORS correcta
 const allowedOrigins = [
-  'http://127.0.0.1:5500', // entorno local
+  'http://127.0.0.1:5500',
   'https://fomagmesayuda-0a68b8706cab.herokuapp.com' // frontend en producción (Heroku)
 ];
 
@@ -25,18 +25,17 @@ const corsOptions = {
   credentials: true
 };
 
-// 🛡️ Aplica CORS a todas las rutas
 app.use(cors(corsOptions));
-
-// 🔁 Permitir preflight requests
 app.options('*', cors(corsOptions));
-
-// 🧩 Middlewares esenciales
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-// 📁 Servir archivos estáticos desde 'src/uploads'
+// 📁 Servir archivos estáticos (CSS, JS, imágenes desde frontend/views)
+const publicPath = path.join(__dirname, 'frontend', 'views');
+app.use(express.static(publicPath));
+
+// 📁 Servir archivos desde 'src/uploads'
 const uploadsPath = path.join(__dirname, 'src', 'uploads');
 app.use('/uploads', express.static(uploadsPath));
 
@@ -76,12 +75,12 @@ try {
   process.exit(1);
 }
 
-// 🏠 Ruta raíz para confirmar que el backend funciona
+// 🏠 Ruta raíz que carga login.html
 app.get('/', (req, res) => {
-  res.send('✅ Backend de Mesa de Ayuda funcionando en Heroku');
+  res.sendFile(path.join(__dirname, 'frontend', 'views', 'login.html'));
 });
 
-// 🩺 Ruta de prueba de salud
+// 🩺 Ruta de prueba
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date() });
 });
