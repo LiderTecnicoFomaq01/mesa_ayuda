@@ -1,6 +1,5 @@
 if (typeof API_URL === 'undefined') {
-    var API_URL = 'http://localhost:4000/api/filtros'; // Usamos 'var' para que sea accesible globalmente
-}
+    var API_URL = `${BASE_URL}/api/filtros`;
 
 document.addEventListener('DOMContentLoaded', async () => {
   const params = new URLSearchParams(window.location.search);
@@ -12,7 +11,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   try {
-    const response = await fetch(`http://localhost:4000/api/detalle-ticket/${encodeURIComponent(radicado)}`);
+    const response = await fetch(`${BASE_URL}/api/detalle-ticket/${encodeURIComponent(radicado)}`);
     if (!response.ok) throw new Error('Error al obtener los datos');
 
     const data = await response.json();
@@ -63,7 +62,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       try {
         const userData = JSON.parse(localStorage.getItem("userData"));
 
-        const encuestaPromise = fetch('http://localhost:4000/api/encuesta-satisfaccion', {
+        const encuestaPromise = fetch(`${BASE_URL}/api/encuesta-satisfaccion`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -72,7 +71,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           body: JSON.stringify(respuestas)
         });
 
-        const cambioPromise = fetch('http://localhost:4000/api/cambiar-estado', {
+        const cambioPromise = fetch(`${BASE_URL}/api/cambiar-estado`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -130,7 +129,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (!userData) throw new Error('Usuario no autenticado');
             
             // Cambiar estado a 4 (rechazado)
-            const cambio = await fetch('http://localhost:4000/api/cambiar-estado', {
+              const cambio = await fetch(`${BASE_URL}/api/cambiar-estado`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -147,7 +146,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             formData.append('mensaje', justificacion);
             formData.append('interno', false);
 
-            const respuestaResponse = await fetch('http://localhost:4000/api/responder', {
+              const respuestaResponse = await fetch(`${BASE_URL}/api/responder`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${userData.token}`
@@ -202,7 +201,7 @@ async function configurarCambioDeEstado(radicado) {
       if (!confirmar) return;
 
       const userData = JSON.parse(localStorage.getItem("userData"));
-      await fetch('http://localhost:4000/api/cambiar-estado', {
+        await fetch(`${BASE_URL}/api/cambiar-estado`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -249,7 +248,7 @@ document.getElementById('btnAplicarRedireccion').addEventListener('click', async
 
   try {
     // 1. Redireccionamiento
-    const redireccionResponse = await fetch('http://localhost:4000/api/redireccionar', {
+      const redireccionResponse = await fetch(`${BASE_URL}/api/redireccionar`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -275,7 +274,7 @@ document.getElementById('btnAplicarRedireccion').addEventListener('click', async
     formData.append('mensaje', justificacion);
     formData.append('interno', true);
 
-    const respuestaResponse = await fetch('http://localhost:4000/api/responder', {
+      const respuestaResponse = await fetch(`${BASE_URL}/api/responder`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${userData.token}`
@@ -426,7 +425,7 @@ function renderRespuestas(respuestas) {
             ${esInterno ? '<span class="etiqueta-interno">🔒 Comentario interno</span>' : ''}
             <p>${respuesta.mensaje}</p>
             ${respuesta.ruta_archivo 
-                ? `<a href="http://localhost:4000/uploads/${respuesta.ruta_archivo}" target="_blank">📁 Ver archivo</a>` 
+                ? `<a href="${BASE_URL}/uploads/${respuesta.ruta_archivo}" target="_blank">📁 Ver archivo</a>` 
                 : ''}
             <small>
               <strong>${respuesta.nombre_usuario || 'Sistema'} ${respuesta.apellido_usuario || ''}</strong> | 
@@ -516,7 +515,7 @@ function renderTicket(data) {
                 rutaNormalizada = rutaNormalizada.substring(indexUploads + 'uploads/'.length);
             }
 
-            const downloadUrl = `http://localhost:4000/uploads/${encodeURIComponent(rutaNormalizada)}`;
+            const downloadUrl = `${BASE_URL}/uploads/${encodeURIComponent(rutaNormalizada)}`;
 
             archivosHtml += `
                 <li style="margin-bottom: 15px;">
@@ -608,7 +607,7 @@ function renderTicket(data) {
         respuestaForm.prepend(loadingMessage);
 
         try {
-            const response = await fetch('http://localhost:4000/api/responder', {
+            const response = await fetch(`${BASE_URL}/api/responder`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${userData.token}`
@@ -680,7 +679,7 @@ comentarioInternoBtn.addEventListener('click', async () => {
     respuestaForm.prepend(loadingMessage);
 
     try {
-        const response = await fetch('http://localhost:4000/api/responder', {
+        const response = await fetch(`${BASE_URL}/api/responder`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${userData.token}`
@@ -850,7 +849,7 @@ document.getElementById('btnCerrarModal').addEventListener('click', () => {
 
 function previsualizarArchivo(ruta, nombre) {
     const extension = nombre.split('.').pop().toLowerCase();
-    const fileUrl = `http://localhost:4000/uploads/${encodeURIComponent(ruta)}`;
+    const fileUrl = `${BASE_URL}/uploads/${encodeURIComponent(ruta)}`;
 
     if (['pdf', 'jpg', 'jpeg', 'png', 'gif', 'bmp', 'txt'].includes(extension)) {
         window.open(fileUrl, '_blank');

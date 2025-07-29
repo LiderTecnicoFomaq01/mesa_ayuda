@@ -29,7 +29,7 @@ btn.addEventListener('click', async () => {
 
     const token = localStorage.getItem('authToken');
     try {
-        const response = await fetch('http://localhost:4000/api/auth/change-password', {
+        const response = await fetch(`${BASE_URL}/api/auth/change-password`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

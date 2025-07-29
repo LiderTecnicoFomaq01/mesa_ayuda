@@ -1,7 +1,7 @@
-var TICKETS_URL = 'http://localhost:4000/api/generales/solicitudesGeneralesTickets';
+var TICKETS_URL = `${BASE_URL}/api/generales/solicitudesGeneralesTickets`;
 
 if (typeof API_URL === 'undefined') {
-    var API_URL = 'http://localhost:4000/api/filtros'; // Usamos 'var' para que sea accesible globalmente
+    var API_URL = `${BASE_URL}/api/filtros`; // Usamos var para que sea accesible globalmente
 }
 
 function initMisSolicitudes() {
