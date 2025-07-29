@@ -1,33 +1,48 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const app = express();
 const path = require('path');
+const bodyParser = require('body-parser');
 
-// Configuración CORS segura
+const app = express();
+
+// ✅ Configuración CORS correcta
+const allowedOrigins = [
+  'http://127.0.0.1:5500', // entorno local
+  'https://fomagmesayuda-0a68b8706cab.herokuapp.com' // frontend en producción (Heroku)
+];
+
 const corsOptions = {
-  origin: 'http://127.0.0.1:5500',
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('No permitido por CORS: ' + origin));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
 };
+
+// 🛡️ Aplica CORS a todas las rutas
 app.use(cors(corsOptions));
 
-// Middlewares esenciales
+// 🔁 Permitir preflight requests
+app.options('*', cors(corsOptions));
+
+// 🧩 Middlewares esenciales
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
-// Configuración para servir archivos estáticos desde la carpeta 'uploads'
+// 📁 Servir archivos estáticos desde 'src/uploads'
 const uploadsPath = path.join(__dirname, 'src', 'uploads');
 app.use('/uploads', express.static(uploadsPath));
 
-
-
-
-// Importación segura de rutas
+// ✅ Cargar rutas
 try {
   const cambioEstadoRoutes = require('./src/routes/cambioEstadoRoutes');
-  const bodyParser = require('body-parser');
   const authRoutes = require('./src/routes/authRoutes');
   const areasRoutes = require('./src/routes/areasRoutes');
   const ticketsRoutes = require('./src/routes/ticketsRoutes');
@@ -41,7 +56,6 @@ try {
   const satisfaccionRoutes = require('./src/routes/satisfaccionRoutes');
   const redireccionarRoutes = require('./src/routes/redireccionarRoutes');
 
-  app.use(bodyParser.json());  
   app.use('/api', redireccionarRoutes);
   app.use('/api', cambioEstadoRoutes);
   app.use('/api/detalle-ticket', detalleTicketRoutes);
@@ -56,33 +70,33 @@ try {
   app.use('/api/responder', respuestaRoutes);
   app.use('/api', satisfaccionRoutes);
 
-  console.log('Todas las rutas cargadas correctamente');
+  console.log('✅ Todas las rutas cargadas correctamente');
 } catch (err) {
-  console.error('Error al cargar rutas:', err);
+  console.error('❌ Error al cargar rutas:', err);
   process.exit(1);
 }
 
-// Ruta de salud
+// 🩺 Ruta de prueba
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date() });
 });
 
-// Manejo de errores centralizado
+// 🧯 Middleware global de errores
 app.use((err, req, res, next) => {
   console.error('[ERROR]', err.stack);
-  res.status(500).json({ 
+  res.status(500).json({
     error: 'Internal Server Error',
-    message: err.message 
+    message: err.message
   });
 });
 
-// Iniciar servidor
+// 🚀 Iniciar servidor
 const PORT = process.env.PORT || 4000;
 const server = app.listen(PORT, () => {
   console.log(`🚀 Servidor en http://localhost:${PORT}`);
 });
 
-// Manejo de cierre
+// 🛑 Cierre limpio del servidor
 process.on('SIGTERM', () => {
   server.close(() => {
     console.log('Servidor cerrado');
