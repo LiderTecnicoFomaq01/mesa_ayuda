@@ -76,7 +76,12 @@ try {
   process.exit(1);
 }
 
-// 🩺 Ruta de prueba
+// 🏠 Ruta raíz para confirmar que el backend funciona
+app.get('/', (req, res) => {
+  res.send('✅ Backend de Mesa de Ayuda funcionando en Heroku');
+});
+
+// 🩺 Ruta de prueba de salud
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date() });
 });
