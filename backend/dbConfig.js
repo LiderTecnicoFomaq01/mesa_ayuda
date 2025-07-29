@@ -1,25 +1,17 @@
 // dbConfig.js
-const mysql = require('mysql2/promise'); // ¡Asegúrate de usar /promise!
+const mysql = require('mysql2/promise');
 require('dotenv').config();
 
-const pool = mysql.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
-});
+const pool = mysql.createPool(process.env.JAWSDB_URL);
 
-// Test de conexión al iniciar (opcional pero recomendado)
+// Test de conexión
 pool.getConnection()
   .then(conn => {
-    console.log('✅ Conexión a MySQL exitosa');
+    console.log('✅ Conexión a JawsDB MySQL exitosa');
     conn.release();
   })
   .catch(err => {
-    console.error('❌ Error de conexión a MySQL:', err);
+    console.error('❌ Error de conexión a JawsDB MySQL:', err);
   });
 
 module.exports = pool;
