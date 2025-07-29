@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         // 3. Obtener campos del formulario
-        const response = await fetch(`http://localhost:4000/api/areas/${idCategoria}/campos`);
+        const response = await fetch(`${BASE_URL}/api/areas/${idCategoria}/campos`);
         
         if (!response.ok) {
             const errorData = await response.json();
@@ -387,7 +387,7 @@ form.addEventListener('submit', async (e) => {
         formData.append('fileInfos', JSON.stringify(fileInfosArray));
 
         // Enviar
-        const response = await fetch('http://localhost:4000/api/tickets', {
+        const response = await fetch(`${BASE_URL}/api/tickets`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${userData.token}`
