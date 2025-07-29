@@ -6,10 +6,10 @@ const bodyParser = require('body-parser');
 
 const app = express();
 
-// ✅ Configuración CORS correcta
+// ✅ CORS
 const allowedOrigins = [
   'http://127.0.0.1:5500',
-  'https://fomagmesayuda-0a68b8706cab.herokuapp.com' // frontend en producción (Heroku)
+  'https://fomagmesayuda-0a68b8706cab.herokuapp.com'
 ];
 
 const corsOptions = {
@@ -31,15 +31,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-// 📁 Servir archivos estáticos (CSS, JS, imágenes desde frontend/views)
-const publicPath = path.join(__dirname, 'frontend', 'views');
+// ✅ Servir archivos estáticos (CSS, JS, IMG)
+const publicPath = path.join(__dirname, 'frontend');
 app.use(express.static(publicPath));
 
 // 📁 Servir archivos desde 'src/uploads'
 const uploadsPath = path.join(__dirname, 'src', 'uploads');
 app.use('/uploads', express.static(uploadsPath));
 
-// ✅ Cargar rutas
+// ✅ Cargar rutas API
 try {
   const cambioEstadoRoutes = require('./src/routes/cambioEstadoRoutes');
   const authRoutes = require('./src/routes/authRoutes');
@@ -75,17 +75,17 @@ try {
   process.exit(1);
 }
 
-// 🏠 Ruta raíz que carga login.html
+// ✅ Ruta raíz que muestra login.html
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'frontend', 'views', 'login.html'));
 });
 
-// 🩺 Ruta de prueba
+// 🩺 Ruta de salud
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date() });
 });
 
-// 🧯 Middleware global de errores
+// 🧯 Middleware de errores
 app.use((err, req, res, next) => {
   console.error('[ERROR]', err.stack);
   res.status(500).json({
@@ -100,7 +100,7 @@ const server = app.listen(PORT, () => {
   console.log(`🚀 Servidor en http://localhost:${PORT}`);
 });
 
-// 🛑 Cierre limpio del servidor
+// 🛑 Cierre limpio
 process.on('SIGTERM', () => {
   server.close(() => {
     console.log('Servidor cerrado');
