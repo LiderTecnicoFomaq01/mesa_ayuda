@@ -1,10 +1,10 @@
 // Comprobar si ya están definidas las constantes
 if (typeof API_URL === 'undefined') {
-    var API_URL = 'http://localhost:4000/api/filtros'; // Usamos 'var' para que sea accesible globalmente
+    var API_URL = `${BASE_URL}/api/filtros`;
 }
 
 
-var TICKETS_URL = 'http://localhost:4000/api/asignadas/MisAsignadasTickets';
+var TICKETS_URL = `${BASE_URL}/api/asignadas/MisAsignadasTickets`;
 
 
 function initMisAsignadas() {

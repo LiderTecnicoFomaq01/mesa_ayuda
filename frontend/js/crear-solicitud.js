@@ -11,7 +11,7 @@ async function initCrearSolicitud() {
         contenedor.innerHTML = '<div class="cargando">Cargando áreas disponibles...</div>';
 
         console.log('Solicitando áreas al API...');
-        const response = await fetch('http://localhost:4000/api/areas', {
+        const response = await fetch(`${BASE_URL}/api/areas`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
@@ -109,7 +109,7 @@ async function cargarCategorias(idArea, contenedor) {
     contenedor.innerHTML = '<div class="cargando">Cargando categorías...</div>';
 
     try {
-        const response = await fetch(`http://localhost:4000/api/areas/${idArea}/categorias`);
+        const response = await fetch(`${BASE_URL}/api/areas/${idArea}/categorias`);
 
         if (!response.ok) throw new Error('Error al obtener categorías');
 
@@ -207,7 +207,7 @@ async function cargarFormulario(idCategoria) {
         }
 
         // 3. Obtener campos del formulario
-        const response = await fetch(`http://localhost:4000/api/areas/${idCategoria}/campos`);
+        const response = await fetch(`${BASE_URL}/api/areas/${idCategoria}/campos`);
         
         if (!response.ok) {
             const errorData = await response.json();
@@ -390,7 +390,7 @@ async function cargarFormulario(idCategoria) {
                 }));
 
                 // Enviar al backend
-                const response = await fetch('http://localhost:4000/api/tickets', {
+                const response = await fetch(`${BASE_URL}/api/tickets`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${userData.token}`
