@@ -6,40 +6,34 @@ const bodyParser = require('body-parser');
 
 const app = express();
 
-// ✅ CORS
-const allowedOrigins = [
-  'http://127.0.0.1:5500',
-  'https://fomagmesayuda-0a68b8706cab.herokuapp.com'
-];
-
+// ✅ CORS universal para producción y local
 const corsOptions = {
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('No permitido por CORS: ' + origin));
-    }
-  },
+  origin: [
+    'http://127.0.0.1:5500',
+    'https://fomagmesayuda-0a68b8706cab.herokuapp.com'
+  ],
+  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
+  allowedHeaders: ['Content-Type', 'Authorization']
 };
 
-app.options('*', cors(corsOptions)); // Preflight antes de todo
-app.use(cors(corsOptions)); // Después
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Preflight
+
+// ✅ Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-// ✅ Servir archivos estáticos (CSS, JS, IMG)
+// ✅ Servir archivos estáticos
 const publicPath = path.join(__dirname, 'frontend');
 app.use(express.static(publicPath));
 
-// 📁 Servir archivos desde 'src/uploads'
+// ✅ Servir archivos subidos
 const uploadsPath = path.join(__dirname, 'src', 'uploads');
 app.use('/uploads', express.static(uploadsPath));
 
-// ✅ Cargar rutas API
+// ✅ Cargar rutas
 try {
   const cambioEstadoRoutes = require('./src/routes/cambioEstadoRoutes');
   const authRoutes = require('./src/routes/authRoutes');
@@ -75,7 +69,7 @@ try {
   process.exit(1);
 }
 
-// ✅ Ruta raíz que muestra login.html
+// ✅ Ruta raíz
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'frontend', 'views', 'login.html'));
 });
