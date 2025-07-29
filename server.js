@@ -39,6 +39,10 @@ app.use(bodyParser.json());
 const publicPath = path.join(__dirname, 'frontend');
 app.use(express.static(publicPath));
 
+// ✅ Servir vistas desde /frontend/views/
+const viewsPath = path.join(__dirname, 'frontend', 'views');
+app.use('/', express.static(viewsPath));
+
 // ✅ Servir archivos subidos
 const uploadsPath = path.join(__dirname, 'src', 'uploads');
 app.use('/uploads', express.static(uploadsPath));
