@@ -6,15 +6,24 @@ const bodyParser = require('body-parser');
 
 const app = express();
 
-// ✅ CORS universal para producción y local
+// ✅ CORS dinámico: necesario para que Heroku no bloquee las peticiones
+const allowedOrigins = [
+  'http://127.0.0.1:5500',
+  'https://fomagmesayuda-0a68b8706cab.herokuapp.com'
+];
+
 const corsOptions = {
-  origin: [
-    'http://127.0.0.1:5500',
-    'https://fomagmesayuda-0a68b8706cab.herokuapp.com'
-  ],
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('No permitido por CORS: ' + origin));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 200
 };
 
 app.use(cors(corsOptions));
@@ -25,7 +34,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-// ✅ Servir archivos estáticos
+// ✅ Servir archivos estáticos (frontend)
 const publicPath = path.join(__dirname, 'frontend');
 app.use(express.static(publicPath));
 
@@ -33,7 +42,7 @@ app.use(express.static(publicPath));
 const uploadsPath = path.join(__dirname, 'src', 'uploads');
 app.use('/uploads', express.static(uploadsPath));
 
-// ✅ Cargar rutas
+// ✅ Rutas backend (API)
 try {
   const cambioEstadoRoutes = require('./src/routes/cambioEstadoRoutes');
   const authRoutes = require('./src/routes/authRoutes');
@@ -69,7 +78,7 @@ try {
   process.exit(1);
 }
 
-// ✅ Ruta raíz
+// ✅ Ruta raíz (login)
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'frontend', 'views', 'login.html'));
 });
@@ -79,7 +88,7 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date() });
 });
 
-// 🧯 Middleware de errores
+// 🧯 Middleware global de errores
 app.use((err, req, res, next) => {
   console.error('[ERROR]', err.stack);
   res.status(500).json({
