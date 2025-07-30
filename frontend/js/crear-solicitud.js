@@ -288,7 +288,7 @@ async function cargarFormulario(idCategoria) {
                         <div class="file-input-container">
                             <span class="file-input-button">Seleccionar archivo</span>
                             <span class="file-input-name">Ningún archivo seleccionado</span>
-                            <input type="file" id="field-${campo.id}" name="field_${campo.id}" ${campo.requerido ? 'required' : ''} multiple accept=".txt, .xls, .xlsx, .jpg">
+                            <input type="file" id="field-${campo.id}" name="field_${campo.id}" ${campo.requerido ? 'required' : ''} multiple accept=".txt, .xlsx, .jpg">
                         </div>
                     `;
                     break;
