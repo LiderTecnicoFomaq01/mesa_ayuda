@@ -48,6 +48,8 @@ El backend del módulo ha sido desarrollado con **Node.js**, utilizando una estr
 - `routes/`: Define los endpoints disponibles de la API.
 - `server.js`: Archivo principal para levantar el servidor Express.
 - `multer`: Librería utilizada para la carga de archivos adjuntos en los tickets.
+  Los archivos permitidos son únicamente `.txt`, `.jpg` y `.xlsx` y el tamaño
+  total por solicitud no puede exceder los **5 MB**.
 
 ### Frontend
 
