@@ -6,7 +6,6 @@
     --gris-fondo: #f8f9fa;
 }
 
-/* Contenedor general */
 .contenedor-mis-solicitudes {
     padding: 1.5rem;
     max-width: 1200px;
@@ -14,7 +13,6 @@
     font-family: 'Segoe UI', sans-serif;
 }
 
-/* Contenedor de filtros */
 .filtros-container {
     background-color: var(--gris-fondo);
     border-radius: 10px;
@@ -22,7 +20,6 @@
     box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
-/* Grid de filtros */
 .filtro-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -60,7 +57,6 @@
     outline: none;
 }
 
-/* Botones de acción */
 .filtro-acciones {
     display: flex;
     justify-content: flex-end;
@@ -92,7 +88,6 @@
     background-color: #5a6268;
 }
 
-/* Resultados */
 .contenedor-resultados {
     background-color: white;
     border-radius: 10px;
@@ -124,7 +119,6 @@
     background-color: #f1f9ff;
 }
 
-/* Semáforo circular */
 .semaforo {
     width: 14px;
     height: 14px;
@@ -147,21 +141,20 @@
 #ticket-table {
     width: 100%;
     border-collapse: separate;
-    border-spacing: 0 8px; /* Espacio entre filas */
+    border-spacing: 0 8px;
 }
 
 #ticket-body tr {
     cursor: pointer;
     background-color: #ffffff;
     transition: background-color 0.2s ease;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* Sombra leve */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); 
 }
 
 #ticket-body tr:hover {
-    background-color: #cfe9ff; /* Hover azul claro personalizado */
+    background-color: #cfe9ff; 
 }
 
-/* Bordes redondeados SOLO en la primera y última celda */
 #ticket-body tr td:first-child {
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
@@ -177,7 +170,6 @@
     border-bottom: 1px solid #d0e7ff;
 }
 
-/* Cabecera de la tabla */
 #ticket-table th {
     background-color: #e9f5ff;
     padding: 12px;
@@ -194,9 +186,34 @@
 
 
 /* Responsive */
+@media (max-width: 910px) {
+    .tabla-tickets,
+    #ticket-table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
 @media (max-width: 768px) {
     .filtro-acciones {
         flex-direction: column;
         align-items: stretch;
+    }
+}
+
+@media (max-width: 600px) {
+    /* Make tables horizontally scrollable on very small screens */
+    .tabla-tickets,
+    #ticket-table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    .filtro-grid {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    }
+    .btn-filtro {
+        width: 100%;
     }
 }

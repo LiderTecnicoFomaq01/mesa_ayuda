@@ -6,20 +6,19 @@
     --gris-fondo: #f8f9fa;
 }
 
-/* Contenedor general */
+
 .contenedor-mis-solicitudes {
     padding: 1.5rem;
     max-width: 1200px;
     margin: 0 auto;
-    font-family: 'Segoe UI', sans-serif;
+    font-family: 'Segoe UI', 'Roboto', sans-serif;
 }
 
-/* Contenedor de filtros */
 .filtros-container {
     background-color: var(--gris-fondo);
     border-radius: 10px;
     padding: 1.5rem;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 6px rg    ba(0,0,0,0.05);
 }
 
 /* Grid de filtros */
@@ -30,7 +29,6 @@
     margin-bottom: 1.5rem;
 }
 
-/* Cada filtro */
 .filtro-item {
     display: flex;
     flex-direction: column;
@@ -198,5 +196,21 @@
     .filtro-acciones {
         flex-direction: column;
         align-items: stretch;
+    }
+}
+
+@media (max-width: 600px) {
+    /* Enable horizontal scrolling for tables on small screens */
+    .tabla-tickets,
+    #ticket-table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    .filtro-grid {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    }
+    .btn-filtro {
+        width: 100%;
     }
 }

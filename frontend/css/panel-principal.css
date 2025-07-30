@@ -1,11 +1,11 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', 'Roboto', sans-serif;
     margin: 0;
     padding: 0;
     background-color: #f5f5f5;
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    min-height: 70vh;
 }
 
 header {
@@ -20,7 +20,7 @@ header {
     left: 0;
     width: 100%;
     height: 70px;
-    z-index: 1000;
+    z-index: 10000;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
@@ -60,10 +60,21 @@ header {
     margin-right: 15px;
 }
 
+/* Botón hamburguesa */
+.hamburger-btn {
+    display: none;
+    background: none;
+    font-size: 28px;
+    border: none;
+    color: white;
+    cursor: pointer;
+    margin-left: 15px;
+}
+
 /* Contenedor principal */
 .dashboard-container {
     display: flex;
-    margin-top: 70px; /* Compensa el header fijo */
+    margin-top: 70px;
     flex: 1;
 }
 
@@ -74,30 +85,40 @@ header {
     color: white;
     padding: 20px 0;
     position: fixed;
-    top: 90px; /* Justo debajo del header */
+    top: 70px;
     left: 0;
     height: calc(100vh - 70px);
     overflow-y: auto;
     box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+    z-index: 1001;
 }
 
+/* Sidebar oculto para móviles */
+.sidebar.open {
+    transform: translateX(0);
+}
+
+/* Sidebar module styling */
 .modulo {
     padding: 15px 20px;
     margin: 10px 10px 10px;
     border-radius: 4px;
     background: rgba(255, 255, 255, 0.1);
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease;
     cursor: pointer;
 }
 
 .modulo:hover {
-    background: rgba(231, 76, 60, 0.2);
+    background: rgba(231, 76, 60, 0.15);
     border-left: 4px solid #1CA1D9;
+    transform: translateY(-2px);
 }
 
 .modulo.active {
     background: rgba(255, 255, 255, 0.25);
     font-weight: bold;
+    transform: translateY(-1px);
 }
 
 .modulo h2 {
@@ -116,7 +137,7 @@ header {
 .main-content {
     flex: 1;
     padding: 20px;
-    margin-left: 280px; /* Igual al ancho del sidebar */
+    margin-left: 280px;
     background: white;
     min-height: calc(100vh - 70px);
 }
@@ -162,4 +183,73 @@ body.admin .admin-module.active {
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive: tablets y móviles */
+@media (max-width: 768px) {
+    .hamburger-btn {
+        display: block;
+    }
+
+    .logo {
+        height: 35px;
+        margin-right: 5px;
+    }
+
+    .titulo-app {
+        font-size: 14px;
+        text-align: center;
+        justify-content: center;
+    }
+
+    .sidebar {
+        transform: translateX(-100%);
+        width: 250px;
+    }
+
+    .main-content {
+        margin-left: 0 !important;
+    }
+
+    .dashboard-container {
+        flex-direction: column;
+    }
+
+    .usuario-nombre {
+        font-size: 12px;
+        margin-right: 10px;
+    }
+}
+
+@media (max-width: 600px) {
+    .logo{
+        display: none;
+    }
+
+    .titulo-app {
+        font-size: 22px;
+        margin-left: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .modulo {
+        flex: 1 0 100%;
+    }
+
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+        height: auto;
+        padding: 15px;
+    }
+
+    header .logo {
+        margin-bottom: 10px;
+    }
+
+    .titulo-app {
+        font-size: 18px;
+    }
+
 }
