@@ -370,8 +370,10 @@ form.addEventListener('submit', async (e) => {
             }
         });
 
-        // Agregar info general
-        const asunto = document.getElementById('asunto').value.trim();
+        // Agregar info general usando el nombre de la categoría como asunto
+        const categoriaDataStr = localStorage.getItem('categoriaSeleccionada');
+        const categoriaData = categoriaDataStr ? JSON.parse(categoriaDataStr) : {};
+        const asunto = categoriaData.nombre || 'Sin asunto';
         const descripcion = document.getElementById('descripcion').value.trim();
 
         formData.append('ticket', JSON.stringify({

@@ -282,7 +282,7 @@ async function cargarFormulario(idCategoria) {
                         <div class="file-input-container">
                             <span class="file-input-button">Seleccionar archivo</span>
                             <span class="file-input-name">Ningún archivo seleccionado</span>
-                            <input type="file" id="field-${campo.id}" name="field_${campo.id}" ${campo.requerido ? 'required' : ''} multiple>
+                            <input type="file" id="field-${campo.id}" name="field_${campo.id}" ${campo.requerido ? 'required' : ''} multiple accept=".txt, .xlsx, .jpg">
                         </div>
                     `;
                     
@@ -379,12 +379,16 @@ async function cargarFormulario(idCategoria) {
                     }
                 }
 
+                // Determinar asunto usando el nombre de la categoría
+                const categoriaDataStr = localStorage.getItem('categoriaSeleccionada');
+                const categoriaData = categoriaDataStr ? JSON.parse(categoriaDataStr) : {};
+
                 // Agregar datos del ticket
                 formData.append('ticket', JSON.stringify({
                     id_categoria: parseInt(idCategoria),
                     id_usuario: userData.id,
                     id_estado: 2,
-                    asunto: document.getElementById('asunto').value,
+                    asunto: categoriaData.nombre || 'Sin asunto',
                     descripcion: document.getElementById('descripcion').value,
                     campos: camposValues
                 }));
@@ -409,7 +413,6 @@ async function cargarFormulario(idCategoria) {
                 // Limpiar formulario (sin cerrar el modal)
                 form.reset();
                 if (fileInput) fileInput.value = ''; // Limpiar input de archivo
-                document.getElementById('asunto').value = '';
                 document.getElementById('descripcion').value = '';
 
             } catch (error) {

@@ -7,14 +7,20 @@ exports.processTicketCreation = async ({ ticketData, files, fileInfos }) => {
   let conn;
   try {
     // Validación básica
-    if (!ticketData || !ticketData.id_categoria || !ticketData.id_usuario || !ticketData.asunto) {
+    if (!ticketData || !ticketData.id_categoria || !ticketData.id_usuario) {
       throw new Error('Datos del ticket incompletos');
     }
 
     conn = await pool.getConnection();
     await conn.beginTransaction();
 
-    const asunto = (ticketData.asunto || 'Sin asunto').toString().trim();
+    const [catRows] = await conn.query(
+      'SELECT nombre FROM categorias WHERE id = ?',
+      [ticketData.id_categoria]
+    );
+    const categoriaNombre = catRows[0]?.nombre || '';
+
+    const asunto = (ticketData.asunto || categoriaNombre || 'Sin asunto').toString().trim();
     const descripcion = (ticketData.descripcion || 'Sin descripcion').toString().trim();
 
     // 1) Crear el ticket

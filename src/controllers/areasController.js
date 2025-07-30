@@ -26,8 +26,8 @@ module.exports = {
 
     getCamposByCategoria: async (req, res) => {
         try {
-            const { id } = req.params;
-            const campos = await areasService.getCamposByCategoria(id);
+            const { idCategoria } = req.params;
+            const campos = await areasService.getCamposByCategoria(idCategoria);
 
             res.status(200).json({
                 success: true,
