@@ -131,3 +131,13 @@ exports.cambiarContraseña = async (userId, newPassword) => {
         throw error;
     }
 };
+
+exports.logout = async (token, expiresAt) => {
+    try {
+        await db.query('INSERT INTO jwt_blacklist (token, expires_at) VALUES (?, ?)', [token, expiresAt]);
+        return { success: true };
+    } catch (error) {
+        console.error('Error al registrar logout:', error);
+        throw error;
+    }
+};

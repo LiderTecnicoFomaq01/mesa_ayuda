@@ -172,6 +172,12 @@ CREATE TABLE encuestas_satisfaccion (
   FOREIGN KEY (ticket_id) REFERENCES tickets(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
+-- Tabla para almacenar tokens JWT invalidados
+CREATE TABLE jwt_blacklist (
+  token VARCHAR(500) PRIMARY KEY,
+  expires_at DATETIME NOT NULL
+) ENGINE=InnoDB;
+
 -- Insertar datos iniciales
 INSERT INTO tipo_documento (nombre, abreviatura, descripcion) VALUES
 ('Cédula de Ciudadanía', 'CC', 'Documento de identificación para ciudadanos colombianos mayores de edad.'),
