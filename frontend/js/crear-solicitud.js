@@ -282,9 +282,11 @@ async function cargarFormulario(idCategoria) {
                         <div class="file-input-container">
                             <span class="file-input-button">Seleccionar archivo</span>
                             <span class="file-input-name">Ningún archivo seleccionado</span>
-                            <input type="file" id="field-${campo.id}" name="field_${campo.id}" ${campo.requerido ? 'required' : ''} multiple>
+                            <input type="file" id="field-${campo.id}" name="field_${campo.id}" ${campo.requerido ? 'required' : ''} multiple accept=".txt, .xls, .xlsx, .jpg">
                         </div>
                     `;
+                    break;
+
                     
                     // Agregar evento para mostrar nombre de archivo
                     const fileInput = fieldContainer.querySelector('input[type="file"]');
