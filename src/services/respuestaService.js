@@ -18,7 +18,7 @@ exports.guardarRespuesta = async ({ id_ticket, id_usuario, mensaje, files, inter
 
     // Procesar archivos
     if (files && files.length > 0) {
-      const baseDir = path.join(__dirname, '..', 'uploads');
+      const baseDir = path.join(__dirname, '..', 'archivos');
       const ticketDir = path.join(baseDir, id_ticket.toString());
 
       // Crear carpeta si no existe

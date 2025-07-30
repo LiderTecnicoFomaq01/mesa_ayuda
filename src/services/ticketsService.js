@@ -52,7 +52,7 @@ exports.processTicketCreation = async ({ ticketData, files, fileInfos }) => {
     const rutasPorCampo = {};
 
     if (files && files.length > 0) {
-      const uploadBaseDir = path.join(__dirname, '..', 'uploads');
+      const uploadBaseDir = path.join(__dirname, '..', 'archivos');
       const ticketUploadDir = path.join(uploadBaseDir, String(ticketId));
 
       if (!fs.existsSync(uploadBaseDir)) {

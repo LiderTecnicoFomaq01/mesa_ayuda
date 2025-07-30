@@ -44,8 +44,8 @@ const viewsPath = path.join(__dirname, 'frontend', 'views');
 app.use('/', express.static(viewsPath));
 
 // ✅ Servir archivos subidos
-const uploadsPath = path.join(__dirname, 'src', 'uploads');
-app.use('/uploads', express.static(uploadsPath));
+const archivosPath = path.join(__dirname, 'src', 'archivos');
+app.use('/archivos', express.static(archivosPath));
 
 // ✅ Rutas backend (API)
 try {

@@ -5,7 +5,7 @@ const fs = require('fs');
 const { randomUUID } = require('crypto');
 
 // Directorio temporal (mejor manejo de rutas)
-const tempDir = path.resolve(__dirname, '..', 'uploads', 'temp');
+const tempDir = path.resolve(__dirname, '..', 'archivos', 'temp');
 
 // Aseguramos que el directorio exista (con manejo de errores)
 try {

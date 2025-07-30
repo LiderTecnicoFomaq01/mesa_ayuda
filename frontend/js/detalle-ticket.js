@@ -425,7 +425,7 @@ function renderRespuestas(respuestas) {
             ${esInterno ? '<span class="etiqueta-interno">🔒 Comentario interno</span>' : ''}
             <p>${respuesta.mensaje}</p>
             ${respuesta.ruta_archivo 
-                ? `<a href="${BASE_URL}/uploads/${respuesta.ruta_archivo}" target="_blank">📁 Ver archivo</a>` 
+                ? `<a href="${BASE_URL}/archivos/${respuesta.ruta_archivo}" target="_blank">📁 Ver archivo</a>`
                 : ''}
             <small>
               <strong>${respuesta.nombre_usuario || 'Sistema'} ${respuesta.apellido_usuario || ''}</strong> | 
@@ -510,12 +510,12 @@ function renderTicket(data) {
         archivos.forEach((archivo) => {
             const nombre = archivo.nombre_archivo;
             let rutaNormalizada = archivo.ruta_archivo.replace(/\\/g, '/');
-            const indexUploads = rutaNormalizada.indexOf('uploads/');
+            const indexUploads = rutaNormalizada.indexOf('archivos/');
             if (indexUploads !== -1) {
-                rutaNormalizada = rutaNormalizada.substring(indexUploads + 'uploads/'.length);
+                rutaNormalizada = rutaNormalizada.substring(indexUploads + 'archivos/'.length);
             }
 
-            const downloadUrl = `${BASE_URL}/uploads/${encodeURI(rutaNormalizada)}`;
+            const downloadUrl = `${BASE_URL}/archivos/${encodeURI(rutaNormalizada)}`;
 
             archivosHtml += `
                 <li style="margin-bottom: 15px;">
@@ -849,7 +849,7 @@ document.getElementById('btnCerrarModal').addEventListener('click', () => {
 
 function previsualizarArchivo(ruta, nombre) {
     const extension = nombre.split('.').pop().toLowerCase();
-    const fileUrl = `${BASE_URL}/uploads/${encodeURIComponent(ruta)}`;
+    const fileUrl = `${BASE_URL}/archivos/${encodeURIComponent(ruta)}`;
 
     if (['pdf', 'jpg', 'jpeg', 'png', 'gif', 'bmp', 'txt'].includes(extension)) {
         window.open(fileUrl, '_blank');
