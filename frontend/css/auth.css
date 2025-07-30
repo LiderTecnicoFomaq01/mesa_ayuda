@@ -1,117 +1,177 @@
 body {
-font-family: Arial, sans-serif;
-margin: 0;
-background-color: #f4f4f4;
+    font-family: 'Segoe UI', 'Roboto', sans-serif;
+    margin: 0;
+    background-color: #f4f4f4;
 }
 
 header {
-background-color: #0b3d91;
-color: white;
-padding: 20px;
-text-align: center;
+    background-color: #0b3d91;
+    color: white;
+    padding: 20px;
+    text-align: center;
 }
 
 .logo {
-height: 60px;
-vertical-align: middle;
+    height: 60px;
+    vertical-align: middle;
 }
 
 main {
-display: flex;
-justify-content: center;
-align-items: center;
-height: 70vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 70vh;
 }
 
 .login-container {
-background: white;
-padding: 30px;
-border-radius: 10px;
-width: 100%;
-max-width: 400px;
-box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
 .login-container h2 {
     text-align: center;
-}  
+}
 
 .login-fields {
-display: flex;
-flex-direction: column;
-gap: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
 input {
-padding: 10px;
-font-size: 1rem;
-border: 1px solid #ccc;
-border-radius: 5px;
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    /* Add smooth interactions on focus */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Highlight focused inputs */
+input:focus {
+    border-color: #0b3d91;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(11, 61, 145, 0.2);
 }
 
 button {
-background-color: #0b3d91;
-color: white;
-padding: 10px;
-font-size: 1rem;
-border: none;
-border-radius: 5px;
-cursor: pointer;
+    background-color: #0b3d91;
+    color: white;
+    padding: 10px;
+    font-size: 1rem;
+    border: none;
+    /* Increase border radius and add transitions */
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 button:hover {
-background-color: #092e6c;
+    background-color: #092e6c;
+}
+
+button:active {
+    /* Subtle press effect */
+    transform: scale(0.98);
 }
 
 .error {
-color: red;
-font-size: 0.9rem;
-text-align: center;
+    color: red;
+    font-size: 0.9rem;
+    text-align: center;
 }
 
 footer {
-text-align: center;
-padding: 10px;
-background-color: #0b3d91;
-color: white;
+    text-align: center;
+    padding: 10px;
+    background-color: #0b3d91;
+    color: white;
+    position: fixed;
+    bottom: 0;
+    min-width: 100%;
 }
 
 .message {
-text-align: center;
-margin-top: 10px;
-font-weight: bold;
+    text-align: center;
+    margin-top: 10px;
+    font-weight: bold;
 }
 
 .message.info {
-color: #0b3d91;
+    color: #0b3d91;
 }
 
 .message.success {
-color: green;
+    color: green;
 }
 
 .message.error {
-color: red;
+    color: red;
 }
 
 .password-wrapper {
-position: relative;
+    position: relative;
 }
 
 .password-wrapper input {
-width: 94.5%;
+    width: 94.5%;
 }
 
 .toggle-password {
-position: absolute;
-right: 10px;
-top: 50%;
-transform: translateY(-50%);
-cursor: pointer;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
 }
 
 .toggle-password img {
-width: 24px;
-height: 24px;
+    width: 24px;
+    height: 24px;
 }
-  
+
+
+@media (max-width: 768px) {
+    .login-container {
+        width: 90%;
+    }
+
+}
+
+@media (max-width: 480px) {
+    header h1 {
+        font-size: 1.2rem;
+    }
+
+    .logo {
+        height: 50px;
+        vertical-align: middle;
+    }
+
+    .login-container {
+        padding: 20px;
+        max-width: 95%;
+    }
+
+    button {
+        font-size: 0.9rem;
+    }
+
+    footer {
+        max-width: fit-content;
+        text-align: center;
+        padding: 10px;
+        background-color: #0b3d91;
+    }
+}
+
+@media (max-width: 280px) {
+    .logo {
+        height: 35px;
+    }
+
+}

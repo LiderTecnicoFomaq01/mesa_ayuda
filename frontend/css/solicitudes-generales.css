@@ -7,11 +7,13 @@
 }
 
 /* Contenedor general */
+/* General container styling */
 .contenedor-mis-solicitudes {
     padding: 1rem; /* antes 1.5rem */
     max-width: 1200px;
     margin: 0 auto;
-    font-family: 'Segoe UI', sans-serif;
+    /* Modern font stack */
+    font-family: 'Segoe UI', 'Roboto', sans-serif;
 }
 
 /* Contenedor de filtros */
@@ -203,9 +205,26 @@
 
 
 /* Responsive */
+@media (max-width: 1069px) {
+    .tabla-tickets,
+    #ticket-table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
 @media (max-width: 768px) {
     .filtro-acciones {
         flex-direction: column;
         align-items: stretch;
+    }
+}
+
+@media (max-width: 600px) {
+    .filtro-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    }
+    .btn-filtro {
+        width: 100%;
     }
 }

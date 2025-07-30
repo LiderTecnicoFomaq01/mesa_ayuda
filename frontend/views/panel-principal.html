@@ -9,6 +9,7 @@
 <body>
     <header>
         <div class="header-left">
+            <button class="hamburger-btn" onclick="toggleSidebar()">&#9776;</button>
             <img src="../public/assets/img/Logo.png" alt="Logo" class="logo">
             <h1 class="titulo-app">Mesa de ayuda FOMAG</h1>
         </div>
@@ -16,7 +17,7 @@
     </header>                
     
     <div class="dashboard-container">
-        <nav class="sidebar">
+        <nav class="sidebar" id="sidebar">
             <!-- Módulos para todos los usuarios -->
             <div class="modulo" data-panel="crear-solicitud">
                 <h2>Radicar solicitud</h2>
@@ -28,7 +29,7 @@
                 <p>Revisa el estado de tus solicitudes</p>
             </div>
             
-            <!-- Módulos solo para admin (se muestran con CSS según clase) -->
+            <!-- Módulos solo para admin -->
             <div class="modulo admin-module" data-panel="solicitudes-generales">
                 <h2>Todas las solicitudes</h2>
                 <p>Todas las solicitudes del sistema pendientes</p>
@@ -52,29 +53,20 @@
                 <p>Seleccione una opción del menú lateral para comenzar</p>
             </div>
             
-            <!-- Paneles de contenido (inicialmente ocultos) -->
-            <div class="panel-contenido" id="crear-solicitud" style="display: none;">
-                <!-- Contenido de Crear Solicitud -->
-            </div>
-            
-            <div class="panel-contenido" id="mis-solicitudes" style="display: none;">
-                <!-- Contenido de Mis Solicitudes -->
-            </div>
-            
-            <div class="panel-contenido admin-panel" id="solicitudes-generales" style="display: none;">
-                <!-- Contenido de Solicitudes Generales -->
-            </div>
-            
-            <div class="panel-contenido admin-panel" id="mis-asignadas" style="display: none;">
-                <!-- Contenido de Mis Asignadas -->
-            </div>
-            
-            <div class="panel-contenido admin-panel" id="solucionadas" style="display: none;">
-                <!-- Contenido de Solucionadas -->
-            </div>
+            <div class="panel-contenido" id="crear-solicitud" style="display: none;"></div>
+            <div class="panel-contenido" id="mis-solicitudes" style="display: none;"></div>
+            <div class="panel-contenido admin-panel" id="solicitudes-generales" style="display: none;"></div>
+            <div class="panel-contenido admin-panel" id="mis-asignadas" style="display: none;"></div>
+            <div class="panel-contenido admin-panel" id="solucionadas" style="display: none;"></div>
         </main>
     </div>
-  <script src="../js/config.js"></script>
+
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+    </script>
+    <script src="../js/config.js"></script>
     <script src="../js/panel-principal.js"></script>
 </body>
 </html>
