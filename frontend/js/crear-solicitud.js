@@ -292,7 +292,6 @@ async function cargarFormulario(idCategoria) {
                         </div>
                     `;
                     break;
-
                     
                     // Agregar evento para mostrar nombre de archivo
                     const fileInput = fieldContainer.querySelector('input[type="file"]');
