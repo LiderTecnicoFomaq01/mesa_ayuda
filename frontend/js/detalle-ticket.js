@@ -856,4 +856,4 @@ function previsualizarArchivo(ruta, nombre) {
     } else {
         alert(`El archivo ${nombre} no se puede previsualizar.`);
     }
-}
+}}
