@@ -203,11 +203,6 @@ async function cargarFormulario(idCategoria) {
         if (categoria?.nombre) {
             formTitle.textContent = categoria.nombre.toUpperCase();
 
-            // Colocar el nombre de la categoría en el campo Asunto
-            const asuntoInput = document.getElementById('asunto');
-            if (asuntoInput) {
-                asuntoInput.value = categoria.nombre;
-            }
         } else {
             formTitle.textContent = 'FORMULARIO DE TICKET'; // Fallback
         }
@@ -386,12 +381,16 @@ async function cargarFormulario(idCategoria) {
                     }
                 }
 
+                // Determinar asunto usando el nombre de la categoría
+                const categoriaDataStr = localStorage.getItem('categoriaSeleccionada');
+                const categoriaData = categoriaDataStr ? JSON.parse(categoriaDataStr) : {};
+
                 // Agregar datos del ticket
                 formData.append('ticket', JSON.stringify({
                     id_categoria: parseInt(idCategoria),
                     id_usuario: userData.id,
                     id_estado: 2,
-                    asunto: document.getElementById('asunto').value,
+                    asunto: categoriaData.nombre || 'Sin asunto',
                     descripcion: document.getElementById('descripcion').value,
                     campos: camposValues
                 }));
@@ -416,7 +415,6 @@ async function cargarFormulario(idCategoria) {
                 // Limpiar formulario (sin cerrar el modal)
                 form.reset();
                 if (fileInput) fileInput.value = ''; // Limpiar input de archivo
-                document.getElementById('asunto').value = '';
                 document.getElementById('descripcion').value = '';
 
             } catch (error) {
