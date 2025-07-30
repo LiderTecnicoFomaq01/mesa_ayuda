@@ -854,6 +854,6 @@ function previsualizarArchivo(ruta, nombre) {
     if (['pdf', 'jpg', 'jpeg', 'png', 'gif', 'bmp', 'txt'].includes(extension)) {
         window.open(fileUrl, '_blank');
     } else {
-        alert(`El archivo: ${nombre} no se puede previsualizar.`);
+        alert(`El archivo ${nombre} no se puede previsualizar.`);
     }
 }}
