@@ -515,7 +515,7 @@ function renderTicket(data) {
                 rutaNormalizada = rutaNormalizada.substring(indexUploads + 'uploads/'.length);
             }
 
-            const downloadUrl = `${BASE_URL}/uploads/${encodeURIComponent(rutaNormalizada)}`;
+            const downloadUrl = `${BASE_URL}/uploads/${encodeURI(rutaNormalizada)}`;
 
             archivosHtml += `
                 <li style="margin-bottom: 15px;">
