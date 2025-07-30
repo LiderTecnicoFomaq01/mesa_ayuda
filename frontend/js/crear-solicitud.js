@@ -202,6 +202,12 @@ async function cargarFormulario(idCategoria) {
         // 2. Actualizar título con el nombre de la categoría en mayúsculas
         if (categoria?.nombre) {
             formTitle.textContent = categoria.nombre.toUpperCase();
+
+            // Colocar el nombre de la categoría en el campo Asunto
+            const asuntoInput = document.getElementById('asunto');
+            if (asuntoInput) {
+                asuntoInput.value = categoria.nombre;
+            }
         } else {
             formTitle.textContent = 'FORMULARIO DE TICKET'; // Fallback
         }
