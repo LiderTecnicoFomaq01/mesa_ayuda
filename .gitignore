@@ -1,0 +1,4 @@
+# Ignore uploaded files in src/archivos but keep placeholder
+src/archivos/*
+!src/archivos/.gitkeep
+!src/archivos/temp/.gitkeep
