@@ -71,6 +71,10 @@ Este script debe ejecutarse antes de iniciar el sistema para crear las tablas ne
 Los usuarios de ejemplo definidos en `datos_iniciales.sql` se crean con contraseñas cifradas.
 Al iniciar sesión por primera vez se solicitará al usuario que actualice su contraseña para activar la cuenta.
 
+### Proceso de Logout
+
+Para cerrar sesión, el cliente debe enviar una petición `POST` a `/api/auth/logout` incluyendo el token JWT en la cabecera `Authorization`. El backend guardará dicho token en la tabla `jwt_blacklist` junto con su fecha de expiración, evitando que pueda reutilizarse.
+
 ### Levantamiento del Servidor
 
 Para levantar el backend localmente:

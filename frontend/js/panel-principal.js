@@ -203,6 +203,15 @@ function setupUserDropdown() {
 }
 
 function logout() {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+        fetch(`${BASE_URL}/api/auth/logout`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        }).catch(err => console.error('Error al cerrar sesión:', err));
+    }
     localStorage.removeItem('authToken');
     localStorage.removeItem('userData');
     window.location.href = 'login.html';

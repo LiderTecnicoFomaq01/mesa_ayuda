@@ -1,5 +1,6 @@
 const authService = require('../services/authService');
 const { generarToken } = require('../middlewares/authMiddleware');
+const jwt = require('jsonwebtoken');
 
 exports.login = async (req, res) => {
     try {
@@ -60,5 +61,25 @@ exports.changePassword = async (req, res) => {
     } catch (error) {
         console.error('Error en changePassword:', error);
         res.status(500).json({ success: false, message: 'Error al cambiar la contraseña' });
+    }
+};
+
+exports.logout = async (req, res) => {
+    try {
+        const authHeader = req.headers['authorization'];
+        const token = authHeader && authHeader.split(' ')[1];
+
+        if (!token) {
+            return res.status(400).json({ success: false, message: 'Token requerido' });
+        }
+
+        const decoded = jwt.decode(token);
+        const expiresAt = decoded && decoded.exp ? new Date(decoded.exp * 1000) : null;
+
+        await authService.logout(token, expiresAt);
+        res.json({ success: true, message: 'Sesión cerrada' });
+    } catch (error) {
+        console.error('Error en logout:', error);
+        res.status(500).json({ success: false, message: 'Error al cerrar sesión' });
     }
 };
