@@ -40,6 +40,11 @@ header {
     margin: 0;
 }
 
+.usuario-menu {
+    position: relative;
+    margin-right: 30px;
+}
+
 .usuario-nombre {
     font-weight: bold;
     text-transform: uppercase;
@@ -48,11 +53,41 @@ header {
     padding: 8px 15px;
     border-radius: 20px;
     color: white;
-    margin-right: 30px;
     white-space: nowrap;
     max-width: 250px;
     overflow: hidden;
     text-overflow: ellipsis;
+    cursor: pointer;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: calc(100% + 5px);
+    background: white;
+    color: #333;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    border-radius: 4px;
+    min-width: 150px;
+    z-index: 10001;
+}
+
+.dropdown-menu.show {
+    display: block;
+}
+
+.dropdown-menu button {
+    background: none;
+    border: none;
+    padding: 10px;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+}
+
+.dropdown-menu button:hover {
+    background: #f0f0f0;
 }
 
 .logo {
@@ -215,9 +250,11 @@ body.admin .admin-module.active {
         flex-direction: column;
     }
 
+    .usuario-menu {
+        margin-right: 10px;
+    }
     .usuario-nombre {
         font-size: 12px;
-        margin-right: 10px;
     }
 }
 

@@ -12,6 +12,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Configurar interfaz de usuario
     setupUserInterface(userData);
 
+    // Preparar menú de usuario
+    setupUserDropdown();
+
     // Configurar navegación
     await setupModuleNavigation();
 });
@@ -176,5 +179,32 @@ function loadPanelAssets(panelId) {
         };
         document.body.appendChild(script);
     });
+}
+
+function setupUserDropdown() {
+    const nameElement = document.getElementById('usuarioNombre');
+    const dropdown = document.getElementById('userDropdown');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    if (!nameElement || !dropdown || !logoutBtn) return;
+
+    nameElement.addEventListener('click', (e) => {
+        dropdown.classList.toggle('show');
+        e.stopPropagation();
+    });
+
+    logoutBtn.addEventListener('click', logout);
+
+    document.addEventListener('click', (e) => {
+        if (!dropdown.contains(e.target) && e.target !== nameElement) {
+            dropdown.classList.remove('show');
+        }
+    });
+}
+
+function logout() {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userData');
+    window.location.href = 'login.html';
 }
 
