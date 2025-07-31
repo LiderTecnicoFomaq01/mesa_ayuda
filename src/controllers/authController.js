@@ -76,6 +76,13 @@ exports.changePassword = async (req, res) => {
         res.json({ success: true, message: 'Datos actualizados correctamente' });
     } catch (error) {
         console.error('Error en changePassword:', error);
+        // Mensaje más descriptivo según el tipo de fallo
+        if (error.code === 'ECONNREFUSED' || error.code === 'ENOTFOUND' || error.code === 'ENETUNREACH') {
+            return res.status(500).json({
+                success: false,
+                message: 'No se pudo conectar a la base de datos'
+            });
+        }
         res.status(500).json({ success: false, message: 'Error al actualizar los datos' });
     }
 };
