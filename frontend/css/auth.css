@@ -134,6 +134,12 @@ footer {
     height: 24px;
 }
 
+/* Estilo para indicar campos obligatorios */
+label.required::after {
+    content: ' *';
+    color: red;
+}
+
 
 @media (max-width: 768px) {
     .login-container {
