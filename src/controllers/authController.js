@@ -46,21 +46,37 @@ exports.login = async (req, res) => {
 
 exports.changePassword = async (req, res) => {
     try {
-        const { newPassword } = req.body;
+        const {
+            newPassword,
+            primer_nombre,
+            segundo_nombre,
+            primer_apellido,
+            segundo_apellido,
+            email,
+            celular
+        } = req.body;
         const userId = req.user.id;
 
-        if (!newPassword) {
+        if (!primer_nombre || !primer_apellido || !email || !celular || !newPassword) {
             return res.status(400).json({
                 success: false,
-                message: 'Nueva contraseña requerida'
+                message: 'Datos incompletos'
             });
         }
 
-        await authService.cambiarContraseña(userId, newPassword);
-        res.json({ success: true, message: 'Contraseña actualizada correctamente' });
+        await authService.actualizarDatosIniciales(userId, {
+            newPassword,
+            primer_nombre,
+            segundo_nombre,
+            primer_apellido,
+            segundo_apellido,
+            email,
+            celular
+        });
+        res.json({ success: true, message: 'Datos actualizados correctamente' });
     } catch (error) {
         console.error('Error en changePassword:', error);
-        res.status(500).json({ success: false, message: 'Error al cambiar la contraseña' });
+        res.status(500).json({ success: false, message: 'Error al actualizar los datos' });
     }
 };
 

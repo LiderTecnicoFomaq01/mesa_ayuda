@@ -1,5 +1,11 @@
 const btn = document.getElementById('changeBtn');
 const messageDiv = document.getElementById('changeMessage');
+const primerNombreInput = document.getElementById('primerNombre');
+const segundoNombreInput = document.getElementById('segundoNombre');
+const primerApellidoInput = document.getElementById('primerApellido');
+const segundoApellidoInput = document.getElementById('segundoApellido');
+const emailInput = document.getElementById('email');
+const celularInput = document.getElementById('celular');
 const newPasswordInput = document.getElementById('newPassword');
 const confirmPasswordInput = document.getElementById('confirmPassword');
 const toggleNewPassword = document.getElementById('toggleNewPassword');
@@ -8,11 +14,17 @@ const eyeOpen = '../public/assets/img/ojo-abierto.png';
 const eyeClosed = '../public/assets/img/ojo.png';
 
 btn.addEventListener('click', async () => {
+    const primer_nombre = primerNombreInput.value.trim();
+    const segundo_nombre = segundoNombreInput.value.trim();
+    const primer_apellido = primerApellidoInput.value.trim();
+    const segundo_apellido = segundoApellidoInput.value.trim();
+    const email = emailInput.value.trim();
+    const celular = celularInput.value.trim();
     const newPassword = newPasswordInput.value.trim();
     const confirmPassword = confirmPasswordInput.value.trim();
 
-    if (!newPassword || !confirmPassword) {
-        showMessage('Debe completar ambos campos', 'error');
+    if (!primer_nombre || !primer_apellido || !email || !celular || !newPassword || !confirmPassword) {
+        showMessage('Por favor complete los campos obligatorios', 'error');
         return;
     }
 
@@ -35,11 +47,19 @@ btn.addEventListener('click', async () => {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({ newPassword })
+            body: JSON.stringify({
+                newPassword,
+                primer_nombre,
+                segundo_nombre,
+                primer_apellido,
+                segundo_apellido,
+                email,
+                celular
+            })
         });
         const data = await response.json();
         if (!response.ok) throw new Error(data.message || 'Error');
-        showMessage('Contraseña actualizada', 'success');
+        showMessage('Datos actualizados', 'success');
         setTimeout(() => {
             window.location.href = 'panel-principal.html';
         }, 1500);

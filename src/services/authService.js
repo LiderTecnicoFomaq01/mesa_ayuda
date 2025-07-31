@@ -133,6 +133,29 @@ exports.cambiarContraseña = async (userId, newPassword) => {
     }
 };
 
+exports.actualizarDatosIniciales = async (userId, datos) => {
+    try {
+        const hashed = await bcrypt.hash(datos.newPassword, 10);
+        await db.query(
+            `UPDATE usuarios SET contraseña = ?, primer_nombre = ?, segundo_nombre = ?, primer_apellido = ?, segundo_apellido = ?, email = ?, celular = ?, ultimo_login = NOW(), intentos_fallidos = 0, bloqueado = FALSE, fecha_desbloqueo = NULL WHERE id = ?`,
+            [
+                hashed,
+                datos.primer_nombre,
+                datos.segundo_nombre || null,
+                datos.primer_apellido,
+                datos.segundo_apellido || null,
+                datos.email,
+                datos.celular,
+                userId
+            ]
+        );
+        return { success: true };
+    } catch (error) {
+        console.error('Error actualizando datos iniciales:', error);
+        throw error;
+    }
+};
+
 exports.logout = async (token, expiresAt) => {
     try {
         await db.query('INSERT INTO jwt_blacklist (token, expires_at) VALUES (?, ?)', [token, expiresAt]);
