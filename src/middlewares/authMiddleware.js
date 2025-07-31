@@ -9,7 +9,7 @@ exports.generarToken = (user) => {
   return jwt.sign(
     {
       id: user.id,
-      email: user.email,
+      usuario: user.usuario,
       rol: user.rol // 👈 este es el dato clave
     },
     JWT_SECRET,
