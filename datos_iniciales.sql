@@ -1,18 +1,18 @@
 use mesa_ayuda;
 
 INSERT INTO usuarios (
-  tipo_documento_id, numero_documento, primer_nombre, segundo_nombre,
-  primer_apellido, segundo_apellido, email, contraseña, rol_id
+  tipo_documento_id, numero_documento, usuario, primer_nombre, segundo_nombre,
+  primer_apellido, segundo_apellido, email, celular, contraseña, rol_id
 ) VALUES
-(2, '200000002', 'María', 'José', 'Rodríguez', 'López', 'admin2@correo.com', '$2b$10$VktcUyLyfUV8IteoBffHmeO.bOUaD0HM5X.ViS5IQqrJF7zcIAyzC', 1),
-(1, '100000003', 'Andrés', 'Felipe', 'García', 'Torres', 'usuario_admin3@correo.com', '$2b$10$VktcUyLyfUV8IteoBffHmeO.bOUaD0HM5X.ViS5IQqrJF7zcIAyzC', 2),
-(3, 'CE1234567', 'Paula', 'Andrea', 'Ramírez', 'Vargas', 'usuario_admin4@correo.com', '$2b$10$VktcUyLyfUV8IteoBffHmeO.bOUaD0HM5X.ViS5IQqrJF7zcIAyzC', 2),
-(4, 'P7654321', 'Camila', NULL, 'Suárez', 'Mejía', 'usuario_admin5@correo.com', '$2b$10$VktcUyLyfUV8IteoBffHmeO.bOUaD0HM5X.ViS5IQqrJF7zcIAyzC', 2),
-(1, '100000001', 'Carlos', 'Andrés', 'Pérez', 'Gómez', 'admin1@correo.com', '$2b$10$VktcUyLyfUV8IteoBffHmeO.bOUaD0HM5X.ViS5IQqrJF7zcIAyzC', 1),
-(4, 'P1234567', 'Luisa', NULL, 'Martínez', 'Díaz', 'usuario_admin1@correo.com', '$2b$10$VktcUyLyfUV8IteoBffHmeO.bOUaD0HM5X.ViS5IQqrJF7zcIAyzC', 2),
-(3, 'CE9876543', 'Juan', 'Esteban', 'Córdoba', NULL, 'usuario_admin2@correo.com', '$2b$10$VktcUyLyfUV8IteoBffHmeO.bOUaD0HM5X.ViS5IQqrJF7zcIAyzC', 2),
-(4, 'P76543216', 'María', 'Camila', 'Ruiz', 'Sánchez', 'usuario1@correo.com', '$2b$10$qg8YS80GD/imgBbuJfiYOOyVygtc6hYrKRr/aZqZrkL1O7.7b.yzS', 3),
-(1, '100000005', 'Diego', NULL, 'Fernández', 'López', 'usuario2@correo.com', '$2b$10$qg8YS80GD/imgBbuJfiYOOyVygtc6hYrKRr/aZqZrkL1O7.7b.yzS', 3);
+  (2, '200000002', 'admin2', 'María', 'José', 'Rodríguez', 'López', 'admin2@correo.com', '3000000001', '$2b$10$VktcUyLyfUV8IteoBffHmeO.bOUaD0HM5X.ViS5IQqrJF7zcIAyzC', 1),
+  (1, '100000003', 'usuario_admin3', 'Andrés', 'Felipe', 'García', 'Torres', 'usuario_admin3@correo.com', '3000000002', '$2b$10$VktcUyLyfUV8IteoBffHmeO.bOUaD0HM5X.ViS5IQqrJF7zcIAyzC', 2),
+  (3, 'CE1234567', 'usuario_admin4', 'Paula', 'Andrea', 'Ramírez', 'Vargas', 'usuario_admin4@correo.com', '3000000003', '$2b$10$VktcUyLyfUV8IteoBffHmeO.bOUaD0HM5X.ViS5IQqrJF7zcIAyzC', 2),
+  (4, 'P7654321', 'usuario_admin5', 'Camila', NULL, 'Suárez', 'Mejía', 'usuario_admin5@correo.com', '3000000004', '$2b$10$VktcUyLyfUV8IteoBffHmeO.bOUaD0HM5X.ViS5IQqrJF7zcIAyzC', 2),
+  (1, '100000001', 'admin1', 'Carlos', 'Andrés', 'Pérez', 'Gómez', 'admin1@correo.com', '3000000005', '$2b$10$VktcUyLyfUV8IteoBffHmeO.bOUaD0HM5X.ViS5IQqrJF7zcIAyzC', 1),
+  (4, 'P1234567', 'usuario_admin1', 'Luisa', NULL, 'Martínez', 'Díaz', 'usuario_admin1@correo.com', '3000000006', '$2b$10$VktcUyLyfUV8IteoBffHmeO.bOUaD0HM5X.ViS5IQqrJF7zcIAyzC', 2),
+  (3, 'CE9876543', 'usuario_admin2', 'Juan', 'Esteban', 'Córdoba', NULL, 'usuario_admin2@correo.com', '3000000007', '$2b$10$VktcUyLyfUV8IteoBffHmeO.bOUaD0HM5X.ViS5IQqrJF7zcIAyzC', 2),
+  (4, 'P76543216', 'usuario1', 'María', 'Camila', 'Ruiz', 'Sánchez', 'usuario1@correo.com', '3000000008', '$2b$10$qg8YS80GD/imgBbuJfiYOOyVygtc6hYrKRr/aZqZrkL1O7.7b.yzS', 3),
+  (1, '100000005', 'usuario2', 'Diego', NULL, 'Fernández', 'López', 'usuario2@correo.com', '3000000009', '$2b$10$qg8YS80GD/imgBbuJfiYOOyVygtc6hYrKRr/aZqZrkL1O7.7b.yzS', 3);
 
 INSERT INTO categorias (id_area, id_prioridad, nombre, descripcion)
 VALUES

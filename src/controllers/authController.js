@@ -4,17 +4,17 @@ const jwt = require('jsonwebtoken');
 
 exports.login = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { username, password } = req.body;
         
         // Validación básica
-        if (!email || !password) {
+        if (!username || !password) {
             return res.status(400).json({
                 success: false,
-                message: 'Email y contraseña son requeridos'
+                message: 'Usuario y contraseña son requeridos'
             });
         }
 
-        const result = await authService.autenticarUsuario(email, password);
+        const result = await authService.autenticarUsuario(username, password);
         
         if (!result.success) {
             return res.status(result.status || 401).json({

@@ -1,9 +1,9 @@
 document.getElementById('loginBtn').addEventListener('click', async () => {
-    const email = document.getElementById('email').value.trim();
+    const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value.trim();
     const messageDiv = document.getElementById('authMessage');
 
-    if (!email || !password) {
+    if (!username || !password) {
         showMessage('Por favor complete todos los campos', 'error');
         return;
     }
@@ -16,7 +16,7 @@ document.getElementById('loginBtn').addEventListener('click', async () => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ email, password })
+            body: JSON.stringify({ username, password })
         });
 
         const data = await response.json();

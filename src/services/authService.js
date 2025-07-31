@@ -1,22 +1,22 @@
 const db = require('../../dbConfig');
 const bcrypt = require('bcryptjs');
 
-exports.autenticarUsuario = async (email, password) => {
+exports.autenticarUsuario = async (username, password) => {
     try {
-        // 1. Normalizar el email (eliminar espacios y convertir a minúsculas)
-        email = email.trim().toLowerCase();
+        // 1. Normalizar el usuario (eliminar espacios y convertir a minúsculas)
+        username = username.trim().toLowerCase();
         
         // 2. Buscar usuario
         const [users] = await db.query(`
-            SELECT u.id, u.email, u.contraseña, u.activo, u.bloqueado, 
+            SELECT u.id, u.usuario, u.email, u.contraseña, u.activo, u.bloqueado,
                    u.fecha_desbloqueo, u.intentos_fallidos, r.nombre AS rol,
                    u.primer_nombre, u.segundo_nombre, u.primer_apellido, u.segundo_apellido,
                    u.ultimo_login, u.numero_documento, td.abreviatura AS tipo_documento
             FROM usuarios u
             JOIN roles r ON u.rol_id = r.id
             JOIN tipo_documento td ON u.tipo_documento_id = td.id
-            WHERE u.email = ?
-        `, [email]);
+            WHERE u.usuario = ?
+        `, [username]);
 
         // 3. Verificar si el usuario existe
         if (users.length === 0) {
@@ -40,7 +40,7 @@ exports.autenticarUsuario = async (email, password) => {
                 message: 'Tu cuenta está inactiva. Por favor contacta al administrador.',
                 status: 403,
                 userData: {
-                    email: user.email,
+                    usuario: user.usuario,
                     nombre: `${user.primer_nombre} ${user.primer_apellido}`
                 }
             };
@@ -101,6 +101,7 @@ exports.autenticarUsuario = async (email, password) => {
             success: true,
             user: {
                 id: user.id,
+                usuario: user.usuario,
                 email: user.email,
                 rol: user.rol,
                 nombre: `${user.primer_nombre} ${user.primer_apellido}`,
