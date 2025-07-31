@@ -8,10 +8,23 @@ const emailInput = document.getElementById('email');
 const celularInput = document.getElementById('celular');
 const newPasswordInput = document.getElementById('newPassword');
 const confirmPasswordInput = document.getElementById('confirmPassword');
+const aceptaDatosCheckbox = document.getElementById('aceptaDatos');
 const toggleNewPassword = document.getElementById('toggleNewPassword');
 const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
 const eyeOpen = '../public/assets/img/ojo-abierto.png';
 const eyeClosed = '../public/assets/img/ojo.png';
+
+btn.disabled = true;
+
+function updateButtonState() {
+    const requiredFilled = primerNombreInput.value.trim() && primerApellidoInput.value.trim() && emailInput.value.trim() && celularInput.value.trim() && newPasswordInput.value.trim() && confirmPasswordInput.value.trim();
+    btn.disabled = !(requiredFilled && aceptaDatosCheckbox.checked);
+}
+
+[primerNombreInput, primerApellidoInput, emailInput, celularInput, newPasswordInput, confirmPasswordInput].forEach(el => {
+    el.addEventListener('input', updateButtonState);
+});
+aceptaDatosCheckbox.addEventListener('change', updateButtonState);
 
 btn.addEventListener('click', async () => {
     const primer_nombre = primerNombreInput.value.trim();
@@ -22,8 +35,9 @@ btn.addEventListener('click', async () => {
     const celular = celularInput.value.trim();
     const newPassword = newPasswordInput.value.trim();
     const confirmPassword = confirmPasswordInput.value.trim();
+    const acepta_datos = aceptaDatosCheckbox.checked;
 
-    if (!primer_nombre || !primer_apellido || !email || !celular || !newPassword || !confirmPassword) {
+    if (!primer_nombre || !primer_apellido || !email || !celular || !newPassword || !confirmPassword || !acepta_datos) {
         showMessage('Por favor complete los campos obligatorios', 'error');
         return;
     }
@@ -54,7 +68,8 @@ btn.addEventListener('click', async () => {
                 primer_apellido,
                 segundo_apellido,
                 email,
-                celular
+                celular,
+                acepta_datos
             })
         });
         const data = await response.json();

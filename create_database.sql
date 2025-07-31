@@ -34,6 +34,7 @@ CREATE TABLE usuarios (
   segundo_apellido VARCHAR(100),
   email VARCHAR(100),
   celular VARCHAR(20),
+  acepta_datos BOOLEAN DEFAULT FALSE,
   contraseña VARCHAR(255) NOT NULL,
   rol_id INT NOT NULL,
   activo BOOLEAN DEFAULT TRUE,

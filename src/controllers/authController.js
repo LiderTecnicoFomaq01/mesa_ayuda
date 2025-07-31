@@ -53,11 +53,12 @@ exports.changePassword = async (req, res) => {
             primer_apellido,
             segundo_apellido,
             email,
-            celular
+            celular,
+            acepta_datos
         } = req.body;
         const userId = req.user.id;
 
-        if (!primer_nombre || !primer_apellido || !email || !celular || !newPassword) {
+        if (!primer_nombre || !primer_apellido || !email || !celular || !newPassword || !acepta_datos) {
             return res.status(400).json({
                 success: false,
                 message: 'Datos incompletos'
@@ -71,7 +72,8 @@ exports.changePassword = async (req, res) => {
             primer_apellido,
             segundo_apellido,
             email,
-            celular
+            celular,
+            acepta_datos
         });
         res.json({ success: true, message: 'Datos actualizados correctamente' });
     } catch (error) {

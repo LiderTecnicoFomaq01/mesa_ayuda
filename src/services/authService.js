@@ -137,7 +137,7 @@ exports.actualizarDatosIniciales = async (userId, datos) => {
     try {
         const hashed = await bcrypt.hash(datos.newPassword, 10);
         await db.query(
-            `UPDATE usuarios SET contraseña = ?, primer_nombre = ?, segundo_nombre = ?, primer_apellido = ?, segundo_apellido = ?, email = ?, celular = ?, ultimo_login = NOW(), intentos_fallidos = 0, bloqueado = FALSE, fecha_desbloqueo = NULL WHERE id = ?`,
+            `UPDATE usuarios SET contraseña = ?, primer_nombre = ?, segundo_nombre = ?, primer_apellido = ?, segundo_apellido = ?, email = ?, celular = ?, acepta_datos = ?, ultimo_login = NOW(), intentos_fallidos = 0, bloqueado = FALSE, fecha_desbloqueo = NULL WHERE id = ?`,
             [
                 hashed,
                 datos.primer_nombre,
@@ -146,6 +146,7 @@ exports.actualizarDatosIniciales = async (userId, datos) => {
                 datos.segundo_apellido || null,
                 datos.email,
                 datos.celular,
+                datos.acepta_datos ? 1 : 0,
                 userId
             ]
         );
