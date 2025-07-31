@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cambiar Contraseña</title>
+  <title>Completar Registro</title>
   <link rel="stylesheet" href="../css/auth.css" />
 </head>
 <body>
@@ -14,8 +14,26 @@
 
   <main>
     <section class="login-container" aria-labelledby="change-title">
-      <h2 id="change-title">Actualizar Contraseña</h2>
+      <h2 id="change-title">Completar Registro</h2>
       <div class="login-fields">
+        <label for="primerNombre">Primer nombre</label>
+        <input type="text" id="primerNombre" required />
+
+        <label for="segundoNombre">Segundo nombre</label>
+        <input type="text" id="segundoNombre" />
+
+        <label for="primerApellido">Primer apellido</label>
+        <input type="text" id="primerApellido" required />
+
+        <label for="segundoApellido">Segundo apellido</label>
+        <input type="text" id="segundoApellido" />
+
+        <label for="email">Correo electrónico</label>
+        <input type="email" id="email" required />
+
+        <label for="celular">Celular</label>
+        <input type="text" id="celular" required />
+
         <label for="newPassword">Nueva contraseña</label>
         <div class="password-wrapper">
           <input type="password" id="newPassword" placeholder="Nueva contraseña" required />
