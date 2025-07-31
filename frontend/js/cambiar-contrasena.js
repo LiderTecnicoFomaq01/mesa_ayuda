@@ -59,7 +59,7 @@ btn.addEventListener('click', async () => {
         });
         const data = await response.json();
         if (!response.ok) throw new Error(data.message || 'Error');
-        showMessage('Datos actualizados', 'success');
+        showMessage('Datos guardados correctamente', 'success');
         setTimeout(() => {
             window.location.href = 'panel-principal.html';
         }, 1500);
