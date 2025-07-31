@@ -232,7 +232,7 @@ body {
 }
 
 .chat-form .btn-enviar {
-    background-color: #0d6efd;
+    background-color: #28a745;
     color: #fff;
     border: none;
     margin: 0px;
@@ -242,6 +242,11 @@ body {
     max-width: 150px;
     cursor: pointer;
     transition: background-color 0.3s;
+}
+
+.chat-form .btn-enviar:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
 }
 
 .chat-form .btn-interno {
@@ -281,7 +286,7 @@ body {
 }
 
 .chat-form .btn-enviar:hover {
-    background-color: #0a58ca;
+    background-color: #218838;
 }
 
 /* Estilos generales para los botones */
@@ -472,6 +477,11 @@ button.modal1-submit{
 
 button.modal1-submit:hover {
   background: #218838;
+}
+
+button.modal1-submit:disabled {
+  background: #ccc;
+  cursor: not-allowed;
 }
 
 /* Modal de Rechazo */
