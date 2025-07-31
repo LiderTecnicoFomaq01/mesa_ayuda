@@ -54,6 +54,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // --- Envío de la encuesta y cambio de estado a "finalizar" ---
     const formEncuesta = document.getElementById('formEncuestaSatisfaccion');
+    const enviarEncuestaBtn = formEncuesta.querySelector('button[type="submit"]');
+    enviarEncuestaBtn.disabled = true;
+
+    formEncuesta.addEventListener('change', () => {
+      const q1 = formEncuesta.querySelector('input[name="q1"]:checked');
+      const q3 = formEncuesta.querySelector('input[name="q3"]:checked');
+      enviarEncuestaBtn.disabled = !(q1 && q3);
+    });
+
     formEncuesta.addEventListener('submit', async (e) => {
       e.preventDefault();
       const formData = new FormData(formEncuesta);
@@ -575,6 +584,12 @@ function renderTicket(data) {
     // Manejador de envío de respuesta
     const respuestaForm = document.getElementById('form-respuesta');
     const submitBtn = respuestaForm.querySelector('button[type="submit"]');
+    const mensajeInput = respuestaForm.querySelector('#mensaje');
+    submitBtn.disabled = true;
+
+    mensajeInput.addEventListener('input', () => {
+        submitBtn.disabled = mensajeInput.value.trim() === '';
+    });
 
     respuestaForm.addEventListener('submit', async (e) => {
         e.preventDefault();
