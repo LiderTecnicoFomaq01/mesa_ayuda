@@ -2,3 +2,5 @@
 src/archivos/*
 !src/archivos/.gitkeep
 !src/archivos/temp/.gitkeep
+
+node_modules/
