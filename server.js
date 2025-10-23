@@ -6,12 +6,21 @@ const bodyParser = require('body-parser');
 
 const app = express();
 
-// ✅ CORS dinámico: necesario para que Heroku no bloquee las peticiones
-const allowedOrigins = [
+// 🚪 Puerto configurable
+const PORT = Number(process.env.PORT) || 4000;
+
+// ✅ CORS dinámico: compatible con Live Server u otros orígenes configurados
+const defaultAllowedOrigins = [
   'http://127.0.0.1:5500',
-  'https://fomagmesayuda.herokuapp.com',
-  'https://fomagmesayuda-0a68b8706cab.herokuapp.com'
+  'http://localhost:5500',
+  `http://localhost:${PORT}`
 ];
+
+const envAllowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',').map((origin) => origin.trim()).filter(Boolean)
+  : [];
+
+const allowedOrigins = Array.from(new Set([...defaultAllowedOrigins, ...envAllowedOrigins]));
 
 const corsOptions = {
   origin: function (origin, callback) {
@@ -103,7 +112,6 @@ app.use((err, req, res, next) => {
 });
 
 // 🚀 Iniciar servidor
-const PORT = process.env.PORT || 4000;
 const server = app.listen(PORT, () => {
   console.log(`🚀 Servidor en http://localhost:${PORT}`);
 });
