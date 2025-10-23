@@ -1,0 +1,222 @@
+/* Fuente y fondo */
+body {
+  font-family: 'Segoe UI', 'Roboto', sans-serif;
+  margin: 0;
+  background-color: #f4f4f4;
+}
+
+/* Encabezado */
+header {
+  background-color: #0b3d91;
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+
+.logo {
+  height: 60px;
+  vertical-align: middle;
+}
+
+/* Contenedor principal */
+main {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* importante */
+  padding-top: 40px; /* o el valor que necesites según altura del header */
+  min-height: calc(100vh - 100px); /* asegura que ocupe el espacio disponible sin pisar el footer */
+  box-sizing: border-box;
+}
+
+
+/* Contenedor del formulario */
+.login-container {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.login-container h2 {
+  text-align: center;
+}
+
+/* Campos del formulario */
+.login-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.login-fields label {
+  font-weight: 500;
+}
+
+.login-fields input[type="text"],
+.login-fields input[type="email"],
+.login-fields input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Enfoque en inputs */
+input:focus {
+  border-color: #0b3d91;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(11, 61, 145, 0.2);
+}
+
+/* Botón */
+button {
+  background-color: #0b3d91;
+  color: white;
+  padding: 10px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+  background-color: #092e6c;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+/* Errores y mensajes */
+.error {
+  color: red;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.message {
+  text-align: center;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.message.info {
+  color: #0b3d91;
+}
+
+.message.success {
+  color: green;
+}
+
+.message.error {
+  color: red;
+}
+
+/* Contraseñas con ícono de visibilidad */
+.password-wrapper {
+  position: relative;
+}
+
+.password-wrapper input {
+  width: 100% !important;
+  padding-right: 40px;
+  box-sizing: border-box;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.toggle-password img {
+  width: 24px;
+  height: 24px;
+}
+
+/* Campo obligatorio visual */
+label.required::after {
+  content: ' *';
+  color: red;
+}
+
+/* Checkbox */
+.checkbox-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.checkbox-container input[type="checkbox"] {
+  margin-top: 4px;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 10px;
+  background-color: #0b3d91;
+  color: white;
+  position: fixed;
+  bottom: 0;
+  min-width: 100%;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .login-container {
+    width: 90%;
+  }
+}
+
+@media (max-width: 480px) {
+  header h1 {
+    font-size: 1.2rem;
+  }
+
+  .logo {
+    height: 50px;
+    vertical-align: middle;
+  }
+
+  .login-container {
+    padding: 20px;
+    max-width: 95%;
+  }
+
+  .checkbox-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .checkbox-label {
+    font-size: 0.85rem;
+  }
+
+  button {
+    font-size: 1rem;
+  }
+
+  footer {
+    max-width: fit-content;
+    text-align: center;
+    padding: 10px;
+    background-color: #0b3d91;
+  }
+}
+
+@media (max-width: 280px) {
+  .logo {
+    height: 35px;
+  }
+}

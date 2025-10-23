@@ -8,9 +8,7 @@ const app = express();
 
 // ✅ CORS dinámico: necesario para que Heroku no bloquee las peticiones
 const allowedOrigins = [
-  'http://127.0.0.1:5500',
-  'https://fomagmesayuda.herokuapp.com',
-  'https://fomagmesayuda-0a68b8706cab.herokuapp.com'
+  'http://127.0.0.1:5500'
 ];
 
 const corsOptions = {
