@@ -124,7 +124,7 @@ function aplicarFiltros() {
 }
 
 // Calcular color de semáforo basado en tiempos traídos del backend
-function obtenerIndicativoSemaforo(fechaCreacion, tiempoVerde, tiempoAmarillo, estado, contadorHoras = null, fechaCierre = null) {
+function obtenerIndicativoSemaforo(fechaCreacion, tiempoVerde, tiempoAmarillo, estado, contadorHoras = null, fechaCierre = null, fechaInicioEnCurso = null) {
     const ahora = new Date();
     const creacion = new Date(fechaCreacion);
     const estadoLower = estado?.toLowerCase();
@@ -143,8 +143,16 @@ function obtenerIndicativoSemaforo(fechaCreacion, tiempoVerde, tiempoAmarillo, e
         };
     }
 
-    // Si está activo, calcular las horas hábiles desde la creación hasta ahora
-    const horasTranscurridas = calcularHorasHabiles(creacion, ahora);
+    let inicioCalculo = creacion;
+    if (estadoLower === 'en curso' && fechaInicioEnCurso) {
+        const posibleInicio = new Date(fechaInicioEnCurso);
+        if (!isNaN(posibleInicio)) {
+            inicioCalculo = posibleInicio;
+        }
+    }
+
+    // Si está activo, calcular las horas hábiles desde el inicio correspondiente hasta ahora
+    const horasTranscurridas = calcularHorasHabiles(inicioCalculo, ahora);
 
     const tiempoTexto = horasTranscurridas >= 48
         ? `${Math.floor(horasTranscurridas / 24)} d`
@@ -296,7 +304,7 @@ async function cargarTickets(userId, filters = {}) {
         }
 
         ticketsFiltrados.forEach(ticket => {
-            const { tiempoTexto, color } = obtenerIndicativoSemaforo(ticket.fecha_creacion, ticket.tiempo_verde, ticket.tiempo_amarillo, ticket.estado, ticket.contador_horas, ticket.hora_solucion);
+            const { tiempoTexto, color } = obtenerIndicativoSemaforo(ticket.fecha_creacion, ticket.tiempo_verde, ticket.tiempo_amarillo, ticket.estado, ticket.contador_horas, ticket.hora_solucion, ticket.fecha_inicio_en_curso);
             const row = document.createElement('tr');
 
             row.innerHTML = `

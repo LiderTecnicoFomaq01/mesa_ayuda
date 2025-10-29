@@ -50,7 +50,7 @@ function calcularHorasHabiles(fechaInicio, fechaFin) {
 const cambiarEstado = async (radicado, nuevoEstado) => {
     try {
         const [rows] = await db.query(
-            `SELECT id_estado, fecha_creacion, hora_solucion, contador_horas FROM tickets WHERE id = ?`,
+            `SELECT id_estado, fecha_creacion, hora_solucion, contador_horas, fecha_inicio_en_curso FROM tickets WHERE id = ?`,
             [radicado]
         );
 
@@ -70,22 +70,25 @@ const cambiarEstado = async (radicado, nuevoEstado) => {
         console.log('================================');
 
         // Si el ticket se reabre
-        if (nuevoEstado === 1) {
+        if (Number(nuevoEstado) === 1) {
             console.log('[IF] Estado 1 detectado: Reapertura de ticket');
 
             if (ticket.hora_solucion) {
                 console.log('Ticket tenía hora de solución. Reiniciando...');
                 await db.query(
-                    `UPDATE tickets 
-                     SET id_estado = ?, fecha_actualizacion = NOW(), hora_solucion = NULL 
+                    `UPDATE tickets
+                     SET id_estado = ?, fecha_actualizacion = NOW(), hora_solucion = NULL,
+                         fecha_inicio_en_curso = NOW(), contador_horas = 0
                      WHERE id = ?`,
                     [nuevoEstado, radicado]
                 );
             } else {
                 console.log('Ticket no tenía hora de solución. Solo se actualiza el estado.');
                 await db.query(
-                    `UPDATE tickets 
-                     SET id_estado = ?, fecha_actualizacion = NOW() 
+                    `UPDATE tickets
+                     SET id_estado = ?, fecha_actualizacion = NOW(),
+                         fecha_inicio_en_curso = NOW(), contador_horas = 0,
+                         hora_solucion = NULL
                      WHERE id = ?`,
                     [nuevoEstado, radicado]
                 );
@@ -100,8 +103,8 @@ const cambiarEstado = async (radicado, nuevoEstado) => {
             if (!ticket.hora_solucion) {
                 console.log('No tenía hora de solución. Asignando hora actual:', ahora);
                 await db.query(
-                    `UPDATE tickets 
-                     SET hora_solucion = NOW() 
+                    `UPDATE tickets
+                     SET hora_solucion = NOW()
                      WHERE id = ?`,
                     [radicado]
                 );
@@ -109,21 +112,24 @@ const cambiarEstado = async (radicado, nuevoEstado) => {
                 console.log('Ya tenía hora de solución:', ticket.hora_solucion);
             }
 
-            const fechaInicio = ticket.hora_solucion
-                ? new Date(ticket.hora_solucion)
-                : new Date(ticket.fecha_creacion);
+            const fechaInicio = ticket.fecha_inicio_en_curso
+                ? new Date(ticket.fecha_inicio_en_curso)
+                : ticket.hora_solucion
+                    ? new Date(ticket.hora_solucion)
+                    : new Date(ticket.fecha_creacion);
 
             const horasNuevas = calcularHorasHabiles(fechaInicio, ahora);
-            const totalHoras = ticket.contador_horas + horasNuevas;
+            const totalHoras = horasNuevas;
 
             console.log(`Calculando horas hábiles desde: ${fechaInicio}`);
             console.log(`Horas nuevas calculadas: ${horasNuevas}`);
             console.log(`Total acumulado de horas: ${totalHoras}`);
 
             await db.query(
-                `UPDATE tickets 
-                 SET id_estado = ?, fecha_actualizacion = NOW(), 
-                     contador_horas = ?, hora_solucion = NOW() 
+                `UPDATE tickets
+                 SET id_estado = ?, fecha_actualizacion = NOW(),
+                     contador_horas = ?, hora_solucion = NOW(),
+                     fecha_inicio_en_curso = NULL
                  WHERE id = ?`,
                 [nuevoEstado, totalHoras, radicado]
             );
