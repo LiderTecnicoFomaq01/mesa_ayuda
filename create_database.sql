@@ -94,8 +94,9 @@ CREATE TABLE tickets (
   descripcion_caso TEXT,
   fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  hora_solucion TIMESTAMP NULL,   
-  contador_horas INT DEFAULT 0,   
+  hora_solucion TIMESTAMP NULL,
+  fecha_inicio_en_curso TIMESTAMP NULL,
+  contador_horas INT DEFAULT 0,
   FOREIGN KEY (id_categoria) REFERENCES categorias(id),
   FOREIGN KEY (id_usuario) REFERENCES usuarios(id),
   FOREIGN KEY (id_estado) REFERENCES estados_ticket(id)

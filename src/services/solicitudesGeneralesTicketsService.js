@@ -12,6 +12,7 @@ const getTicketsByUserId = async (usuarioId) => {
         et.nombre_estado AS estado,
         t.fecha_creacion AS fecha_creacion,
         t.hora_solucion AS hora_solucion,
+        t.fecha_inicio_en_curso AS fecha_inicio_en_curso,
         t.contador_horas AS contador_horas,
         t.asunto AS asunto,
         pt.nombre_prioridad AS prioridad,

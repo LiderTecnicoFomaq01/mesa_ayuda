@@ -68,9 +68,10 @@ BEGIN
     -- Actualizar el ticket
     UPDATE tickets
     SET
-      id_estado          = 4,
-      contador_horas     = @total_horas,
-      fecha_actualizacion = NOW()
+      id_estado           = 4,
+      contador_horas      = @total_horas,
+      fecha_actualizacion = NOW(),
+      fecha_inicio_en_curso = NULL
     WHERE id = v_id;
   END LOOP;
   CLOSE cur;
@@ -101,6 +102,7 @@ BEGIN
   IF NEW.id_estado = 3 AND OLD.id_estado <> 3 THEN
     SET NEW.hora_solucion = NOW();
     SET NEW.fecha_actualizacion = NOW();
+    SET NEW.fecha_inicio_en_curso = NULL;
   END IF;
 END$$
 DELIMITER ;
