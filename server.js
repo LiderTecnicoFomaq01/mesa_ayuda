@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const bodyParser = require('body-parser');
+const fs = require('fs');
 
 const app = express();
 
@@ -96,6 +97,26 @@ try {
 // ✅ Ruta raíz (login)
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'frontend', 'views', 'login.html'));
+});
+
+// ✅ Cualquier otra vista HTML disponible en /frontend/views
+app.get('/:viewName.html', (req, res, next) => {
+  const viewName = req.params ? req.params.viewName : undefined;
+
+  if (!viewName) {
+    return next();
+  }
+
+  const sanitizedViewName = path.basename(viewName); // evita rutas con ../
+  const requestedViewPath = path.join(viewsPath, `${sanitizedViewName}.html`);
+
+  fs.access(requestedViewPath, fs.constants.F_OK, (err) => {
+    if (err) {
+      return next();
+    }
+
+    res.sendFile(requestedViewPath);
+  });
 });
 
 // 🩺 Ruta de salud
